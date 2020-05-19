@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Row, Col } from 'antd';
 import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import useStyles from '@/utils/makestyle';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { LocalizationProvider, DatePicker } from '@material-ui/pickers';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import MomentUtils from '@date-io/moment';
+import MomentAdapter from '@material-ui/pickers/adapter/moment';
+
 moment.locale('zh-cn');
 //初始化表格
 let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
@@ -36,8 +34,7 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
     ? defaultCol
     : { xs: 24, sm: 24, md: 12, lg: 12, xl: 12, xxl: 12 };
 
-  useEffect(() => {}, []);
-  console.log(errors);
+  //seEffect(() => { }, []);
 
   return (
     <div style={{ width: '100%' }}>
@@ -93,19 +90,18 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
                   </Col>
                 );
               } else if (item.type == 'select') {
-                let selectprops = {
+                let inputprops = {
                     name: item.keys,
+                    inputRef: register({ required: item.required }),
+                    onChange: (e: any) => {
+                      handleChange(item.keys, e.target.value);
+                    },
+                  },
+                  selectprops = {
                     value: item.value,
                     style: { width: '100%' },
                     labelId: item.keys,
                     multiple: item.multiple,
-                    inputProps: {
-                      name: item.keys,
-                      inputRef: register({ required: item.required }),
-                      onChange: (e: any) => {
-                        handleChange(item.keys, e.target.value);
-                      },
-                    },
                   },
                   colprops = item.col ? item.col : defaultCol;
                 return (
@@ -125,7 +121,10 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
                           item.title
                         )}
                       </InputLabel>
-                      <Select {...selectprops}>
+                      <Select
+                        {...selectprops}
+                        input={<Input {...inputprops} />}
+                      >
                         {item.options &&
                           item.options.map((item: any, i: number) => {
                             return (
@@ -148,11 +147,10 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
                 );
               } else if (item.type == 'datepicker') {
                 let datepickerprops = {
-                    fullwidth: true,
-                    name: item.keys, //form input key
-                    onChange: (e: any) => {
-                      handleChange(item.keys, e.target.value);
+                    onChange: (date: any) => {
+                      handleChange(item.keys, date);
                     },
+                    className: useStyles().root,
                     label: item.required ? (
                       <span>
                         <i style={{ color: 'red', marginRight: 8 }}>*</i>
@@ -164,13 +162,21 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
                     format: 'YYYY-MM-DD',
                     disableToolbar: true,
                     value: item.value,
-                    inputRef: register({ required: item.required }),
-                    helperText: errors[item.keys] ? (
-                      <span
-                        style={{ color: '#f50' }}
-                      >{`请完善${item.title}`}</span>
-                    ) : (
-                      <span style={{ opacity: 0 }}>11</span>
+                    renderInput: (props: any) => (
+                      <TextField
+                        {...props}
+                        name={item.keys}
+                        inputRef={register({ required: item.required })}
+                        helperText={
+                          errors[item.keys] ? (
+                            <span
+                              style={{ color: '#f50' }}
+                            >{`请完善${item.title}`}</span>
+                          ) : (
+                            <span style={{ opacity: 0 }}>11</span>
+                          )
+                        }
+                      />
                     ),
                   },
                   colprops = item.col ? item.col : defaultCol;
@@ -180,14 +186,14 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
                     {...colprops}
                     style={{ padding: '0 12px', margin: '12px 0 0 0' }}
                   >
-                    <MuiPickersUtilsProvider
-                      libInstance={moment}
-                      utils={MomentUtils}
+                    <LocalizationProvider
+                      style={{ width: '100%' }}
+                      dateLibInstance={moment}
+                      dateAdapter={MomentAdapter}
+                      locale={'zh-cn'}
                     >
-                      <KeyboardDatePicker
-                        {...datepickerprops}
-                      ></KeyboardDatePicker>
-                    </MuiPickersUtilsProvider>
+                      <DatePicker {...datepickerprops}></DatePicker>
+                    </LocalizationProvider>
                   </Col>
                 );
               }

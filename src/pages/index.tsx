@@ -3,6 +3,8 @@ import styles from './index.less';
 import { connect, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import InitForm from '@/components/InitForm';
+import moment from 'moment';
+
 let defaultfields: any = {
   sensorName: {
     value: '', //初始化值
@@ -31,7 +33,7 @@ let defaultfields: any = {
     ],
   },
   date: {
-    value: '',
+    value: moment(),
     type: 'datepicker',
     title: '日期选择',
     keys: 'date',
@@ -97,6 +99,7 @@ let Index = ({ model, dispatch }: any) => {
               }
               return newfields;
             });
+            console.log(fields);
           }}
           handleChange={(key: any, value: any) => {
             cf(() => {

@@ -2,6 +2,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   root: {
+    '& .MuiInputBase-root': {
+      width: '100%',
+    },
     '& .Mui-focused': {
       color: '#000',
     },
