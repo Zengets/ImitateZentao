@@ -1,4 +1,5 @@
 import { defineConfig } from 'umi';
+import initialRouter from './config/router.config';
 
 export default defineConfig({
   nodeModulesTransform: {
@@ -8,5 +9,9 @@ export default defineConfig({
     skipModelValidate: true,
     immer: true,
   },
-  routes: [{ path: '/', component: '@/pages/index' }],
+  antd: {
+    dark: false,
+    compact: false,
+  },
+  routes: initialRouter,
 });
