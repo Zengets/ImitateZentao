@@ -92,13 +92,13 @@ let InitForm = ({ fields, submitData, defaultCol, handleChange }: any) => {
               } else if (item.type == 'select') {
                 let inputprops = {
                     name: item.keys,
+                    value: item.value,
                     inputRef: register({ required: item.required }),
                     onChange: (e: any) => {
                       handleChange(item.keys, e.target.value);
                     },
                   },
                   selectprops = {
-                    value: item.value,
                     style: { width: '100%' },
                     labelId: item.keys,
                     multiple: item.multiple,

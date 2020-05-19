@@ -4,6 +4,7 @@ import { connect, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
+import { message } from 'antd';
 
 let defaultfields: any = {
   sensorName: {
@@ -92,13 +93,23 @@ let Index = ({ model, dispatch }: any) => {
         <InitForm
           fields={fields}
           submitData={(data: any) => {
+            let isthen = false;
             cf(() => {
               let newfields = JSON.parse(JSON.stringify(fields));
               for (let i in newfields) {
                 newfields[i].second = true;
+                if (
+                  (newfields[i].required && !newfields[i].value) ||
+                  (newfields[i].required && newfields[i].value.length == 0)
+                ) {
+                  isthen = true;
+                }
               }
               return newfields;
             });
+            if (isthen) {
+              return;
+            }
             console.log(fields);
           }}
           handleChange={(key: any, value: any) => {
