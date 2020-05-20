@@ -4,7 +4,42 @@ import { connect, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import { message } from 'antd';
+import { message, TreeSelect } from 'antd';
+import TextField from '@material-ui/core/TextField';
+const treeData = [
+  {
+    title: 'parent 1',
+    key: '0-0',
+    children: [
+      {
+        title: 'parent 1-0',
+        key: '0-0-0',
+        disabled: true,
+        children: [
+          {
+            title: 'leaf',
+            key: '0-0-0-0',
+            disableCheckbox: true,
+          },
+          {
+            title: 'leaf',
+            key: '0-0-0-1',
+          },
+        ],
+      },
+      {
+        title: 'parent 1-1',
+        key: '0-0-1',
+        children: [
+          {
+            title: <span style={{ color: '#1890ff' }}>sss</span>,
+            key: '0-0-1-0',
+          },
+        ],
+      },
+    ],
+  },
+];
 
 let defaultfields: any = {
   sensorName: {
@@ -52,6 +87,15 @@ let defaultfields: any = {
       { dicName: 'dapaos', dicKey: '1' },
     ],
   },
+  tree: {
+    value: [],
+    type: 'treeselect',
+    title: '树结构',
+    keys: 'tree',
+    required: true,
+    multiple: false,
+    options: treeData,
+  },
   sensorNamec: {
     value: 45465,
     type: 'multiline', //textarea
@@ -60,6 +104,13 @@ let defaultfields: any = {
     keys: 'sensorNamec',
     required: true,
     col: { span: 24 },
+  },
+  upload: {
+    value: [],
+    type: 'upload',
+    title: '设备图片',
+    keys: 'upload',
+    required: true,
   },
 };
 
@@ -92,21 +143,18 @@ let Index = ({ model, dispatch }: any) => {
       <div style={{ width: 800, margin: '0 auto' }}>
         <InitForm
           fields={fields}
-          submitData={(data: any) => {
+          submitData={() => {
             let isthen = false;
-            cf(() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i].second = true;
-                if (
-                  (newfields[i].required && !newfields[i].value) ||
-                  (newfields[i].required && newfields[i].value.length == 0)
-                ) {
-                  isthen = true;
-                }
+            let newfields = JSON.parse(JSON.stringify(fields));
+            for (let i in newfields) {
+              newfields[i].second = true;
+              if (
+                (newfields[i].required && !newfields[i].value) ||
+                (newfields[i].required && newfields[i].value.length == 0)
+              ) {
+                isthen = true;
               }
-              return newfields;
-            });
+            }
             if (isthen) {
               return;
             }

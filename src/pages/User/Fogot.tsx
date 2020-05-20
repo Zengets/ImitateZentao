@@ -6,25 +6,33 @@ import TextField from '@material-ui/core/TextField';
 import { useForm } from 'react-hook-form';
 import Container from '@material-ui/core/Container';
 import useStyles from '@/utils/makestyle';
+import { Row, Col, message } from 'antd';
 
-let Login = ({ model, dispatch }: any) => {
+let Fogot = (props: any) => {
+  let { dispatch, user } = props;
   //useForm hooks
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors, getValues } = useForm();
+
+  //倒计时
+  let [num, cnum] = useState(60);
+  let t: NodeJS.Timeout | null = null;
+
   //submit
   const onSubmit = (data: any) => {
-    console.log(data);
+    let { id } = user.res.data.data ? user.res.data.data : { id: '' };
     setNewState(
-      'Login',
+      'reparePassword',
       {
-        accountName: data.username,
-        password: data.password,
+        code: data.qrcode,
+        newPassword: data.password,
+        id,
       },
       () => {
         history.replace('/');
+        message.success('密码修改成功');
       },
     );
   };
-
   //dispach数据
   function setNewState(type: any, values: any, fn: any) {
     dispatch({
@@ -51,10 +59,8 @@ let Login = ({ model, dispatch }: any) => {
               borderRadius: 6,
             }}
           >
-            <h1
-              style={{ textAlign: 'center', marginBottom: 36, color: '#000' }}
-            >
-              南高项目管理平台
+            <h1 style={{ textAlign: 'left', marginBottom: 36, color: '#000' }}>
+              找回密码
             </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
               <TextField
@@ -76,6 +82,58 @@ let Login = ({ model, dispatch }: any) => {
                   )
                 }
               />
+              <Row gutter={12}>
+                <Col span={16}>
+                  <TextField
+                    style={{ marginBottom: 18, color: '#fff' }}
+                    className={useStyles().root}
+                    type="text"
+                    fullWidth
+                    name="qrcode"
+                    inputRef={register({ required: true })}
+                    id="outlined-basic"
+                    label="验证码"
+                    variant="outlined"
+                    error={Boolean(errors.qrcode)}
+                    helperText={
+                      errors.qrcode ? (
+                        '请输入验证码'
+                      ) : (
+                        <span style={{ opacity: 0 }}>11</span>
+                      )
+                    }
+                  />
+                </Col>
+                <Col span={8}>
+                  <Button
+                    disabled={num < 60}
+                    style={{ height: 56, color: '#fff' }}
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                    onClick={() => {
+                      setNewState(
+                        'sendVerificationCode',
+                        { accountName: getValues('username') },
+                        () => {
+                          t = setInterval(() => {
+                            if (num == 0) {
+                              cnum(60);
+                              clearInterval(t);
+                            } else {
+                              cnum(num--);
+                            }
+                          }, 1000);
+                        },
+                      );
+                    }}
+                  >
+                    {num < 60 ? num + 's' : '获 取'}
+                  </Button>
+                </Col>
+              </Row>
+
               <TextField
                 style={{ marginBottom: 18, color: '#fff' }}
                 className={useStyles().root}
@@ -103,11 +161,11 @@ let Login = ({ model, dispatch }: any) => {
                 color="primary"
                 disableElevation
               >
-                立即登录
+                找回密码
               </Button>
             </form>
             <Link
-              to="/Fogot"
+              to="/"
               style={{
                 color: '#3f51b5',
                 marginTop: 12,
@@ -116,7 +174,7 @@ let Login = ({ model, dispatch }: any) => {
                 width: '100%',
               }}
             >
-              忘记密码？
+              立即登录
             </Link>
           </div>
         </Container>
@@ -129,7 +187,7 @@ let Login = ({ model, dispatch }: any) => {
   );
 };
 
-export default connect(({ model, loading }: any) => ({
-  model,
+export default connect(({ user, loading }: any) => ({
+  user,
   loading: loading.effects['model/User'],
-}))(Login);
+}))(Fogot);

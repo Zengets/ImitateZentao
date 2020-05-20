@@ -1,17 +1,32 @@
-import { User } from '@/services/api.ts';
+import { Login, sendVerificationCode, reparePassword } from '@/services/api.ts';
+import { message } from 'antd';
 
 export default {
   state: {
-    User: [],
+    res: {},
   },
   effects: {
-    *User({ payload }: any, { call, put }: any) {
-      //datalist
-      const responese = yield call(User, payload);
-      console.log(responese);
+    *Login({ payload }: any, { call, put }: any) {
+      const responese = yield call(Login, payload);
       yield put({
         type: 'updateState',
-        payload: { User: responese.users ? responese.users : [] },
+        payload: { res: responese },
+      });
+      return responese.code == '0000';
+    },
+    *sendVerificationCode({ payload }: any, { call, put }: any) {
+      const responese = yield call(sendVerificationCode, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese.code == '0000';
+    },
+    *reparePassword({ payload }: any, { call, put }: any) {
+      const responese = yield call(reparePassword, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
       });
       return responese.code == '0000';
     },
@@ -19,6 +34,12 @@ export default {
 
   reducers: {
     updateState(state: any, { payload }: any) {
+      for (let i in payload) {
+        if (payload[i].code !== '0000') {
+          message.destroy();
+          message.warn(payload[i].msg);
+        }
+      }
       return { ...state, ...payload };
     },
   },
