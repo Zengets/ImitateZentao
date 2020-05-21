@@ -16,6 +16,15 @@ export async function Login(params: any) {
     body: JSON.stringify(params),
   });
 }
+//登出
+export async function Logout(params: any) {
+  return request(`/zentao/sysAccount/logout`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //获取找密码验证码
 export async function sendVerificationCode(params: any) {
   return request(`/zentao/sysAccount/sendVerificationCode`, {
@@ -27,6 +36,33 @@ export async function sendVerificationCode(params: any) {
 //找回密码
 export async function reparePassword(params: any) {
   return request(`/zentao/sysAccount/reparePassword`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//修改密码
+export async function changePassword(params: any) {
+  return request(`/zentao/sysAccount/changePassword`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//部门树
+export async function DepqueryTreeList(params: any) {
+  return request(`/zentao/sysDepartment/queryTreeList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//查询部门树子节点
+export async function DepqueryByParentId(params: any) {
+  return request(`/zentao/sysDepartment/queryByParentId`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),

@@ -114,7 +114,7 @@ let defaultfields: any = {
   },
 };
 
-let Index = ({ model, dispatch }: any) => {
+let SetUser = ({ model, dispatch }: any) => {
   //dispatch
   let [fields, cf] = useState(defaultfields);
 
@@ -158,4 +158,4 @@ let Index = ({ model, dispatch }: any) => {
 export default connect(({ model, loading }: any) => ({
   model,
   loading: loading.effects['model/User'],
-}))(Index);
+}))(SetUser);

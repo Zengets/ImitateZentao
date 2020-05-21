@@ -24,7 +24,7 @@ function PaperComponent(props: any) {
   );
 }
 
-export default function Dia({ show, cshow }: any) {
+export default function Dia({ show, cshow, title, children, maxWidth }: any) {
   return (
     <div>
       <Dialog
@@ -32,25 +32,25 @@ export default function Dia({ show, cshow }: any) {
         PaperComponent={PaperComponent}
         TransitionComponent={Transition}
         keepMounted
+        maxWidth={maxWidth}
+        fullWidth={true}
         onClose={() => cshow(false)}
         aria-labelledby="draggable-dialog-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle id="draggable-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
+        <DialogTitle id="draggable-dialog-title">{title}</DialogTitle>
+        <DialogContent>{children}</DialogContent>
         <DialogActions>
           <Button onClick={() => cshow(false)} color="primary">
-            Disagree
+            取消
           </Button>
-          <Button onClick={() => cshow(false)} color="primary">
-            Agree
+          <Button
+            onClick={() => cshow(false)}
+            color="primary"
+            variant="contained"
+            disableElevation
+          >
+            确定
           </Button>
         </DialogActions>
       </Dialog>

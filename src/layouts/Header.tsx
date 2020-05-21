@@ -4,43 +4,19 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import styles from './layout.less';
 import Container from '@material-ui/core/Container';
-import { Avatar, Menu, Dropdown, Divider } from 'antd';
+import { Breadcrumb, Menu, Dropdown, Divider } from 'antd';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { IconButton } from '@material-ui/core';
+import { IconButton, Paper } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-
-function TabPanel(props: any) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import { connect, history } from 'umi';
+import Link from '@material-ui/core/Link';
 
 function a11yProps(index: any) {
   return {
-    style: { height: 64, minWidth: 80 },
+    style: { height: 60, minWidth: 80 },
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
@@ -53,16 +29,43 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SimpleTabs(props) {
-  const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
+export default function SimpleTabs(props: any) {
+  let curindex = 0,
+    curindexs = 0,
+    mainroutes = props.routes.filter((item: any) => {
+      return item.name;
+    }),
+    childroute;
+  mainroutes.map((item: any, i: any) => {
+    if (history.location.pathname.indexOf(item.path) !== -1) {
+      curindex = i;
+      childroute = item.routes.filter((item: any) => {
+        return item.name;
+      });
+    }
+  });
+  const [value, setValue] = React.useState(curindex);
+  const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
   };
 
+  childroute &&
+    childroute.map((item: any, i: any) => {
+      if (history.location.pathname == item.path) {
+        curindexs = i;
+      }
+    });
+
+  const [values, setValues] = React.useState(curindexs);
+  const handleChanges = (event: any, newValue: any) => {
+    setValues(newValue);
+  };
+
+  console.log(childroute);
+
   return (
     <div className={styles.topHeader}>
-      <AppBar position="static">
+      <AppBar position="static" style={{ boxShadow: 'none' }}>
         <Container
           maxWidth={'lg'}
           style={{
@@ -79,16 +82,31 @@ export default function SimpleTabs(props) {
             indicatorColor="secondary"
             scrollButtons="auto"
           >
-            <Tab label="首页" {...a11yProps(0)} />
-            <Tab label="产品" {...a11yProps(1)} />
-            <Tab label="项目" {...a11yProps(2)} />
-            <Tab label="任务" {...a11yProps(2)} />
-            <Tab label="测试" {...a11yProps(2)} />
-            <Divider
-              type="vertical"
-              style={{ height: 24, margin: 0, marginTop: 20, padding: 0 }}
-            ></Divider>
-            <Tab label="设置" {...a11yProps(2)} />
+            {mainroutes &&
+              mainroutes.map((item: any, i: any) => {
+                if (i == mainroutes.length - 1) {
+                  return (
+                    <Tab
+                      label={item.name}
+                      style={{ borderLeft: '#fff solid 1px' }}
+                      {...a11yProps(i)}
+                      onClick={() => {
+                        history.push(item.path);
+                      }}
+                    />
+                  );
+                } else {
+                  return (
+                    <Tab
+                      label={item.name}
+                      {...a11yProps(i)}
+                      onClick={() => {
+                        history.push(item.path);
+                      }}
+                    />
+                  );
+                }
+              })}
           </Tabs>
           <Dropdown overlay={props.menu} trigger="click">
             <div className={styles.userbox}>
@@ -104,6 +122,55 @@ export default function SimpleTabs(props) {
           </Dropdown>
         </Container>
       </AppBar>
+      {childroute && (
+        <div
+          style={{
+            width: '100%',
+            overflow: 'hidden',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <Container
+            maxWidth={'lg'}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ width: 250 }}>
+              <Breadcrumb>
+                <Breadcrumb.Item>{mainroutes[value].name}</Breadcrumb.Item>
+                <Dropdown overlay={<div></div>} trigger="click">
+                  <Breadcrumb.Item>{childroute[values].name}</Breadcrumb.Item>
+                </Dropdown>
+              </Breadcrumb>
+            </div>
+            <Tabs
+              centered
+              value={values}
+              indicatorColor="primary"
+              textColor="primary"
+              onChange={handleChanges}
+              aria-label="disabled tabs example"
+            >
+              {childroute &&
+                childroute.map((item, i) => {
+                  return (
+                    <Tab
+                      label={item.name}
+                      style={{ minWidth: 80 }}
+                      onClick={() => {
+                        history.push(item.path);
+                      }}
+                    />
+                  );
+                })}
+            </Tabs>
+            <div style={{ width: 250 }}></div>
+          </Container>
+        </div>
+      )}
     </div>
   );
 }

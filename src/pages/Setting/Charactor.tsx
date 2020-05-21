@@ -114,43 +114,13 @@ let defaultfields: any = {
   },
 };
 
-let Index = ({ model, dispatch }: any) => {
+let SetUser = ({ model, dispatch }: any) => {
   //dispatch
   let [fields, cf] = useState(defaultfields);
 
   return (
     <div>
-      <div style={{ width: 800, margin: '0 auto' }}>
-        <InitForm
-          fields={fields}
-          submitData={() => {
-            let isthen = false;
-            let newfields = JSON.parse(JSON.stringify(fields));
-            for (let i in newfields) {
-              newfields[i].second = true;
-              if (
-                (newfields[i].required && !newfields[i].value) ||
-                (newfields[i].required && newfields[i].value.length == 0)
-              ) {
-                isthen = true;
-              }
-            }
-            if (isthen) {
-              return;
-            }
-            console.log(fields);
-          }}
-          handleChange={(key: any, value: any) => {
-            cf(() => {
-              fields[key].value = value;
-              fields[key].second = true;
-              return {
-                ...fields,
-              };
-            });
-          }}
-        ></InitForm>
-      </div>
+      <div style={{ width: 800, margin: '0 auto' }}>来了</div>
     </div>
   );
 };
@@ -158,4 +128,4 @@ let Index = ({ model, dispatch }: any) => {
 export default connect(({ model, loading }: any) => ({
   model,
   loading: loading.effects['model/User'],
-}))(Index);
+}))(SetUser);

@@ -7,6 +7,8 @@ let IpAndPort = '';
 
 if (allStr.indexOf('9000') != -1) {
   IpAndPort = 'http://172.21.3.124:8081/';
+} else if (allStr.indexOf('9001') != -1) {
+  IpAndPort = 'http://172.21.3.137:8081/';
 }
 
 export default defineConfig({
@@ -23,7 +25,7 @@ export default defineConfig({
   },
   title: '南高项目管理云平台',
   theme: {
-    'primary-color': '#1DA57A',
+    'primary-color': '#1183fb',
     'font-size-base': '16px',
   },
   routes: initialRouter,

@@ -7,6 +7,17 @@ import { useForm } from 'react-hook-form';
 import Container from '@material-ui/core/Container';
 import useStyles from '@/utils/makestyle';
 import { Row, Col, message } from 'antd';
+import setNewState from '@/utils/setNewState';
+import {
+  FormControl,
+  InputLabel,
+  FilledInput,
+  IconButton,
+  OutlinedInput,
+  InputAdornment,
+} from '@material-ui/core';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 let Fogot = (props: any) => {
   let { dispatch, user } = props;
@@ -21,7 +32,8 @@ let Fogot = (props: any) => {
   const onSubmit = (data: any) => {
     let { id } = user.res.data.data ? user.res.data.data : { id: '' };
     setNewState(
-      'reparePassword',
+      dispatch,
+      'user/reparePassword',
       {
         code: data.qrcode,
         newPassword: data.password,
@@ -33,17 +45,17 @@ let Fogot = (props: any) => {
       },
     );
   };
-  //dispach数据
-  function setNewState(type: any, values: any, fn: any) {
-    dispatch({
-      type: 'user/' + type,
-      payload: values,
-    }).then((res: any) => {
-      if (res) {
-        fn ? fn() : null;
-      }
-    });
-  }
+  let [values, setvalues] = useState({
+    showPassword: false,
+    showPasswords: false,
+  });
+  const handleClickShowPassword = (key: string) => {
+    setvalues({ ...values, [key]: !values[key] });
+  };
+
+  const handleMouseDownPassword = (event: any) => {
+    event.preventDefault();
+  };
 
   return (
     <div
@@ -114,7 +126,8 @@ let Fogot = (props: any) => {
                     disableElevation
                     onClick={() => {
                       setNewState(
-                        'sendVerificationCode',
+                        dispatch,
+                        'user/sendVerificationCode',
                         { accountName: getValues('username') },
                         () => {
                           t = setInterval(() => {
@@ -134,25 +147,48 @@ let Fogot = (props: any) => {
                 </Col>
               </Row>
 
-              <TextField
-                style={{ marginBottom: 18, color: '#fff' }}
+              <FormControl
                 className={useStyles().root}
-                type="password"
-                fullWidth
-                name="password"
-                inputRef={register({ required: true })}
-                id="outlined-basic"
-                label="密码"
                 variant="outlined"
-                error={Boolean(errors.password)}
-                helperText={
-                  errors.password ? (
+                style={{ width: '100%' }}
+              >
+                <InputLabel htmlFor="outlined-adornment-password">
+                  密码
+                </InputLabel>
+                <OutlinedInput
+                  name="password"
+                  fullWidth
+                  style={{ marginBottom: 24 }}
+                  id="outlined-adornment-password"
+                  type={values.showPassword ? 'text' : 'password'}
+                  error={Boolean(errors.password)}
+                  inputRef={register({ required: true })}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => handleClickShowPassword('showPassword')}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {values.showPassword ? (
+                          <Visibility />
+                        ) : (
+                          <VisibilityOff />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={70}
+                />
+                <span style={{ fontSize: 12, color: '#f50', paddingLeft: 14 }}>
+                  {errors.password ? (
                     '请输入密码'
                   ) : (
                     <span style={{ opacity: 0 }}>11</span>
-                  )
-                }
-              />
+                  )}
+                </span>
+              </FormControl>
 
               <Button
                 fullWidth
