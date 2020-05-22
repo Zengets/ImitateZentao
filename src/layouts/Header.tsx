@@ -39,9 +39,11 @@ export default function SimpleTabs(props: any) {
   mainroutes.map((item: any, i: any) => {
     if (history.location.pathname.indexOf(item.path) !== -1) {
       curindex = i;
-      childroute = item.routes.filter((item: any) => {
-        return item.name;
-      });
+      childroute =
+        item.routes &&
+        item.routes.filter((item: any) => {
+          return item.name;
+        });
     }
   });
   const [value, setValue] = React.useState(curindex);
@@ -67,7 +69,7 @@ export default function SimpleTabs(props: any) {
     <div className={styles.topHeader}>
       <AppBar position="static" style={{ boxShadow: 'none' }}>
         <Container
-          maxWidth={'lg'}
+          maxWidth={'xl'}
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -131,7 +133,7 @@ export default function SimpleTabs(props: any) {
           }}
         >
           <Container
-            maxWidth={'lg'}
+            maxWidth={'xl'}
             style={{
               display: 'flex',
               justifyContent: 'space-between',

@@ -5,10 +5,12 @@ let allOk = JSON.parse(npm_config_argv).original,
   allStr = allOk[allOk.length - 1];
 let IpAndPort = '';
 
-if (allStr.indexOf('9000') != -1) {
-  IpAndPort = 'http://172.21.3.124:8081/';
-} else if (allStr.indexOf('9001') != -1) {
-  IpAndPort = 'http://172.21.3.137:8081/';
+if (allStr) {
+  if (allStr.indexOf('9000') != -1) {
+    IpAndPort = 'http://172.21.3.124:8081/';
+  } else if (allStr.indexOf('9001') != -1) {
+    IpAndPort = 'http://172.21.3.137:8081/';
+  }
 }
 
 export default defineConfig({
@@ -36,4 +38,10 @@ export default defineConfig({
       pathRewrite: { '^/zentao': '' },
     },
   },
+  links: [
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+    },
+  ],
 });

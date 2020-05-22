@@ -68,3 +68,29 @@ export async function DepqueryByParentId(params: any) {
     body: JSON.stringify(params),
   });
 }
+
+//部门编辑
+export async function Depsave(params: any) {
+  return request(`/zentao/sysDepartment/save`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//部门编辑
+export async function DepdeleteById(params: any) {
+  return request(`/zentao/sysDepartment/deleteById`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用户列表
+export async function UserqueryList(params: any) {
+  return request(`/zentao/sysUser/queryList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
