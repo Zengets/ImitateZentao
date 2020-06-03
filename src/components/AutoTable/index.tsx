@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import styles from './index.less';
-import { connect, history } from 'umi';
-import Button from '@material-ui/core/Button';
-import InitForm from '@/components/InitForm';
-import moment from 'moment';
 import { message, Table } from 'antd';
-import TextField from '@material-ui/core/TextField';
 
-let AutoTable = ({ data, columns, loading, rowKey, pageChange }: any) => {
-  let dataSource = data.data ? data.data.page : { list: [] };
+let AutoTable = ({
+  data,
+  columns,
+  loading,
+  rowKey,
+  pageChange,
+  onChange,
+  scroll,
+  expandedRowRender,
+}: any) => {
+  let dataSource = pageChange
+    ? data.data
+      ? data.data.page
+      : { list: [] }
+    : data;
 
   return (
     <Table
-      bordered
+      showSorterTooltip={false}
       dataSource={dataSource.list}
-      scroll={{ x: 1100, y: '60vh' }}
+      scroll={
+        scroll ? (scroll == 'false' ? '' : scroll) : { x: 1660, y: '60vh' }
+      }
       loading={loading}
       columns={columns}
       pagination={{
@@ -27,6 +36,9 @@ let AutoTable = ({ data, columns, loading, rowKey, pageChange }: any) => {
         onChange: pageChange,
       }}
       rowKey={rowKey ? rowKey : 'id'}
+      onChange={onChange}
+      expandedRowRender={expandedRowRender}
+      size="middle"
     ></Table>
   );
 };

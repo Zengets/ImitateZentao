@@ -11,8 +11,8 @@ export default function setNewState(
     type: path,
     payload: values,
   }).then((res: any) => {
-    if (res) {
-      fn ? fn() : null;
+    if (res.code == '0000') {
+      fn ? fn(res) : null;
     }
   });
 }

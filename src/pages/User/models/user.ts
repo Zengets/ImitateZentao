@@ -12,7 +12,7 @@ export default {
         type: 'updateState',
         payload: { res: responese },
       });
-      return responese.code == '0000';
+      return responese;
     },
     *sendVerificationCode({ payload }: any, { call, put }: any) {
       const responese = yield call(sendVerificationCode, payload);
@@ -20,7 +20,7 @@ export default {
         type: 'updateState',
         payload: { res: responese },
       });
-      return responese.code == '0000';
+      return responese;
     },
     *reparePassword({ payload }: any, { call, put }: any) {
       const responese = yield call(reparePassword, payload);
@@ -28,7 +28,7 @@ export default {
         type: 'updateState',
         payload: { res: responese },
       });
-      return responese.code == '0000';
+      return responese;
     },
   },
 

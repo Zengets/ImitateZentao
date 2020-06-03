@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import { useForm } from 'react-hook-form';
 import Container from '@material-ui/core/Container';
 import useStyles from '@/utils/makestyle';
-import { Row, Col, message, Menu } from 'antd';
+import { Row, Col, message, Menu, ConfigProvider } from 'antd';
 import Header from './Header';
 import { UserOutlined, LockOutlined, LogoutOutlined } from '@ant-design/icons';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -22,7 +22,7 @@ import {
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import any from './BasicLayout';
+import zhCN from 'antd/es/locale/zh_CN';
 
 const theme = createMuiTheme({
   palette: {
@@ -42,7 +42,7 @@ const theme = createMuiTheme({
 });
 
 let BasicLayout = (props: any) => {
-  let { children } = props,
+  let { children, dispatch } = props,
     [show, cshow] = useState(false),
     [values, setvalues] = useState({
       showPassword: false,
@@ -104,6 +104,10 @@ let BasicLayout = (props: any) => {
     event.preventDefault();
   };
 
+  useEffect(() => {
+    setNewState(dispatch, 'model/UserqueryAll', {}, () => {}); //全局下拉框
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Dia
@@ -113,6 +117,7 @@ let BasicLayout = (props: any) => {
         cshow={(key: any) => {
           cshow(key);
         }}
+        onOk={handleSubmit(onSubmit)}
       >
         <form
           className={useStyles().root}
@@ -195,8 +200,12 @@ let BasicLayout = (props: any) => {
           </Button>
         </form>
       </Dia>
-      <Header menu={menu} routes={props.route.routes}></Header>
-      <div style={{ height: 108 }}></div>
+      <Header
+        menu={menu}
+        routes={props.route.routes}
+        location={props.history.location}
+      ></Header>
+      <div style={{ height: 106 }}></div>
 
       <div
         style={{
@@ -205,7 +214,7 @@ let BasicLayout = (props: any) => {
           minHeight: 'calc(100vh - 108px)',
         }}
       >
-        {children}
+        <ConfigProvider locale={zhCN}>{children}</ConfigProvider>
       </div>
     </ThemeProvider>
   );

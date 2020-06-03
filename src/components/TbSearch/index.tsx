@@ -8,34 +8,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 
-const { TreeNode } = TreeSelect;
 let { Option } = Select;
-
-let loop = (data: any[]) =>
-  data.map(item => {
-    const title = <span>{item.title}</span>;
-    if (item.children) {
-      return (
-        <TreeNode
-          value={item.key}
-          key={item.key}
-          title={title}
-          icon={<EditOutlined />}
-        >
-          {loop(item.children)}
-        </TreeNode>
-      );
-    } else {
-      return (
-        <TreeNode
-          value={item.key}
-          key={item.key}
-          title={title}
-          icon={<EditOutlined />}
-        />
-      );
-    }
-  });
 
 let loopname = (data: any, key: any) => {
   let name = '';
@@ -84,7 +57,7 @@ let getColumnSearchProps = (
             searchInput = node;
           }}
           placeholder={`请输入查询内容...`}
-          onSearch={val => handleSearch([val], dataIndex)}
+          onSearch={val => handleSearch(val, dataIndex)}
           style={{ width: 188 }}
         />
       </div>
@@ -145,7 +118,7 @@ let getColumnSelectProps = (
         placeholder={`请选择...`}
         value={postData[dataIndex]}
         onChange={val => {
-          handleSearch([val], dataIndex);
+          handleSearch(val, dataIndex);
         }}
         style={{ width: 288, display: 'block' }}
       >
@@ -205,11 +178,10 @@ let getColumnTreeSelectProps = (
         treeDefaultExpandAll
         placeholder={`请选择...`}
         onChange={val => {
-          handleSearch([val], dataIndex);
+          handleSearch(val, dataIndex);
         }}
-      >
-        {option && loop(option)}
-      </TreeSelect>
+        treeData={option}
+      ></TreeSelect>
     </div>
   ),
   filterIcon: (filtered: any) => (
@@ -255,7 +227,7 @@ let getColumnDateProps = (
         value={postData[dataIndex] ? moment(postData[dataIndex]) : undefined}
         onChange={val => {
           handleSearch(
-            [val ? moment(val).format('YYYY-MM-DD') : undefined],
+            val ? moment(val).format('YYYY-MM-DD') : undefined,
             dataIndex,
           );
         }}
@@ -272,7 +244,11 @@ let getColumnDateProps = (
       }}
     >
       <Tooltip
-        title={postData[dataIndex] ? `查询条件:${postData[dataIndex]}` : null}
+        title={
+          postData[dataIndex]
+            ? `查询条件:${moment(postData[dataIndex]).format('YYYY/MM/DD')}`
+            : null
+        }
       >
         <CaretDownOutlined
           style={{ color: postData[dataIndex] ? '#68b356' : '#ff2100' }}
@@ -300,9 +276,9 @@ let getColumnMonthProps = (
         disabledDate={disableddate}
         placeholder={`请选择...`}
         value={postData[dataIndex] ? moment(postData[dataIndex]) : undefined}
-        onChange={val => {
+        onChange={(val: any) => {
           handleSearch(
-            [val ? moment(val).format('YYYY-MM-DD') : undefined],
+            val ? moment(val).format('YYYY-MM-DD') : undefined,
             dataIndex,
           );
         }}
@@ -319,7 +295,11 @@ let getColumnMonthProps = (
       }}
     >
       <Tooltip
-        title={postData[dataIndex] ? `查询条件:${postData[dataIndex]}` : null}
+        title={
+          postData[dataIndex]
+            ? `查询条件:${moment(postData[dataIndex]).format('YYYY/MM')}`
+            : null
+        }
       >
         <CaretDownOutlined
           style={{ color: postData[dataIndex] ? '#68b356' : '#ff2100' }}
@@ -344,22 +324,30 @@ let getColumnRangeProps = (
     <div style={{ padding: 8 }}>
       <DatePicker.RangePicker
         allowClear
+        placeholder={['开始日期', '结束日期']}
         value={
           postData[start]
             ? [moment(postData[start]), moment(postData[end])]
-            : undefined
+            : []
         }
         onChange={(val: any) => {
           handleSearch(
             [
-              val[0] ? moment(val[0]).format('YYYY-MM-DD') : undefined,
-              val[1] ? moment(val[1]).format('YYYY-MM-DD') : undefined,
+              val
+                ? moment(val[0])
+                    .startOf('day')
+                    .valueOf()
+                : undefined,
+              val
+                ? moment(val[1])
+                    .startOf('day')
+                    .valueOf()
+                : undefined,
             ],
             start,
             end,
           );
         }}
-        style={{ display: 'block' }}
       ></DatePicker.RangePicker>
     </div>
   ),
@@ -374,7 +362,78 @@ let getColumnRangeProps = (
       <Tooltip
         title={
           postData[start]
-            ? `查询条件:从${postData[start]} - ${postData[end]}`
+            ? `查询条件:从${moment(postData[start]).format(
+                'YYYY/MM/DD',
+              )} - ${moment(postData[end]).format('YYYY/MM/DD')}`
+            : null
+        }
+      >
+        <CaretDownOutlined
+          style={{ color: postData[start] ? '#68b356' : '#ff2100' }}
+        />
+      </Tooltip>
+    </span>
+  ),
+});
+
+let getColumnRangeminProps = (
+  start: React.Key,
+  end: React.Key,
+  postData: any,
+  handleSearch: any,
+) => ({
+  filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+  }: any) => (
+    <div style={{ padding: 8 }}>
+      <DatePicker.RangePicker
+        allowClear
+        showTime={{ format: 'HH:mm' }}
+        format="YYYY-MM-DD HH:mm"
+        placeholder={['开始日期', '结束日期']}
+        value={
+          postData[start]
+            ? [moment(postData[start]), moment(postData[end])]
+            : []
+        }
+        onChange={(val: any) => {
+          handleSearch(
+            [
+              val
+                ? moment(val[0])
+                    .startOf('minute')
+                    .valueOf()
+                : undefined,
+              val
+                ? moment(val[1])
+                    .startOf('minute')
+                    .valueOf()
+                : undefined,
+            ],
+            start,
+            end,
+          );
+        }}
+      ></DatePicker.RangePicker>
+    </div>
+  ),
+  filterIcon: (filtered: any) => (
+    <span
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Tooltip
+        title={
+          postData[start]
+            ? `查询条件:从${moment(postData[start]).format(
+                'YYYY/MM/DD',
+              )} - ${moment(postData[end]).format('YYYY/MM/DD')}`
             : null
         }
       >
@@ -393,4 +452,5 @@ export {
   getColumnDateProps,
   getColumnMonthProps,
   getColumnRangeProps,
+  getColumnRangeminProps,
 };

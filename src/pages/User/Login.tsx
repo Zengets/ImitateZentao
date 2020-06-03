@@ -17,8 +17,9 @@ import {
 } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { LoadingOutlined } from '@ant-design/icons';
 
-let Login = ({ model, dispatch }: any) => {
+let Login = ({ user, loadings, dispatch }: any) => {
   //useForm hooks
   const { register, handleSubmit, errors } = useForm();
   //submit
@@ -136,7 +137,9 @@ let Login = ({ model, dispatch }: any) => {
                 variant="contained"
                 color="primary"
                 disableElevation
+                disabled={loadings}
               >
+                {loadings && <LoadingOutlined></LoadingOutlined>}
                 立即登录
               </Button>
             </form>
@@ -165,5 +168,5 @@ let Login = ({ model, dispatch }: any) => {
 
 export default connect(({ model, loading }: any) => ({
   model,
-  loading: loading.effects['model/User'],
+  loadings: loading.effects['user/Login'],
 }))(Login);

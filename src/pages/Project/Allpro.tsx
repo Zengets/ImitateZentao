@@ -13,6 +13,7 @@ import {
   Tooltip,
   Row,
   Col,
+  Modal,
 } from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
@@ -23,6 +24,7 @@ import {
   getColumnSearchProps,
   getColumnSelectProps,
   getColumnTreeSelectProps,
+  getColumnRangeProps,
 } from '@/components/TbSearch';
 import Dia from '@/components/Dia/index';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -34,57 +36,45 @@ import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
 import Productdetail from '@/components/Productdetail';
+import Projectdetail from '@/components/Projectdetail';
 
-let Product = (props: any) => {
-  let { prod, dispatch, loading } = props,
+let Allpro = (props: any) => {
+  let { proj, dispatch, loading } = props,
     [post, cpost] = useState({
-      posturl: 'prod/ProdqueryList',
+      posturl: 'proj/ProjqueryList',
       postdata: {
-        pageIndex: '1', //----------------页码 *
-        pageSize: '10', //-----------------条数*
-        productNo: '', //----------------产品编号
-        productName: '', //--------------产品名称
-        chargeUserId: '', //-------------产品负责人
-        openUserId: '', //---------------创建人
-        status: '', //-----------------状态
-        openDateStart: '', //-------------------创建日期搜索
-        openDateEnd: '', //-------------------创建日期搜索
-        activateDateStart: '', //-------------------激活日期搜索
-        activateDateEnd: '', //-------------------激活日期搜索
-        closeDateStart: '', //-------------------关闭日期搜索
-        closeDateEnd: '', //-------------------关闭日期搜索
+        projectNo: '', //项目编号，筛选条件
+        projectName: '', //项目名，筛选条件
+        productId: '', //产品id，筛选条件
+        startMinDate: '', //起止日期，筛选条件
+        startMaxDate: '', //起止日期，筛选条件
+        endMinDate: '', //起止日期，筛选条件
+        endMaxDate: '', //起止日期，筛选条件
+        status: '', //状态，筛选条件
         sortList: [
-          //----------------------------------排序字段集合
+          //排序字段
           {
-            fieldName: 'productNo', //---------编号
+            fieldName: 'projectNo',
             sort: '',
           },
           {
-            fieldName: 'productName', //------------名称
+            fieldName: 'projectName',
             sort: '',
           },
           {
-            fieldName: 'chargeUserId', //--------------负责人
+            fieldName: 'productId',
             sort: '',
           },
           {
-            fieldName: 'openUserId', //----------------创建人
+            fieldName: 'startDate',
             sort: '',
           },
           {
-            fieldName: 'openDate', //----------------创建日期
+            fieldName: 'endDate',
             sort: '',
           },
           {
-            fieldName: 'activateDate', //----------------激活日期
-            sort: '',
-          },
-          {
-            fieldName: 'closeDate', //----------------关闭日期
-            sort: '',
-          },
-          {
-            fieldName: 'status', //---------------状态
+            fieldName: 'status',
             sort: '',
           },
         ],
@@ -98,36 +88,57 @@ let Product = (props: any) => {
       key: '',
     }),
     defaultfields: any = {
-      productNo: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '产品编号', //placeholder
-        name: ['productNo'], //唯一标识
-        required: true, //必填？
-      },
-      productName: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '产品名称', //placeholder
-        name: ['productName'], //唯一标识
-        required: true, //必填？
-      },
-      chargeUserId: {
+      productId: {
         value: '', //初始化值
         type: 'select', //类型
-        title: '产品负责人', //placeholder
-        name: ['chargeUserId'], //唯一标识
+        title: '产品', //placeholder
+        name: ['productId'], //唯一标识
         required: true, //必填？
-        options: prod.UserqueryAll && prod.UserqueryAll,
+        options: proj.ProdqueryAllSelect && proj.ProdqueryAllSelect,
+      },
+      projectNo: {
+        value: '', //初始化值
+        type: 'input', //类型
+        title: '项目编号', //placeholder
+        name: ['projectNo'], //唯一标识
+        required: true, //必填？
+      },
+      projectName: {
+        value: '', //初始化值
+        type: 'input', //类型
+        title: '项目名称', //placeholder
+        name: ['projectName'], //唯一标识
+        required: true, //必填？
+      },
+      availableDays: {
+        value: '', //初始化值
+        type: 'inputnumber',
+        title: '可用工日',
+        name: ['availableDays'],
+        required: true,
       },
       description: {
         value: '', //初始化值
         type: 'textarea',
-        title: '产品描述',
+        title: '项目描述',
         name: ['description'],
         required: true,
         rows: 6,
         col: { span: 24 },
+      },
+      startDate: {
+        value: '', //初始化值
+        type: 'datepicker',
+        title: '预计开始日期',
+        name: ['startDate'],
+        required: true,
+      },
+      endDate: {
+        value: '', //初始化值
+        type: 'datepicker',
+        title: '截止日期',
+        name: ['endDate'],
+        required: true,
       },
       attachmentList: {
         value: [], //初始化值
@@ -142,35 +153,40 @@ let Product = (props: any) => {
 
   useEffect(() => {
     setNewState(dispatch, post.posturl, post.postdata, () => {});
-    setNewState(dispatch, 'prod/UserqueryAll', {}, () => {});
-    setNewState(dispatch, 'prod/ProdqueryStatus', {}, () => {});
+    setNewState(
+      dispatch,
+      'proj/ProjqueryProjectStatusSelectList',
+      {},
+      () => {},
+    );
+    setNewState(dispatch, 'proj/ProdqueryAllSelect', {}, () => {});
   }, []);
 
   let columns = [
     {
-      title: '产品编号',
-      dataIndex: 'productNo',
-      key: 'productNo',
+      title: '项目编号',
+      dataIndex: 'projectNo',
+      key: 'projectNo',
       sorter: {
         multiple: 100,
       },
-      ...getColumnSearchProps('productNo', post.postdata, handleSearch),
+      ...getColumnSearchProps('projectNo', post.postdata, handleSearch),
     },
     {
-      title: '产品名称',
+      title: '项目名称',
+      dataIndex: 'projectName',
+      key: 'projectName',
       sorter: {
         multiple: 99,
       },
-      dataIndex: 'productName',
-      key: 'productName',
-      ...getColumnSearchProps('productName', post.postdata, handleSearch),
+      ...getColumnSearchProps('projectName', post.postdata, handleSearch),
       render(text: React.ReactNode, record: any) {
         return (
           <a
             onClick={() => {
               setNewState(
                 dispatch,
-                'prod/ProdqueryInfo',
+                'proj/ProjqueryById',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -191,90 +207,87 @@ let Product = (props: any) => {
       },
     },
     {
-      title: '状态',
+      title: '所属产品',
+      dataIndex: 'productName',
+      key: 'productName',
       sorter: {
-        multiple: 93,
+        multiple: 98,
       },
+      ...getColumnSelectProps(
+        'productId',
+        proj.ProdqueryAllSelect,
+        post.postdata,
+        handleSearch,
+      ),
+    },
+    {
+      title: '预计开始日期',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      sorter: {
+        multiple: 97,
+      },
+      ...getColumnRangeProps(
+        'startMinDate',
+        'startMaxDate',
+        post.postdata,
+        handleSearch,
+      ),
+      render(text: any) {
+        return (
+          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
+        );
+      },
+    },
+    {
+      title: '截止日期',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      sorter: {
+        multiple: 98,
+      },
+      ...getColumnRangeProps(
+        'endMinDate',
+        'endMaxDate',
+        post.postdata,
+        handleSearch,
+      ),
+      render(text: any) {
+        return (
+          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
+        );
+      },
+    },
+    {
+      title: '预计工时(h)',
+      dataIndex: 'planHours',
+    },
+    {
+      title: '消耗工时(h)',
+      dataIndex: 'expendHours',
+    },
+    {
+      title: '剩余工时(h)',
+      dataIndex: 'leftHours',
+    },
+    {
+      title: '状态',
       dataIndex: 'statusName',
       key: 'statusName',
+      sorter: {
+        multiple: 98,
+      },
       ...getColumnSelectProps(
         'status',
-        prod.ProdqueryStatus,
+        proj.ProjqueryProjectStatusSelectList,
         post.postdata,
         handleSearch,
       ),
       render: (text: React.ReactNode, record: { status: any }) => (
-        <span style={{ color: rendercolor('Productstatus', record.status) }}>
+        <span style={{ color: rendercolor('Projuctstatus', record.status) }}>
           {text}
         </span>
       ),
-    },
-    {
-      title: '产品负责人',
-      sorter: {
-        multiple: 98,
-      },
-      dataIndex: 'chargeUserName',
-      key: 'chargeUserName',
-      ...getColumnSelectProps(
-        'chargeUserId',
-        prod.UserqueryAll,
-        post.postdata,
-        handleSearch,
-      ),
-    },
-    {
-      title: '创建人',
-      sorter: {
-        multiple: 97,
-      },
-      dataIndex: 'openUserName',
-      key: 'openUserName',
-      ...getColumnSelectProps(
-        'openUserId',
-        prod.UserqueryAll,
-        post.postdata,
-        handleSearch,
-      ),
-    },
-    {
-      title: '创建日期',
-      sorter: {
-        multiple: 96,
-      },
-      dataIndex: 'openDate',
-      key: 'openDate',
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
-    },
-    {
-      title: '激活日期',
-      sorter: {
-        multiple: 95,
-      },
-      dataIndex: 'activateDate',
-      key: 'activateDate',
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
-    },
-    {
-      title: '关闭日期',
-      sorter: {
-        multiple: 94,
-      },
-      dataIndex: 'closeDate',
-      key: 'closeDate',
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
     },
     {
       title: '操作',
@@ -293,17 +306,12 @@ let Product = (props: any) => {
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认激活' + record.productName + '？'}
+          title={'确认开始' + record.projectName + '？'}
           onConfirm={() => {
-            setNewState(
-              dispatch,
-              'prod/Prodactivation',
-              { id: record.id },
-              () => {
-                message.success('激活' + record.productName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
-              },
-            );
+            setNewState(dispatch, 'proj/Projstart', { id: record.id }, () => {
+              message.success('开始' + record.projectName + '成功！');
+              setNewState(dispatch, post.posturl, post.postdata, () => {});
+            });
           }}
         >
           <IconButton disabled={record.status !== 1}>
@@ -312,48 +320,66 @@ let Product = (props: any) => {
             />
           </IconButton>
         </Popconfirm>
-
         <Divider type="vertical"></Divider>
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认关闭' + record.productName + '？'}
+          title={'确认完成' + record.projectName + '？'}
           onConfirm={() => {
-            setNewState(dispatch, 'prod/Prodclose', { id: record.id }, () => {
-              message.success(record.productName + '关闭成功！');
+            setNewState(dispatch, 'proj/Projfinish', { id: record.id }, () => {
+              message.success(record.projectName + '完成成功！');
               setNewState(dispatch, post.posturl, post.postdata, () => {});
             });
           }}
         >
-          <IconButton disabled={record.status !== 2}>
+          <IconButton disabled={record.status !== 2 && record.status !== 3}>
             <PowerSettingsNewIcon
-              color={record.status !== 2 ? 'action' : 'primary'}
+              color={
+                record.status !== 2 && record.status !== 3
+                  ? 'action'
+                  : 'primary'
+              }
             />
           </IconButton>
         </Popconfirm>
         <Divider type="vertical"></Divider>
-
         <IconButton
-          disabled={record.status === 3}
+          disabled={record.status === 4 || record.status === 5}
           onClick={() => {
             cf({
-              productNo: {
-                ...fields.productNo,
-                value: record.productNo, //初始化值
+              productId: {
+                ...fields.productId,
+                value: record.productId, //初始化值
               },
-              productName: {
-                ...fields.productName,
-                value: record.productName, //初始化值
+              projectNo: {
+                ...fields.projectNo,
+                value: record.projectNo, //初始化值
               },
-              chargeUserId: {
-                ...fields.chargeUserId,
-                value: record.chargeUserId, //初始化值
+              projectName: {
+                ...fields.projectName,
+                value: record.projectName, //初始化值
+              },
+              availableDays: {
+                ...fields.availableDays,
+                value: record.availableDays, //初始化值
               },
               description: {
                 ...fields.description,
                 value: record.description, //初始化值
+              },
+              startDate: {
+                ...fields.startDate,
+                value: record.startDate
+                  ? moment(parseInt(record.startDate))
+                  : undefined, //初始化值
+              },
+              endDate: {
+                ...fields.endDate,
+                value: record.endDate
+                  ? moment(parseInt(record.endDate))
+                  : undefined, //初始化值
               },
               attachmentList: {
                 ...fields.attachmentList,
@@ -366,7 +392,7 @@ let Product = (props: any) => {
               return {
                 ...iftype,
                 visible: true,
-                title: '修改' + record.productName,
+                title: '修改' + record.projectName,
                 key: 'edit',
                 curitem: record,
                 fullScreen: false,
@@ -374,7 +400,11 @@ let Product = (props: any) => {
             });
           }}
         >
-          <EditIcon color={record.status === 3 ? 'action' : 'primary'} />
+          <EditIcon
+            color={
+              record.status === 4 || record.status === 5 ? 'action' : 'primary'
+            }
+          />
         </IconButton>
         <Divider type="vertical"></Divider>
 
@@ -383,14 +413,14 @@ let Product = (props: any) => {
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认删除' + record.productName + '？'}
+          title={'确认删除' + record.projectName + '？'}
           onConfirm={() => {
             setNewState(
               dispatch,
-              'prod/ProddeleteById',
+              'proj/ProjdeleteById',
               { id: record.id },
               () => {
-                message.success('删除' + record.productName + '成功！');
+                message.success('删除' + record.projectName + '成功！');
                 setNewState(dispatch, post.posturl, post.postdata, () => {});
               },
             );
@@ -404,16 +434,29 @@ let Product = (props: any) => {
     );
   }
 
-  function handleSearch(value: any, dataIndex: any) {
-    cpost(() => {
-      return {
-        ...post,
-        postdata: {
-          ...post.postdata,
-          [dataIndex]: value,
-        },
-      };
-    });
+  function handleSearch(value: any, dataIndex: any, dataIndexs: any) {
+    if (dataIndexs) {
+      cpost(() => {
+        return {
+          ...post,
+          postdata: {
+            ...post.postdata,
+            [dataIndex]: value && value[0],
+            [dataIndexs]: value && value[1],
+          },
+        };
+      });
+    } else {
+      cpost(() => {
+        return {
+          ...post,
+          postdata: {
+            ...post.postdata,
+            [dataIndex]: value,
+          },
+        };
+      });
+    }
   }
 
   let handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -447,7 +490,7 @@ let Product = (props: any) => {
 
   useMemo(() => {
     cf(defaultfields);
-  }, [prod]);
+  }, [proj]);
 
   let pageChange = (page: any) => {
     cpost(() => {
@@ -480,10 +523,27 @@ let Product = (props: any) => {
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Productdetail
+          <Projectdetail
+            showProduct={() => {
+              setNewState(
+                dispatch,
+                'proj/ProdqueryInfo',
+                { id: proj.ProjqueryById.data.data.productId },
+                (res: any) => {
+                  Modal.info({
+                    zIndex: 999999,
+                    width: 800,
+                    maskClosable: true,
+                    title: proj.ProjqueryById.data.data.productName,
+                    content: <Productdetail maindata={res.data.data} />,
+                    okText: '晓得了',
+                  });
+                },
+              );
+            }}
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={prod.ProdqueryInfo.data.data}
-          ></Productdetail>
+            maindata={proj.ProjqueryById.data.data}
+          ></Projectdetail>
         ) : (
           <InitForm
             fields={fields}
@@ -510,10 +570,19 @@ let Product = (props: any) => {
                     },
                   )
                 : [];
-
               newfields.attachmentList = newlist;
+              newfields.startDate = newfields.startDate
+                ? moment(newfields.startDate)
+                    .startOf('day')
+                    .valueOf()
+                : '';
+              newfields.endDate = newfields.endDate
+                ? moment(newfields.endDate)
+                    .startOf('day')
+                    .valueOf()
+                : '';
 
-              setNewState(dispatch, 'prod/Prodsave', newfields, () => {
+              setNewState(dispatch, 'proj/Projsave', newfields, () => {
                 setNewState(dispatch, post.posturl, post.postdata, () => {
                   message.success('操作成功');
                   ciftype(() => {
@@ -540,7 +609,7 @@ let Product = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Prodsave']}
+            submitting={props.loading.effects['model/Projsave']}
           ></InitForm>
         )}
       </Dia>
@@ -555,7 +624,7 @@ let Product = (props: any) => {
                   return {
                     ...iftype,
                     visible: true,
-                    title: '新增产品',
+                    title: '新增项目',
                     key: 'add',
                   };
                 });
@@ -568,7 +637,7 @@ let Product = (props: any) => {
         }
       >
         <AutoTable
-          data={prod.ProdqueryList}
+          data={proj.ProjqueryList}
           columns={columns}
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
@@ -580,7 +649,7 @@ let Product = (props: any) => {
   );
 };
 
-export default connect(({ prod, loading }: any) => ({
-  prod,
+export default connect(({ proj, loading }: any) => ({
+  proj,
   loading,
-}))(Product);
+}))(Allpro);

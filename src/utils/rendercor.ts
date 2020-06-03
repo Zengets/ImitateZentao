@@ -1,0 +1,171 @@
+export default function rendercolor(model: any, key: any) {
+  let color = '#333';
+  if (model == 'Buglevel') {
+    switch (key) {
+      case 1:
+        color = '#b71c1c';
+        break;
+      case '1':
+        color = '#b71c1c';
+        break;
+      case 2:
+        color = '#ffa726';
+        break;
+      case '2':
+        color = '#ffa726';
+        break;
+      case 3:
+        color = '#4caf50';
+        break;
+      case '3':
+        color = '#4caf50';
+        break;
+      default:
+        color = '#333';
+        break;
+    }
+  } else if (model == 'Bugstatus') {
+    switch (key) {
+      case 1:
+        color = 'green';
+        break;
+      case '激活':
+        color = 'green';
+        break;
+      case 2:
+        color = '#f50';
+        break;
+      case '待验证':
+        color = '#f50';
+        break;
+      case 3:
+        color = '#333';
+        break;
+      case '已完成':
+        color = '#333';
+        break;
+      default:
+        color = '#333';
+        break;
+    }
+  } else if (model == 'Productstatus') {
+    switch (key) {
+      case 1: //未激活
+        color = '#999';
+        break;
+      case '未激活':
+        color = '#999';
+        break;
+      case 2: //进行中
+        color = 'green';
+        break;
+      case '进行中': //进行中
+        color = 'green';
+        break;
+      case 3: //已关闭
+        color = '#f50';
+        break;
+      case '已关闭':
+        color = '#f50';
+        break;
+      default:
+        color = '#333';
+        break;
+    }
+  } else if (model == 'Projuctstatus') {
+    switch (key) {
+      case 1:
+        color = '#999';
+        break;
+      case '未开始':
+        color = '#999';
+        break;
+      case 2:
+        color = 'green';
+        break;
+      case '进行中':
+        color = 'green';
+        break;
+      case 3:
+        color = 'red';
+        break;
+      case '已延期':
+        color = 'red';
+        break;
+      case 4:
+        color = '#13c2c2';
+        break;
+      case '已完成':
+        color = '#13c2c2';
+        break;
+      case 5:
+        color = '#400';
+        break;
+      case '延期完成':
+        color = '#400';
+        break;
+      default:
+        color = '#333';
+        break;
+    }
+  } else if (model == 'Missionstatus') {
+    switch (key) {
+      case 1:
+        color = '#999';
+        break;
+      case '待激活':
+        color = '#999';
+        break;
+      case 2:
+        color = '#666';
+        break;
+      case '待分配':
+        color = '#666';
+        break;
+      case 3:
+        color = '#13c2c2';
+        break;
+      case '待开发':
+        color = '#13c2c2';
+        break;
+      case 4:
+        color = 'green';
+        break;
+      case '开发中':
+        color = 'green';
+        break;
+      case 5:
+        color = '#400';
+        break;
+      case '待测试':
+        color = '#400';
+        break;
+
+      case 6:
+        color = '#f50';
+        break;
+      case '待验收':
+        color = '#f50';
+        break;
+
+      case 7:
+        color = '#333';
+        break;
+      case '已完成':
+        color = '#333';
+        break;
+      case 8:
+        color = 'red';
+        break;
+      case '已关闭':
+        color = 'red';
+        break;
+
+      default:
+        color = '#333';
+        break;
+    }
+  }
+
+  return color;
+}

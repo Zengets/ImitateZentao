@@ -28,7 +28,7 @@ export default defineConfig({
   title: '南高项目管理云平台',
   theme: {
     'primary-color': '#1183fb',
-    'font-size-base': '16px',
+    'font-size-base': '14px',
   },
   routes: initialRouter,
   proxy: {
