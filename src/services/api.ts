@@ -42,6 +42,23 @@ export async function reparePassword(params: any) {
   });
 }
 
+//上传背景
+export async function uploadBackgroungImg(params: any) {
+  return request(`/zentao/sysDic/uploadBackgroungImg`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//获取背景
+export async function queryBackgroungImg(params: any) {
+  return request(`/zentao/sysDic/queryBackgroungImg`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //修改密码
 export async function changePassword(params: any) {
   return request(`/zentao/sysAccount/changePassword`, {
@@ -577,6 +594,15 @@ export async function queryTaskStatusSelectList(params: any) {
   });
 }
 
+//任务总览  queryTaskStatusSelectList
+export async function MisquerytaskDetails(params: any) {
+  return request(`/zentao/umTask/querytaskDetails`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //bug列表  BugqueryList
 export async function BugqueryList(params: any) {
   return request(`/zentao/umBug/queryList`, {
@@ -605,7 +631,7 @@ export async function BugqueryById(params: any) {
 
 //bug删除  BugqueryList,Bugsave,BugqueryById,Bugdelete
 export async function Bugdelete(params: any) {
-  return request(`/zentao/umBug/delete`, {
+  return request(`/zentao/umBug/deleteById`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),
@@ -630,7 +656,7 @@ export async function Bugconfirm(params: any) {
   });
 }
 
-//bug验收  BugqueryList,Bugsave,BugqueryById,Bugdelete,Bugsolve,Bugconfirm,Bugactivate
+//bug激活  BugqueryList,Bugsave,BugqueryById,Bugdelete,Bugsolve,Bugconfirm,Bugactivate
 export async function Bugactivate(params: any) {
   return request(`/zentao/umBug/activate`, {
     method: 'POST',
@@ -687,6 +713,139 @@ export async function Bugpriority(params: any) {
 
 export async function Bugsolution(params: any) {
   return request(`/zentao/sysDic/queryBugSolutionSelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//测试用例 列表
+export async function DemoqueryList(params: any) {
+  return request(`/zentao/umTestCase/queryList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例类型
+export async function Demotype(params: any) {
+  return request(`/zentao/sysDic/queryCaseTypeSelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例类型
+export async function Demosave(params: any) {
+  return request(`/zentao/umTestCase/save`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例执行记录 DemoqueryListByCaseId
+export async function DemoqueryListByCaseId(params: any) {
+  return request(`/zentao/umTestCaseExecute/queryListByCaseId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例执行失败记录 DemoqueryListByCaseId
+export async function DemoqueryFailListByCaseId(params: any) {
+  return request(`/zentao/umTestCaseExecute/queryFailListByCaseId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例执行树
+export async function Demotree(params: any) {
+  return request(`/zentao/umTestCaseExecuteStep/queryTreeListByExecuteId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例执行
+export async function Demoexecute(params: any) {
+  return request(`/zentao/umTestCase/execute`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例详情
+export async function DemoqueryById(params: any) {
+  return request(`/zentao/umTestCase/queryById`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//首页 统计
+export async function IndexFirst(params: any) {
+  return request(`/zentao/umProject/queryProjectStatistics`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//首页 统计
+export async function IndexSecond(params: any) {
+  return request(`/zentao/umProject/queryMyHome`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//首页 统计
+export async function IndexThird(params: any) {
+  return request(`/zentao/umTask/queryMyList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//首页 统计
+export async function IndexFourth(params: any) {
+  return request(`/zentao/umBug/queryMyList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//首页 统计
+export async function IndexFifth(params: any) {
+  return request(`/zentao/umTask/queryDelayList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+export async function IndexSixth(params: any) {
+  return request(`/zentao/umProject/queryDelayList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+export async function queryMenu(params: any) {
+  return request(`/zentao/sysPermission/queryMenu`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),

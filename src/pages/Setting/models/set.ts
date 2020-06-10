@@ -241,7 +241,7 @@ export default {
   reducers: {
     updateState(state: any, { payload }: any) {
       for (let i in payload) {
-        if (payload[i].code !== '0000' && payload[i].code) {
+        if (payload[i].code != '0000' && payload[i].code) {
           message.destroy();
           message.warn(payload[i].msg);
         }

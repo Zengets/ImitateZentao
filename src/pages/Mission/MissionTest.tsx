@@ -3,18 +3,7 @@ import styles from './index.less';
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import {
-  Input,
-  message,
-  List,
-  Card,
-  Popconfirm,
-  Divider,
-  Tooltip,
-  Row,
-  Col,
-  Modal,
-} from 'antd';
+import { Input, message, List, Card, Tooltip, Row, Col, Modal } from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
@@ -30,10 +19,9 @@ import Dia from '@/components/Dia/index';
 import mockfile from '@/utils/mockfile';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
-import { ClusterOutlined } from '@ant-design/icons';
-import rendercolor from '@/utils/rendercor';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import BugReportIcon from '@material-ui/icons/BugReport';
+
+import Missiondetail from '@/components/Missiondetail';
 
 let MissionTest = (props: any) => {
   let { miss, dispatch, loading, model } = props,
@@ -129,7 +117,7 @@ let MissionTest = (props: any) => {
         type: 'textarea',
         title: '测试描述',
         name: ['testStageDescription'],
-        required: true,
+        required: false,
         rows: 6,
         col: { span: 24 },
       },
@@ -138,16 +126,11 @@ let MissionTest = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
-
-  useEffect(() => {
-    //setNewState(dispatch, post.posturl, post.postdata, () => { });
-    setNewState(dispatch, 'miss/ProjquerySelectList', {}, () => {});
-  }, []);
 
   //父级组件项目变化调用
   useMemo(() => {
@@ -177,12 +160,15 @@ let MissionTest = (props: any) => {
       sorter: {
         multiple: 100,
       },
+      ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
@@ -193,7 +179,7 @@ let MissionTest = (props: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'miss/ProjqueryById',
+                'miss/MisquerytaskDetails',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -220,6 +206,7 @@ let MissionTest = (props: any) => {
       sorter: {
         multiple: 101,
       },
+      width: 120,
       ...getColumnSelectProps(
         'devUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -234,6 +221,7 @@ let MissionTest = (props: any) => {
       sorter: {
         multiple: 102,
       },
+      width: 120,
       ...getColumnSelectProps(
         'currentUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -242,20 +230,22 @@ let MissionTest = (props: any) => {
       ),
     },
     {
-      title: '预计时长(h开发)',
+      title: '预计时长(开发)',
       dataIndex: 'devStagePlanHours',
       key: 'devStagePlanHours',
       sorter: {
         multiple: 98,
       },
+      width: 140,
     },
     {
-      title: '消耗时长(h开发)',
+      title: '消耗时长(开发)',
       dataIndex: 'devStageExpendHours',
       key: 'devStageExpendHours',
       sorter: {
         multiple: 97,
       },
+      width: 140,
     },
     {
       title: '完成时间(开发)',
@@ -264,6 +254,7 @@ let MissionTest = (props: any) => {
       sorter: {
         multiple: 96,
       },
+      width: 140,
       ...getColumnRangeminProps(
         'realFinishTimeStart',
         'realFinishTimeEnd',
@@ -285,6 +276,7 @@ let MissionTest = (props: any) => {
       sorter: {
         multiple: 95,
       },
+      width: 120,
       ...getColumnRangeProps(
         'deadDateStart',
         'deadDateEnd',
@@ -312,7 +304,7 @@ let MissionTest = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 140,
+      width: 60,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -320,23 +312,26 @@ let MissionTest = (props: any) => {
   function renderAction(record: any) {
     return (
       <div>
-        <IconButton
-          aria-label="delete"
-          onClick={() => {
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '测试信息',
-                curitem: record,
-                key: 'edit',
-              };
-            });
-            cf(defaultfields);
-          }}
-        >
-          <PlayCircleFilledIcon color={'primary'} style={{ fontSize: 24 }} />
-        </IconButton>
+        <Tooltip title="测试">
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: true,
+                  title: '测试信息',
+                  curitem: record,
+                  key: 'edit',
+                  fullScreen: false,
+                };
+              });
+              cf(defaultfields);
+            }}
+          >
+            <BugReportIcon color={'primary'} style={{ fontSize: 24 }} />
+          </IconButton>
+        </Tooltip>
       </div>
     );
   }
@@ -399,13 +394,14 @@ let MissionTest = (props: any) => {
     cf(defaultfields);
   }, [miss]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
@@ -430,27 +426,52 @@ let MissionTest = (props: any) => {
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Projectdetail
-            showProduct={() => {
+          <Missiondetail
+            showOther={() => {
               setNewState(
                 dispatch,
-                'miss/ProdqueryInfo',
-                { id: miss.ProjqueryById.data.data.projectId },
+                'miss/ProjqueryById',
+                { id: miss.MisquerytaskDetails.data.data.info.projectId },
                 (res: any) => {
                   Modal.info({
+                    style: { top: 20 },
                     zIndex: 999999,
                     width: 800,
                     maskClosable: true,
-                    title: miss.ProjqueryById.data.data.productName,
-                    content: <Productdetail maindata={res.data.data} />,
+                    title: miss.MisquerytaskDetails.data.data.info.projectName,
+                    content: (
+                      <Projectdetail
+                        showProduct={() => {
+                          setNewState(
+                            dispatch,
+                            'miss/ProdqueryInfo',
+                            { id: res.data.data.productId },
+                            (result: any) => {
+                              Modal.info({
+                                style: { top: 20 },
+                                zIndex: 999999,
+                                width: 800,
+                                maskClosable: true,
+                                title: res.data.data.productName,
+                                content: (
+                                  <Productdetail maindata={result.data.data} />
+                                ),
+                                okText: '晓得了',
+                              });
+                            },
+                          );
+                        }}
+                        maindata={res.data.data}
+                      />
+                    ),
                     okText: '晓得了',
                   });
                 },
               );
             }}
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={miss.ProjqueryById.data.data}
-          ></Projectdetail>
+            maindata={miss.MisquerytaskDetails.data.data}
+          ></Missiondetail>
         ) : (
           <InitForm
             fields={fields}
@@ -530,7 +551,7 @@ let MissionTest = (props: any) => {
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>

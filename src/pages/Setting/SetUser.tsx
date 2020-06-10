@@ -110,7 +110,7 @@ let SetUser = (props: any) => {
         type: 'input', //类型
         title: '密码', //placeholder
         name: ['password'], //唯一标识
-        required: true, //必填？
+        required: false, //必填？
         disabled: true,
       },
       departmentId: {
@@ -142,14 +142,14 @@ let SetUser = (props: any) => {
         type: 'input',
         title: '职位',
         name: ['jobTitle'],
-        required: true,
+        required: false,
       },
       superId: {
         value: '', //初始化值
         type: 'select',
         title: '直属领导',
         name: ['superId'],
-        required: true,
+        required: false,
         options: set.UserqueryAll && set.UserqueryAll,
       },
       telephone: {
@@ -157,21 +157,21 @@ let SetUser = (props: any) => {
         type: 'input',
         title: '电话',
         name: ['telephone'],
-        required: true,
+        required: false,
       },
       mailNo: {
         value: '', //初始化值
         type: 'input',
         title: '邮箱',
         name: ['mailNo'],
-        required: true,
+        required: false,
       },
       entryDate: {
         value: '', //初始化值
         type: 'datepicker',
         title: '入职时间',
         name: ['entryDate'],
-        required: true,
+        required: false,
       },
     },
     [fields, cf] = useState(defaultfields);
@@ -301,7 +301,7 @@ let SetUser = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 200,
+      width: 130,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -374,7 +374,9 @@ let SetUser = (props: any) => {
             });
           }}
         >
-          <EditIcon color="primary" />
+          <Tooltip title="修改">
+            <EditIcon color="primary" />
+          </Tooltip>
         </IconButton>
         <Divider type="vertical"></Divider>
 
@@ -390,9 +392,11 @@ let SetUser = (props: any) => {
             });
           }}
         >
-          <IconButton aria-label="delete">
-            <DeleteIcon color="error" />
-          </IconButton>
+          <Tooltip title="删除">
+            <IconButton aria-label="delete">
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
         <Divider type="vertical"></Divider>
         <Popconfirm
@@ -476,13 +480,18 @@ let SetUser = (props: any) => {
     setNewState(dispatch, post.posturl, post.postdata, () => {});
   }, [post]);
 
-  let pageChange = (page: any) => {
+  useMemo(() => {
+    cf(defaultfields);
+  }, [set]);
+
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
@@ -562,7 +571,7 @@ let SetUser = (props: any) => {
         extra={
           <div>
             <IconButton
-              style={{ padding: 8 }}
+              style={{ padding: 8, borderRadius: 4 }}
               onClick={() => {
                 ciftype(() => {
                   return {
@@ -575,7 +584,24 @@ let SetUser = (props: any) => {
                 cf(defaultfields);
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22, color: '#000' }} />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
             </IconButton>
           </div>
         }

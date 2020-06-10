@@ -118,7 +118,7 @@ let Charactor = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 200,
+      width: 60,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -175,13 +175,14 @@ let Charactor = (props: any) => {
     cp(set.ChaqueryAllByRoleId.data.data.haveIdList);
   }, [iftype]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
@@ -206,11 +207,11 @@ let Charactor = (props: any) => {
               cf(defaultfields);
             }}
           >
-            <AddCircleOutlineIcon style={{ color: '#000' }} />
+            <AddCircleOutlineIcon color="primary" />
           </IconButton>
         )}
 
-        {record.parentKey !== '0' && record.type == 2 ? (
+        {record.parentKey != '0' && record.type == 2 ? (
           <>
             <Divider type="vertical"></Divider>
             <IconButton
@@ -345,7 +346,7 @@ let Charactor = (props: any) => {
       <Card title={props.route.name}>
         <AutoTable
           rowKey="key"
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
           data={set.DataqueryTreeList}
           columns={columns}
           loading={loading.effects[post.posturl]}

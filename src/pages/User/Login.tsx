@@ -18,6 +18,8 @@ import {
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { LoadingOutlined } from '@ant-design/icons';
+import ImageIcon from '@material-ui/icons/Image';
+import { message, Upload } from 'antd';
 
 let Login = ({ user, loadings, dispatch }: any) => {
   //useForm hooks
@@ -37,10 +39,14 @@ let Login = ({ user, loadings, dispatch }: any) => {
         password: data.password,
       },
       () => {
-        history.replace('/index');
+        setNewState(dispatch, 'model/queryMenu', {}, (res: any) => {
+          history.replace('/index');
+          localStorage.setItem('Menu', JSON.stringify(res.data.dataList));
+        });
       },
     );
   };
+
   const handleClickShowPassword = (key: string) => {
     setvalues({ ...values, [key]: !values[key] });
   };
@@ -49,11 +55,58 @@ let Login = ({ user, loadings, dispatch }: any) => {
     event.preventDefault();
   };
 
+  useEffect(() => {
+    setNewState(dispatch, 'user/queryBackgroungImg', {}, () => {});
+  }, []);
+
   return (
     <div
       className={styles.loginbg}
-      style={{ backgroundImage: `url(${require('@/assets/images/bg.jpg')})` }}
+      style={{
+        backgroundImage: `url(${
+          user.queryBackgroungImg
+            ? user.queryBackgroungImg
+            : require('@/assets/images/bg.jpg')
+        })`,
+      }}
     >
+      <div style={{ position: 'absolute', right: 48, top: 48, zIndex: 99998 }}>
+        <Upload
+          showUploadList={false}
+          action="/zentao/common/uploadFile"
+          onChange={(info: {
+            file: { name?: any; status?: any; response?: any };
+            fileList: any;
+          }) => {
+            const { status, response } = info.file;
+            if (status == 'done') {
+              let dicName = response.data.dataList[0].url;
+              setNewState(
+                dispatch,
+                'user/uploadBackgroungImg',
+                { dicName },
+                () => {
+                  setNewState(
+                    dispatch,
+                    'user/queryBackgroungImg',
+                    {},
+                    () => {},
+                  );
+                },
+              );
+            } else if (status == 'error') {
+              message.error(`${info.file.name} 上传失败`);
+            }
+          }}
+        >
+          <IconButton>
+            <ImageIcon
+              style={{ color: '#fff', boxShadow: '0px 0px 2px #000' }}
+            ></ImageIcon>
+          </IconButton>
+        </Upload>
+      </div>
+
       <div className={styles.loginbox}>
         <Container maxWidth="xs">
           <div
@@ -160,13 +213,13 @@ let Login = ({ user, loadings, dispatch }: any) => {
       </div>
 
       <div className={styles.footer}>
-        <p style={{ color: '#fff' }}>南高项目管理平台/禅道阉割版</p>
+        <p style={{ color: '#fff' }}>南高项目管理平台</p>
       </div>
     </div>
   );
 };
 
-export default connect(({ model, loading }: any) => ({
-  model,
+export default connect(({ user, loading }: any) => ({
+  user,
   loadings: loading.effects['user/Login'],
 }))(Login);

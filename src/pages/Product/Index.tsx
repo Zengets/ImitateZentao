@@ -125,7 +125,7 @@ let Product = (props: any) => {
         type: 'textarea',
         title: '产品描述',
         name: ['description'],
-        required: true,
+        required: false,
         rows: 6,
         col: { span: 24 },
       },
@@ -134,7 +134,7 @@ let Product = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
@@ -154,6 +154,8 @@ let Product = (props: any) => {
       sorter: {
         multiple: 100,
       },
+      ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('productNo', post.postdata, handleSearch),
     },
     {
@@ -161,6 +163,7 @@ let Product = (props: any) => {
       sorter: {
         multiple: 99,
       },
+      ellipsis: true,
       dataIndex: 'productName',
       key: 'productName',
       ...getColumnSearchProps('productName', post.postdata, handleSearch),
@@ -191,29 +194,11 @@ let Product = (props: any) => {
       },
     },
     {
-      title: '状态',
-      sorter: {
-        multiple: 93,
-      },
-      dataIndex: 'statusName',
-      key: 'statusName',
-      ...getColumnSelectProps(
-        'status',
-        prod.ProdqueryStatus,
-        post.postdata,
-        handleSearch,
-      ),
-      render: (text: React.ReactNode, record: { status: any }) => (
-        <span style={{ color: rendercolor('Productstatus', record.status) }}>
-          {text}
-        </span>
-      ),
-    },
-    {
       title: '产品负责人',
       sorter: {
         multiple: 98,
       },
+      width: 120,
       dataIndex: 'chargeUserName',
       key: 'chargeUserName',
       ...getColumnSelectProps(
@@ -228,6 +213,7 @@ let Product = (props: any) => {
       sorter: {
         multiple: 97,
       },
+      width: 120,
       dataIndex: 'openUserName',
       key: 'openUserName',
       ...getColumnSelectProps(
@@ -242,6 +228,7 @@ let Product = (props: any) => {
       sorter: {
         multiple: 96,
       },
+      width: 120,
       dataIndex: 'openDate',
       key: 'openDate',
       render(text: any) {
@@ -255,6 +242,7 @@ let Product = (props: any) => {
       sorter: {
         multiple: 95,
       },
+      width: 120,
       dataIndex: 'activateDate',
       key: 'activateDate',
       render(text: any) {
@@ -270,6 +258,7 @@ let Product = (props: any) => {
       },
       dataIndex: 'closeDate',
       key: 'closeDate',
+      width: 120,
       render(text: any) {
         return (
           <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
@@ -277,10 +266,30 @@ let Product = (props: any) => {
       },
     },
     {
+      title: '状态',
+      sorter: {
+        multiple: 93,
+      },
+      dataIndex: 'statusName',
+      key: 'statusName',
+      width: 120,
+      ...getColumnSelectProps(
+        'status',
+        prod.ProdqueryStatus,
+        post.postdata,
+        handleSearch,
+      ),
+      render: (text: React.ReactNode, record: { status: any }) => (
+        <span style={{ color: rendercolor('Productstatus', record.status) }}>
+          {text}
+        </span>
+      ),
+    },
+    {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 260,
+      width: 170,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -301,16 +310,20 @@ let Product = (props: any) => {
               { id: record.id },
               () => {
                 message.success('激活' + record.productName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
               },
             );
           }}
         >
-          <IconButton disabled={record.status !== 1}>
-            <PlayCircleOutlineIcon
-              color={record.status !== 1 ? 'action' : 'primary'}
-            />
-          </IconButton>
+          <Tooltip title="激活">
+            <IconButton disabled={record.status != 1}>
+              <PlayCircleOutlineIcon
+                color={record.status != 1 ? 'action' : 'primary'}
+              />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
 
         <Divider type="vertical"></Divider>
@@ -323,20 +336,24 @@ let Product = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'prod/Prodclose', { id: record.id }, () => {
               message.success(record.productName + '关闭成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, () => {
+                hides(false);
+              });
             });
           }}
         >
-          <IconButton disabled={record.status !== 2}>
-            <PowerSettingsNewIcon
-              color={record.status !== 2 ? 'action' : 'primary'}
-            />
-          </IconButton>
+          <Tooltip title="关闭">
+            <IconButton disabled={record.status != 2}>
+              <PowerSettingsNewIcon
+                color={record.status != 2 ? 'action' : 'primary'}
+              />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
         <Divider type="vertical"></Divider>
 
         <IconButton
-          disabled={record.status === 3}
+          disabled={record.status == 3}
           onClick={() => {
             cf({
               productNo: {
@@ -374,7 +391,9 @@ let Product = (props: any) => {
             });
           }}
         >
-          <EditIcon color={record.status === 3 ? 'action' : 'primary'} />
+          <Tooltip title="修改">
+            <EditIcon color={record.status == 3 ? 'action' : 'primary'} />
+          </Tooltip>
         </IconButton>
         <Divider type="vertical"></Divider>
 
@@ -391,14 +410,18 @@ let Product = (props: any) => {
               { id: record.id },
               () => {
                 message.success('删除' + record.productName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
               },
             );
           }}
         >
-          <IconButton disabled={record.status !== 1} aria-label="delete">
-            <DeleteIcon color={record.status !== 1 ? 'action' : 'error'} />
-          </IconButton>
+          <Tooltip title="删除">
+            <IconButton disabled={record.status != 1} aria-label="delete">
+              <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
       </div>
     );
@@ -449,17 +472,28 @@ let Product = (props: any) => {
     cf(defaultfields);
   }, [prod]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
   };
+
+  function hides(key: any) {
+    ciftype(() => {
+      return {
+        ...iftype,
+        visible: key,
+        fullScreen: false,
+      };
+    });
+  }
 
   return (
     <Container maxWidth="xl">
@@ -467,13 +501,7 @@ let Product = (props: any) => {
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
         cshow={(key: React.SetStateAction<boolean>) => {
-          ciftype(() => {
-            return {
-              ...iftype,
-              visible: key,
-              fullScreen: false,
-            };
-          });
+          hides(key);
         }}
         maxWidth="lg"
         title={iftype.title}
@@ -549,7 +577,7 @@ let Product = (props: any) => {
         extra={
           <div>
             <IconButton
-              style={{ padding: 8 }}
+              style={{ padding: 8, borderRadius: 4 }}
               onClick={() => {
                 ciftype(() => {
                   return {
@@ -562,7 +590,24 @@ let Product = (props: any) => {
                 cf(defaultfields);
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22, color: '#000' }} />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
             </IconButton>
           </div>
         }
@@ -573,7 +618,7 @@ let Product = (props: any) => {
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>

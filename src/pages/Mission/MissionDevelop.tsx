@@ -33,6 +33,7 @@ import { ClusterOutlined } from '@ant-design/icons';
 import rendercolor from '@/utils/rendercor';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import Missiondetail from '@/components/Missiondetail';
 
 let MissionDevelop = (props: any) => {
   let { miss, dispatch, loading, model } = props,
@@ -137,7 +138,7 @@ let MissionDevelop = (props: any) => {
         type: 'textarea',
         title: '开发描述',
         name: ['devStageFinishDescription'],
-        required: true,
+        required: false,
         rows: 6,
         col: { span: 24 },
       },
@@ -146,16 +147,11 @@ let MissionDevelop = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
-
-  useEffect(() => {
-    //setNewState(dispatch, post.posturl, post.postdata, () => { });
-    setNewState(dispatch, 'miss/ProjquerySelectList', {}, () => {});
-  }, []);
 
   //父级组件项目变化调用
   useMemo(() => {
@@ -185,12 +181,15 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 100,
       },
+      ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
@@ -201,7 +200,7 @@ let MissionDevelop = (props: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'miss/ProjqueryById',
+                'miss/MisquerytaskDetails',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -228,6 +227,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 101,
       },
+      width: 120,
       ...getColumnSelectProps(
         'assignUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -242,6 +242,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 102,
       },
+      width: 120,
       ...getColumnSelectProps(
         'currentUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -256,6 +257,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 98,
       },
+      width: 140,
       ...getColumnRangeProps(
         'devStageStartDateStart',
         'devStageStartDateEnd',
@@ -275,6 +277,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 97,
       },
+      width: 120,
     },
     {
       title: '截止日期(开发)',
@@ -283,6 +286,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 96,
       },
+      width: 140,
       ...getColumnRangeProps(
         'devStageEndDateStart',
         'devStageEndDateEnd',
@@ -313,6 +317,7 @@ let MissionDevelop = (props: any) => {
       sorter: {
         multiple: 94,
       },
+      width: 120,
       ...getColumnSelectProps(
         'status',
         [
@@ -338,7 +343,7 @@ let MissionDevelop = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 140,
+      width: 100,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -351,45 +356,52 @@ let MissionDevelop = (props: any) => {
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认开始任务:' + record.taskName + '？'}
+          title={'确认开始开发:' + record.taskName + '？'}
           onConfirm={() => {
             setNewState(
               dispatch,
               'miss/MisdevelopStart',
               { id: record.id },
               () => {
-                message.success('开始任务:' + record.taskName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
+                message.success('开始开发:' + record.taskName + '成功！');
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
               },
             );
           }}
         >
-          <IconButton disabled={record.status !== 3} aria-label="delete">
-            <PlayCircleOutlineIcon
-              color={record.status !== 3 ? 'action' : 'primary'}
-            />
-          </IconButton>
+          <Tooltip title="开始开发">
+            <IconButton disabled={record.status != 3} aria-label="delete">
+              <PlayCircleOutlineIcon
+                color={record.status != 3 ? 'action' : 'primary'}
+              />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
         <Divider type="vertical"></Divider>
         <IconButton
-          disabled={record.status !== 4}
+          disabled={record.status != 4}
           aria-label="delete"
           onClick={() => {
             ciftype(() => {
               return {
                 ...iftype,
                 visible: true,
-                title: '完成任务',
+                title: '完成开发',
                 curitem: record,
                 key: 'edit',
+                fullScreen: false,
               };
             });
             cf(defaultfields);
           }}
         >
-          <PowerSettingsNewIcon
-            color={record.status !== 4 ? 'action' : 'error'}
-          />
+          <Tooltip title="完成开发">
+            <PowerSettingsNewIcon
+              color={record.status != 4 ? 'action' : 'error'}
+            />
+          </Tooltip>
         </IconButton>
       </div>
     );
@@ -454,58 +466,87 @@ let MissionDevelop = (props: any) => {
     cf(defaultfields);
   }, [miss]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
   };
 
+  function hides(key: any) {
+    ciftype(() => {
+      return {
+        ...iftype,
+        visible: key,
+        fullScreen: false,
+      };
+    });
+  }
   return (
     <Container maxWidth="xl">
       <Dia
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
         cshow={(key: React.SetStateAction<boolean>) => {
-          ciftype(() => {
-            return {
-              ...iftype,
-              visible: key,
-              fullScreen: false,
-            };
-          });
+          hides(key);
         }}
         maxWidth="lg"
         title={iftype.title}
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Projectdetail
-            showProduct={() => {
+          <Missiondetail
+            showOther={() => {
               setNewState(
                 dispatch,
-                'miss/ProdqueryInfo',
-                { id: miss.ProjqueryById.data.data.projectId },
+                'miss/ProjqueryById',
+                { id: miss.MisquerytaskDetails.data.data.info.projectId },
                 (res: any) => {
                   Modal.info({
+                    style: { top: 20 },
                     zIndex: 999999,
                     width: 800,
                     maskClosable: true,
-                    title: miss.ProjqueryById.data.data.productName,
-                    content: <Productdetail maindata={res.data.data} />,
+                    title: miss.MisquerytaskDetails.data.data.info.projectName,
+                    content: (
+                      <Projectdetail
+                        showProduct={() => {
+                          setNewState(
+                            dispatch,
+                            'miss/ProdqueryInfo',
+                            { id: res.data.data.productId },
+                            (result: any) => {
+                              Modal.info({
+                                style: { top: 20 },
+                                zIndex: 999999,
+                                width: 800,
+                                maskClosable: true,
+                                title: res.data.data.productName,
+                                content: (
+                                  <Productdetail maindata={result.data.data} />
+                                ),
+                                okText: '晓得了',
+                              });
+                            },
+                          );
+                        }}
+                        maindata={res.data.data}
+                      />
+                    ),
                     okText: '晓得了',
                   });
                 },
               );
             }}
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={miss.ProjqueryById.data.data}
-          ></Projectdetail>
+            maindata={miss.MisquerytaskDetails.data.data}
+          ></Missiondetail>
         ) : (
           <InitForm
             fields={fields}
@@ -517,12 +558,6 @@ let MissionDevelop = (props: any) => {
               if (iftype.key == 'edit') {
                 newfields.id = iftype.curitem.id;
               }
-              let res = moment(newfields.realFinishTime)
-                .startOf('minute')
-                .valueOf();
-
-              newfields.realFinishTime = newfields.realFinishTime ? res : '';
-
               let newlist = newfields.attachmentList.fileList
                 ? newfields.attachmentList.fileList.map(
                     (items: any, i: number) => {
@@ -538,10 +573,13 @@ let MissionDevelop = (props: any) => {
                   )
                 : [];
               newfields.attachmentList = newlist;
-
+              let res = moment(newfields.realFinishTime)
+                .startOf('minute')
+                .valueOf();
+              newfields.realFinishTime = newfields.realFinishTime ? res : '';
               setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
                 setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
+                  message.success('已经完成开发');
                   ciftype(() => {
                     return {
                       ...iftype,
@@ -576,7 +614,7 @@ let MissionDevelop = (props: any) => {
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>

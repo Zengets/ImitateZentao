@@ -6,3 +6,40 @@
 .title {
   background: rgb(121, 242, 157);
 }
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  padding-left: 12px;
+  border-left: 2px solid #ffffff;
+}
+.action {
+  display: none;
+}
+.item:hover {
+  background-color: #f0f0f0;
+  border-left: 2px solid #1183fb;
+}
+.item:hover .action {
+  display: block;
+}
+.curitem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  padding-left: 12px;
+  background-color: #f0f0f0;
+  border-left: 2px solid #1183fb;
+}
+.curitem .action {
+  display: block;
+}
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}

@@ -14,17 +14,11 @@ import {
   Popconfirm,
   Divider,
 } from 'antd';
-import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import AutoTable from '@/components/AutoTable';
-import {
-  getColumnSearchProps,
-  getColumnSelectProps,
-  getColumnTreeSelectProps,
-} from '@/components/TbSearch';
 import Dia from '@/components/Dia/index';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -72,7 +66,7 @@ let Charactor = (props: any) => {
         type: 'textarea', //类型
         title: '描述', //placeholder
         name: ['description'], //唯一标识
-        required: true, //必填？
+        required: false, //必填？
         col: { span: 24 },
         rows: 6,
       },
@@ -94,6 +88,7 @@ let Charactor = (props: any) => {
       sorter: {
         multiple: 98,
       },
+      width: 140,
       dataIndex: 'roleNo',
       key: 'roleNo',
     },
@@ -101,6 +96,8 @@ let Charactor = (props: any) => {
       title: '角色名称',
       dataIndex: 'roleName',
       key: 'roleName',
+      width: 180,
+      ellipsis: true,
       sorter: {
         multiple: 100,
       },
@@ -110,6 +107,7 @@ let Charactor = (props: any) => {
       sorter: {
         multiple: 98,
       },
+      ellipsis: true,
       dataIndex: 'description',
       key: 'description',
     },
@@ -117,7 +115,7 @@ let Charactor = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 200,
+      width: 130,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -126,6 +124,7 @@ let Charactor = (props: any) => {
     return (
       <div>
         <IconButton
+          disabled={record.roleType == '1'}
           onClick={() => {
             cf({
               roleName: {
@@ -152,7 +151,9 @@ let Charactor = (props: any) => {
             });
           }}
         >
-          <EditIcon color="primary" />
+          <Tooltip title="修改">
+            <EditIcon color={record.roleType == '1' ? 'action' : 'primary'} />
+          </Tooltip>
         </IconButton>
         <Divider type="vertical"></Divider>
 
@@ -168,9 +169,11 @@ let Charactor = (props: any) => {
             });
           }}
         >
-          <IconButton aria-label="delete">
-            <DeleteIcon color="error" />
-          </IconButton>
+          <Tooltip title="删除">
+            <IconButton disabled={record.roleType == '1'}>
+              <DeleteIcon color={record.roleType == '1' ? 'action' : 'error'} />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
         <Divider type="vertical"></Divider>
         <IconButton
@@ -247,13 +250,14 @@ let Charactor = (props: any) => {
     cp(set.ChaqueryAllByRoleId.data.data.haveIdList);
   }, [iftype]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
@@ -274,7 +278,11 @@ let Charactor = (props: any) => {
         maxWidth="lg"
         title={iftype.title}
         footer={
-          iftype.key == 'link' ? false : <div style={{ height: 24 }}></div>
+          iftype.key == 'link' && iftype.curitem.roleType != '1' ? (
+            false
+          ) : (
+            <div style={{ height: 24 }}></div>
+          )
         }
         onOk={() => {
           let postData = {
@@ -358,7 +366,7 @@ let Charactor = (props: any) => {
         extra={
           <div>
             <IconButton
-              style={{ padding: 8 }}
+              style={{ padding: 8, borderRadius: 4 }}
               onClick={() => {
                 ciftype(() => {
                   return {
@@ -371,13 +379,30 @@ let Charactor = (props: any) => {
                 cf(defaultfields);
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22, color: '#000' }} />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
             </IconButton>
           </div>
         }
       >
         <AutoTable
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
           data={set.ChaqueryList}
           columns={columns}
           loading={loading.effects[post.posturl]}

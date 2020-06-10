@@ -32,7 +32,7 @@ import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
 import rendercolor from '@/utils/rendercor';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { green } from '@material-ui/core/colors/green';
+import Missiondetail from '@/components/Missiondetail';
 
 let MissionCheck = (props: any) => {
   let { miss, dispatch, loading, model } = props,
@@ -185,12 +185,15 @@ let MissionCheck = (props: any) => {
       sorter: {
         multiple: 100,
       },
+      ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
@@ -201,7 +204,7 @@ let MissionCheck = (props: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'miss/ProjqueryById',
+                'miss/MisquerytaskDetails',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -228,6 +231,7 @@ let MissionCheck = (props: any) => {
       sorter: {
         multiple: 102,
       },
+      width: 120,
       ...getColumnSelectProps(
         'currentUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -237,6 +241,7 @@ let MissionCheck = (props: any) => {
     },
     {
       title: '激活时间',
+      width: 120,
       dataIndex: 'activateDate',
       key: 'activateDate',
       sorter: {
@@ -257,17 +262,19 @@ let MissionCheck = (props: any) => {
       },
     },
     {
-      title: '预计时长(h开发)',
+      title: '预计时长(开发)',
       dataIndex: 'devStagePlanHours',
       key: 'devStagePlanHours',
+      width: 120,
       sorter: {
         multiple: 98,
       },
     },
     {
-      title: '消耗时长(h开发)',
+      title: '消耗时长(开发)',
       dataIndex: 'devStageExpendHours',
       key: 'devStageExpendHours',
+      width: 120,
       sorter: {
         multiple: 97,
       },
@@ -276,6 +283,7 @@ let MissionCheck = (props: any) => {
       title: '截止日期',
       dataIndex: 'deadDate',
       key: 'deadDate',
+      width: 120,
       sorter: {
         multiple: 95,
       },
@@ -317,6 +325,7 @@ let MissionCheck = (props: any) => {
       sorter: {
         multiple: 96,
       },
+      width: 120,
       ...getColumnRangeminProps(
         'acceptStageTimeStart',
         'acceptStageTimeEnd',
@@ -338,6 +347,7 @@ let MissionCheck = (props: any) => {
       sorter: {
         multiple: 94,
       },
+      width: 120,
       ...getColumnSelectProps(
         'status',
         miss.queryTaskStatusSelectList && miss.queryTaskStatusSelectList,
@@ -354,6 +364,7 @@ let MissionCheck = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
+      width: 60,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -370,20 +381,24 @@ let MissionCheck = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'miss/Misclose', { id: record.id }, () => {
               message.success('关闭任务：' + record.taskName + '成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, () => {
+                hides(false);
+              });
             });
           }}
         >
-          <IconButton
-            disabled={record.status == 7 || record.status == 8}
-            aria-label="delete"
-          >
-            <HighlightOffIcon
-              color={
-                record.status == 7 || record.status == 8 ? 'action' : 'error'
-              }
-            />
-          </IconButton>
+          <Tooltip title="关闭">
+            <IconButton
+              disabled={record.status == 7 || record.status == 8}
+              aria-label="delete"
+            >
+              <HighlightOffIcon
+                color={
+                  record.status == 7 || record.status == 8 ? 'action' : 'error'
+                }
+              />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
       </div>
     );
@@ -447,17 +462,27 @@ let MissionCheck = (props: any) => {
     cf(defaultfields);
   }, [miss]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
   };
+  function hides(key: any) {
+    ciftype(() => {
+      return {
+        ...iftype,
+        visible: key,
+        fullScreen: false,
+      };
+    });
+  }
 
   return (
     <Container maxWidth="xl">
@@ -465,40 +490,59 @@ let MissionCheck = (props: any) => {
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
         cshow={(key: React.SetStateAction<boolean>) => {
-          ciftype(() => {
-            return {
-              ...iftype,
-              visible: key,
-              fullScreen: false,
-            };
-          });
+          hides(key);
         }}
         maxWidth="lg"
         title={iftype.title}
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Projectdetail
-            showProduct={() => {
+          <Missiondetail
+            showOther={() => {
               setNewState(
                 dispatch,
-                'miss/ProdqueryInfo',
-                { id: miss.ProjqueryById.data.data.projectId },
+                'miss/ProjqueryById',
+                { id: miss.MisquerytaskDetails.data.data.info.projectId },
                 (res: any) => {
                   Modal.info({
+                    style: { top: 20 },
                     zIndex: 999999,
                     width: 800,
                     maskClosable: true,
-                    title: miss.ProjqueryById.data.data.productName,
-                    content: <Productdetail maindata={res.data.data} />,
+                    title: miss.MisquerytaskDetails.data.data.info.projectName,
+                    content: (
+                      <Projectdetail
+                        showProduct={() => {
+                          setNewState(
+                            dispatch,
+                            'miss/ProdqueryInfo',
+                            { id: res.data.data.productId },
+                            (result: any) => {
+                              Modal.info({
+                                style: { top: 20 },
+                                zIndex: 999999,
+                                width: 800,
+                                maskClosable: true,
+                                title: res.data.data.productName,
+                                content: (
+                                  <Productdetail maindata={result.data.data} />
+                                ),
+                                okText: '晓得了',
+                              });
+                            },
+                          );
+                        }}
+                        maindata={res.data.data}
+                      />
+                    ),
                     okText: '晓得了',
                   });
                 },
               );
             }}
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={miss.ProjqueryById.data.data}
-          ></Projectdetail>
+            maindata={miss.MisquerytaskDetails.data.data}
+          ></Missiondetail>
         ) : (
           <InitForm
             fields={fields}
@@ -577,7 +621,7 @@ let MissionCheck = (props: any) => {
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>

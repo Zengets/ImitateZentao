@@ -17,15 +17,33 @@ import {
   MisquerytaskOverview,
   Misclose,
   queryTaskStatusSelectList,
+  MisquerytaskDetails,
+  ProjqueryById,
+  ProdqueryInfo,
 } from '@/services/api.ts';
 
 import { message } from 'antd';
 
 export default {
   state: {
+    ProdqueryInfo: {
+      data: {
+        data: {},
+      },
+    },
+    ProjqueryById: {
+      data: {
+        data: {},
+      },
+    },
     MisquerytaskRelease: {
       data: {
         page: {},
+      },
+    },
+    MisquerytaskDetails: {
+      data: {
+        data: {},
       },
     },
     MisquerytaskAssign: {
@@ -59,6 +77,30 @@ export default {
     res: {},
   },
   effects: {
+    *ProdqueryInfo({ payload }: any, { call, put }: any) {
+      const responese = yield call(ProdqueryInfo, payload);
+      yield put({
+        type: 'updateState',
+        payload: { ProdqueryInfo: responese },
+      });
+      return responese;
+    },
+    *ProjqueryById({ payload }: any, { call, put }: any) {
+      const responese = yield call(ProjqueryById, payload);
+      yield put({
+        type: 'updateState',
+        payload: { ProjqueryById: responese },
+      });
+      return responese;
+    },
+    *MisquerytaskDetails({ payload }: any, { call, put }: any) {
+      const responese = yield call(MisquerytaskDetails, payload);
+      yield put({
+        type: 'updateState',
+        payload: { MisquerytaskDetails: responese },
+      });
+      return responese;
+    },
     *MisquerytaskRelease({ payload }: any, { call, put }: any) {
       const responese = yield call(MisquerytaskRelease, payload);
       yield put({

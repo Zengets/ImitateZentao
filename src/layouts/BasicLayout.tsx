@@ -106,6 +106,8 @@ let BasicLayout = (props: any) => {
 
   useEffect(() => {
     setNewState(dispatch, 'model/UserqueryAll', {}, () => {}); //全局下拉框
+    setNewState(dispatch, 'model/ProjquerySelectList', {}, () => {});
+    setNewState(dispatch, 'model/queryMenu', {}, () => {});
   }, []);
 
   return (

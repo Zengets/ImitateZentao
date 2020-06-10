@@ -343,7 +343,7 @@ let InitForm = ({
                         fileList: any;
                       }) {
                         const { status, response } = info.file;
-                        if (status === 'done') {
+                        if (status == 'done') {
                           let newlist = response.data.dataList.map(
                             (item: any, i: number) => {
                               return {
@@ -369,7 +369,7 @@ let InitForm = ({
                           });
 
                           handleChange(item.keys, res);
-                        } else if (status === 'error') {
+                        } else if (status == 'error') {
                           message.error(`${info.file.name} 上传失败`);
                         }
                       },
@@ -420,7 +420,7 @@ let InitForm = ({
                                 onClick={() => {
                                   let leftfiles = item.value.filter(
                                     (it: any) => {
-                                      return it.uid !== items.uid;
+                                      return it.uid != items.uid;
                                     },
                                   );
                                   handleChange(item.keys, leftfiles);

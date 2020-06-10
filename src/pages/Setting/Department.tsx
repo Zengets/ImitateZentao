@@ -25,18 +25,16 @@ let Department = (props: any) => {
     //node改变执行
   }, []);
 
-  useMemo(() => {
-    cnode(() => {
-      return props.set.DepqueryByParentId.data.data;
-    });
-  }, [props.set]);
-
   const onSelect = (select: any, info: any) => {
     setNewState(
       dispatch,
       'set/DepqueryByParentId',
       { parentId: select[0] },
-      () => {},
+      (res: any) => {
+        cnode(() => {
+          return res.data.data;
+        });
+      },
     );
   };
 
@@ -117,7 +115,18 @@ let Department = (props: any) => {
                               dispatch,
                               'set/DepqueryTreeList',
                               {},
-                              () => {},
+                              () => {
+                                setNewState(
+                                  dispatch,
+                                  'set/DepqueryByParentId',
+                                  { parentId: node.key },
+                                  (res: any) => {
+                                    cnode(() => {
+                                      return res.data.data;
+                                    });
+                                  },
+                                );
+                              },
                             );
                           });
                         },
@@ -254,7 +263,7 @@ let Department = (props: any) => {
                                 onClick={() => {
                                   let newchild = node.children.filter(
                                     (items: any, i: any) => {
-                                      return items.key !== item.key;
+                                      return items.key != item.key;
                                     },
                                   );
                                   cnode(() => {

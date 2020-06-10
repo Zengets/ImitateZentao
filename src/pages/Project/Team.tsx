@@ -124,6 +124,7 @@ let Project = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
+      width: 60,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -149,9 +150,11 @@ let Project = (props: any) => {
             );
           }}
         >
-          <IconButton aria-label="delete">
-            <DeleteIcon color={'error'} />
-          </IconButton>
+          <Tooltip title="删除">
+            <IconButton aria-label="delete">
+              <DeleteIcon color={'error'} />
+            </IconButton>
+          </Tooltip>
         </Popconfirm>
       </div>
     );
@@ -252,7 +255,7 @@ let Project = (props: any) => {
                 proj.TeamqueryAllUser.map((item: any, i: any) => (
                   <Select.Option
                     value={item.id}
-                    disabled={haveselected.indexOf(item.id) !== -1}
+                    disabled={haveselected.indexOf(item.id) != -1}
                   >
                     {item.realName}
                   </Select.Option>
@@ -295,7 +298,12 @@ let Project = (props: any) => {
                 cedit(neweditarr);
               }}
             >
-              <HighlightOffIcon style={{ fontSize: 24 }} color="error" />
+              <Tooltip title="删除人员">
+                <HighlightOffIcon
+                  style={{ fontSize: 24, margin: 6 }}
+                  color="error"
+                />
+              </Tooltip>
             </IconButton>
           </div>
         </div>
@@ -332,14 +340,16 @@ let Project = (props: any) => {
                     cedit(neweditarr);
                   }}
                 >
-                  <AddCircleOutlineIcon
-                    style={{ fontSize: 24 }}
-                    color={
-                      proj.TeamqueryAllUser.length == editarr.length
-                        ? 'action'
-                        : 'primary'
-                    }
-                  />
+                  <Tooltip title="新增人员">
+                    <AddCircleOutlineIcon
+                      style={{ fontSize: 24 }}
+                      color={
+                        proj.TeamqueryAllUser.length == editarr.length
+                          ? 'action'
+                          : 'primary'
+                      }
+                    />
+                  </Tooltip>
                 </IconButton>
                 <Divider type="vertical"></Divider>
                 <IconButton
@@ -382,7 +392,9 @@ let Project = (props: any) => {
                     });
                   }}
                 >
-                  <SaveIcon style={{ fontSize: 25, color: 'red' }} />
+                  <Tooltip title="保存">
+                    <SaveIcon style={{ fontSize: 25, color: 'red' }} />
+                  </Tooltip>
                 </IconButton>
                 <Divider type="vertical"></Divider>
                 <Popconfirm
@@ -411,9 +423,11 @@ let Project = (props: any) => {
                     });
                   }}
                 >
-                  <IconButton style={{ padding: 8 }}>
-                    <RefreshIcon style={{ fontSize: 24, color: '#000' }} />
-                  </IconButton>
+                  <Tooltip title="取消编辑">
+                    <IconButton style={{ padding: 8 }}>
+                      <RefreshIcon style={{ fontSize: 24, color: '#000' }} />
+                    </IconButton>
+                  </Tooltip>
                 </Popconfirm>
               </div>
             ) : (
@@ -426,7 +440,9 @@ let Project = (props: any) => {
                   });
                 }}
               >
-                <EditOutlined style={{ fontSize: 22, color: '#1183fb' }} />
+                <Tooltip title="编辑团队">
+                  <EditOutlined style={{ fontSize: 22, color: '#1183fb' }} />
+                </Tooltip>
               </IconButton>
             )}
           </div>
@@ -480,7 +496,7 @@ let Project = (props: any) => {
             loading={loading.effects[posturl]}
             pageChange={null}
             onChange={handleTableChange}
-            scroll={'false'}
+            scroll={{ y: '65vh' }}
           />
         )}
       </Card>

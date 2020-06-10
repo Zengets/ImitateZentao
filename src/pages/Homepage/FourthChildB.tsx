@@ -38,19 +38,17 @@ import Button from '@material-ui/core/Button';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
 
-let Allpro = (props: any) => {
+let FourthChildB = (props: any) => {
   let { proj, dispatch, loading } = props,
+    [dataList, cdata] = useState([]),
     [post, cpost] = useState({
-      posturl: 'proj/ProjqueryList',
+      posturl: 'home/IndexSixth',
       postdata: {
         projectNo: '', //项目编号，筛选条件
         projectName: '', //项目名，筛选条件
         productId: '', //产品id，筛选条件
-        startMinDate: '', //起止日期，筛选条件
-        startMaxDate: '', //起止日期，筛选条件
         endMinDate: '', //起止日期，筛选条件
         endMaxDate: '', //起止日期，筛选条件
-        status: '', //状态，筛选条件
         sortList: [
           //排序字段
           {
@@ -66,15 +64,7 @@ let Allpro = (props: any) => {
             sort: '',
           },
           {
-            fieldName: 'startDate',
-            sort: '',
-          },
-          {
             fieldName: 'endDate',
-            sort: '',
-          },
-          {
-            fieldName: 'status',
             sort: '',
           },
         ],
@@ -93,7 +83,7 @@ let Allpro = (props: any) => {
         type: 'select', //类型
         title: '产品', //placeholder
         name: ['productId'], //唯一标识
-        required: false, //必填？
+        required: true, //必填？
         options: proj.ProdqueryAllSelect && proj.ProdqueryAllSelect,
       },
       projectNo: {
@@ -122,7 +112,7 @@ let Allpro = (props: any) => {
         type: 'textarea',
         title: '项目描述',
         name: ['description'],
-        required: false,
+        required: true,
         rows: 6,
         col: { span: 24 },
       },
@@ -145,14 +135,16 @@ let Allpro = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: false,
+        required: true,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+      cdata(res.data.dataList);
+    });
     setNewState(
       dispatch,
       'proj/ProjqueryProjectStatusSelectList',
@@ -170,18 +162,17 @@ let Allpro = (props: any) => {
       sorter: {
         multiple: 100,
       },
-      ellipsis: true,
-      width: 120,
+      width: 110,
       ...getColumnSearchProps('projectNo', post.postdata, handleSearch),
     },
     {
       title: '项目名称',
       dataIndex: 'projectName',
       key: 'projectName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
-      ellipsis: true,
       ...getColumnSearchProps('projectName', post.postdata, handleSearch),
       render(text: React.ReactNode, record: any) {
         return (
@@ -225,33 +216,13 @@ let Allpro = (props: any) => {
       ),
     },
     {
-      title: '预计开始日期',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      sorter: {
-        multiple: 97,
-      },
-      width: 160,
-      ...getColumnRangeProps(
-        'startMinDate',
-        'startMaxDate',
-        post.postdata,
-        handleSearch,
-      ),
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
-    },
-    {
       title: '截止日期',
       dataIndex: 'endDate',
       key: 'endDate',
-      width: 120,
       sorter: {
         multiple: 98,
       },
+      width: 120,
       ...getColumnRangeProps(
         'endMinDate',
         'endMaxDate',
@@ -263,49 +234,6 @@ let Allpro = (props: any) => {
           <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
         );
       },
-    },
-    {
-      title: '预计工时(h)',
-      dataIndex: 'planHours',
-      width: 120,
-    },
-    {
-      title: '消耗工时(h)',
-      dataIndex: 'expendHours',
-      width: 120,
-    },
-    {
-      title: '剩余工时(h)',
-      dataIndex: 'leftHours',
-      width: 120,
-    },
-    {
-      title: '状态',
-      dataIndex: 'statusName',
-      key: 'statusName',
-      sorter: {
-        multiple: 98,
-      },
-      width: 120,
-
-      ...getColumnSelectProps(
-        'status',
-        proj.ProjqueryProjectStatusSelectList,
-        post.postdata,
-        handleSearch,
-      ),
-      render: (text: React.ReactNode, record: { status: any }) => (
-        <span style={{ color: rendercolor('Projuctstatus', record.status) }}>
-          {text}
-        </span>
-      ),
-    },
-    {
-      title: '操作',
-      dataIndex: 'action',
-      key: 'action',
-      width: 170,
-      render: (text: any, record: any) => renderAction(record),
     },
   ];
 
@@ -321,17 +249,18 @@ let Allpro = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'proj/Projstart', { id: record.id }, () => {
               message.success('开始' + record.projectName + '成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+                cdata(res.data.dataList);
+                hides(false);
+              });
             });
           }}
         >
-          <Tooltip title="开始">
-            <IconButton disabled={record.status != 1}>
-              <PlayCircleOutlineIcon
-                color={record.status != 1 ? 'action' : 'primary'}
-              />
-            </IconButton>
-          </Tooltip>
+          <IconButton disabled={record.status != 1}>
+            <PlayCircleOutlineIcon
+              color={record.status != 1 ? 'action' : 'primary'}
+            />
+          </IconButton>
         </Popconfirm>
         <Divider type="vertical"></Divider>
         <Popconfirm
@@ -343,21 +272,20 @@ let Allpro = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'proj/Projfinish', { id: record.id }, () => {
               message.success(record.projectName + '完成成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+                cdata(res.data.dataList);
+                hides(false);
+              });
             });
           }}
         >
-          <Tooltip title="完成">
-            <IconButton disabled={record.status != 2 && record.status != 3}>
-              <PowerSettingsNewIcon
-                color={
-                  record.status != 2 && record.status != 3
-                    ? 'action'
-                    : 'primary'
-                }
-              />
-            </IconButton>
-          </Tooltip>
+          <IconButton disabled={record.status != 2 && record.status != 3}>
+            <PowerSettingsNewIcon
+              color={
+                record.status != 2 && record.status != 3 ? 'action' : 'primary'
+              }
+            />
+          </IconButton>
         </Popconfirm>
         <Divider type="vertical"></Divider>
         <IconButton
@@ -415,16 +343,13 @@ let Allpro = (props: any) => {
             });
           }}
         >
-          <Tooltip title="修改">
-            <EditIcon
-              color={
-                record.status == 4 || record.status == 5 ? 'action' : 'primary'
-              }
-            />
-          </Tooltip>
+          <EditIcon
+            color={
+              record.status == 4 || record.status == 5 ? 'action' : 'primary'
+            }
+          />
         </IconButton>
         <Divider type="vertical"></Divider>
-
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -438,16 +363,22 @@ let Allpro = (props: any) => {
               { id: record.id },
               () => {
                 message.success('删除' + record.projectName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
+                setNewState(
+                  dispatch,
+                  post.posturl,
+                  post.postdata,
+                  (res: any) => {
+                    cdata(res.data.dataList);
+                    hides(false);
+                  },
+                );
               },
             );
           }}
         >
-          <Tooltip title="删除">
-            <IconButton disabled={record.status != 1} aria-label="delete">
-              <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
-            </IconButton>
-          </Tooltip>
+          <IconButton disabled={record.status != 1} aria-label="delete">
+            <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
+          </IconButton>
         </Popconfirm>
       </div>
     );
@@ -504,25 +435,24 @@ let Allpro = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+      cdata(res.data.dataList);
+    });
   }, [post]);
 
   useMemo(() => {
     cf(defaultfields);
   }, [proj]);
 
-  let pageChange = (page: any, pageSize: any) => {
-    cpost(() => {
+  function hides(key: any) {
+    ciftype(() => {
       return {
-        ...post,
-        postdata: {
-          ...post.postdata,
-          pageIndex: page,
-          pageSize,
-        },
+        ...iftype,
+        visible: key,
+        fullScreen: false,
       };
     });
-  };
+  }
 
   return (
     <Container maxWidth="xl">
@@ -530,13 +460,7 @@ let Allpro = (props: any) => {
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
         cshow={(key: React.SetStateAction<boolean>) => {
-          ciftype(() => {
-            return {
-              ...iftype,
-              visible: key,
-              fullScreen: false,
-            };
-          });
+          hides(key);
         }}
         maxWidth="lg"
         title={iftype.title}
@@ -604,15 +528,16 @@ let Allpro = (props: any) => {
                 : '';
 
               setNewState(dispatch, 'proj/Projsave', newfields, () => {
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
-                  ciftype(() => {
-                    return {
-                      ...iftype,
-                      visible: false,
-                    };
-                  });
-                });
+                setNewState(
+                  dispatch,
+                  post.posturl,
+                  post.postdata,
+                  (res: any) => {
+                    cdata(res.data.dataList);
+                    message.success('操作成功');
+                    hides(false);
+                  },
+                );
               });
             }}
             onChange={(newFields: any) => {
@@ -634,55 +559,14 @@ let Allpro = (props: any) => {
           ></InitForm>
         )}
       </Dia>
-      <Card
-        title={props.route.name}
-        extra={
-          <div>
-            <IconButton
-              style={{ padding: 8, borderRadius: 4 }}
-              onClick={() => {
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: true,
-                    title: '新增项目',
-                    key: 'add',
-                  };
-                });
-                cf(defaultfields);
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  margin: '6px 12px',
-                }}
-              >
-                <AddCircleOutlineIcon
-                  style={{ fontSize: 22 }}
-                  color="primary"
-                />
-                <span
-                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
-                >
-                  新增
-                </span>
-              </div>
-            </IconButton>
-          </div>
-        }
-      >
-        <AutoTable
-          data={proj.ProjqueryList}
-          columns={columns}
-          loading={loading.effects[post.posturl]}
-          pageChange={pageChange}
-          onChange={handleTableChange}
-          scroll={{ y: '65vh' }}
-        />
-      </Card>
+      <AutoTable
+        data={{ list: dataList }}
+        columns={columns}
+        loading={loading.effects[post.posturl]}
+        pagination={'false'}
+        onChange={handleTableChange}
+        scroll={{ y: '65vh' }}
+      />
     </Container>
   );
 };
@@ -690,4 +574,4 @@ let Allpro = (props: any) => {
 export default connect(({ proj, loading }: any) => ({
   proj,
   loading,
-}))(Allpro);
+}))(FourthChildB);

@@ -10,9 +10,9 @@ import {
   Card,
   Popconfirm,
   Divider,
-  Tooltip,
   Row,
   Col,
+  Tooltip,
   Modal,
 } from 'antd';
 import Container from '@material-ui/core/Container';
@@ -28,59 +28,79 @@ import {
   getColumnRangeminProps,
 } from '@/components/TbSearch';
 import Dia from '@/components/Dia/index';
-import DeleteIcon from '@material-ui/icons/Delete';
-import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import DemoList from './DemoList';
+import DemoAction from './DemoAction';
 import EditIcon from '@material-ui/icons/Edit';
 import mockfile from '@/utils/mockfile';
-import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
+import Demodetail from '@/components/Demodetail';
+import rendercolor from '@/utils/rendercor';
+import Productdetail from '@/components/Productdetail';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import BugReportIcon from '@material-ui/icons/BugReport';
+import DemoBug from './DemoBug';
+
+let defaultvalue = [
+  {
+    id: 'fatetts',
+    step: '',
+    expection: '',
+    children: [],
+  },
+];
 
 let Demos = (props: any) => {
-  let { miss, dispatch, loading, model } = props,
+  let { bug, dispatch, loading, model } = props,
     projectId = model.postdata.projectId, //props projectid
     [post, cpost] = useState({
-      posturl: 'miss/MisquerytaskRelease',
+      posturl: 'bug/DemoqueryList',
       postdata: {
-        pageIndex: '1', //--------------页码 *
-        pageSize: '10', //-------------------条数 *
-        taskNo: '', //-------------------任务编号
-        taskName: '', //--------------------任务名称
-        openUserId: '', //---------------创建人id
-        currentUserId: '', //------------------指派人id
-        projectId: projectId, //---------------任务id
-        openDateStart: '', //-----------------创建时间搜索  (到分钟)
-        openDateEnd: '', //-----------------创建时间搜索  (到分钟)
-        deadDateStart: '', //-----------------截止日期搜索  (到日)
-        deadDateEnd: '', //-----------------截止日期搜索  (到日)
+        projectId: projectId, //项目id，筛选条件
+        caseNo: '', //用例编号，筛选条件
+        caseName: '', //用例标题，筛选条件
+        caseType: '', //用例类型，筛选条件
+        openUserId: '', //创建人id，筛选条件
+        openMinTime: '', //创建起时间，筛选条件
+        openMaxTime: '', //创建止时间，筛选条件
+        lastExecuteUserId: '', //执行人id，筛选条件
+        lastExecuteMinTime: '', //执行起时间，筛选条件
+        lastExecuteMaxTime: '', //执行止时间，筛选条件
+        lastResult: '', //结果，筛选条件
         sortList: [
-          //-------------------------------------------------------------------------排序字段
+          //排序字段
           {
-            fieldName: 'taskNo', //-------------------任务编号
+            fieldName: 'caseNo', //用例编号
             sort: '',
           },
           {
-            fieldName: 'taskName', //--------------------任务名称
+            fieldName: 'caseName', //用例标题
             sort: '',
           },
           {
-            fieldName: 'openUserName', //---------------创建人id
+            fieldName: 'caseTypeName', //用例类型名
             sort: '',
           },
           {
-            fieldName: 'currentUserName', //------------------指派人id
+            fieldName: 'openUserName', //创建人名
             sort: '',
           },
           {
-            fieldName: 'openDate', //---------------------创建时间
+            fieldName: 'lastExecuteUserName', //执行人名
             sort: '',
           },
           {
-            fieldName: 'deadDate', //--------------------------截止日期
+            fieldName: 'lastExecuteTime', //执行时间
+            sort: '',
+          },
+          {
+            fieldName: 'lastResult',
             sort: '',
           },
         ],
       },
     }),
+    [tree, ctree] = useState(),
     [iftype, ciftype] = useState({
       curitem: {},
       fullScreen: false,
@@ -89,13 +109,6 @@ let Demos = (props: any) => {
       key: '',
     }),
     defaultfields: any = {
-      taskName: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '任务名称', //placeholder
-        name: ['taskName'], //唯一标识
-        required: true, //必填？
-      },
       projectId: {
         value: projectId, //初始化值
         type: 'select', //类型
@@ -103,65 +116,56 @@ let Demos = (props: any) => {
         name: ['projectId'], //唯一标识
         required: true, //必填？
         disabled: true,
-        options: miss.ProjquerySelectList && miss.ProjquerySelectList,
+        options: model.ProjquerySelectList && model.ProjquerySelectList,
       },
-      taskDescription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '任务描述',
-        name: ['taskDescription'],
-        required: true,
-        rows: 6,
-        col: { span: 24 },
-      },
-      requireDesctription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '需求描述',
-        name: ['requireDesctription'],
-        required: true,
-        rows: 6,
-        col: { span: 24 },
-      },
-      currentUserId: {
+      caseType: {
         value: '', //初始化值
         type: 'select', //类型
-        title: '指派给', //placeholder
-        name: ['currentUserId'], //唯一标识
+        title: '用例类型', //placeholder
+        name: ['caseType'], //唯一标识
         required: true, //必填？
-        options:
-          miss.querySelectListByProjectId && miss.querySelectListByProjectId,
+        options: bug.Demotype && bug.Demotype,
       },
-      deadDate: {
+      caseName: {
         value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['deadDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
+        type: 'input', //类型
+        title: '用例名称', //placeholder
+        name: ['caseName'], //唯一标识
+        required: true, //必填？
+        col: { span: 24 },
+      },
+      precondition: {
+        value: '', //初始化值
+        type: 'textarea', //类型
+        title: '前置条件', //placeholder
+        name: ['precondition'], //唯一标识
+        required: false, //必填？
+        col: { span: 24 },
+      },
+      stepList: {
+        value: defaultvalue, //初始化值
+        type: 'editable', //类型
+        title: '用例步骤', //placeholder
+        name: ['stepList'], //唯一标识
+        required: true, //必填？
+        col: { span: 24 },
       },
       attachmentList: {
         value: [], //初始化值
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    //setNewState(dispatch, post.posturl, post.postdata, () => { });
-    setNewState(dispatch, 'miss/ProjquerySelectList', {}, () => {});
+    let arr = ['Demotype']; //下拉框汇总
+    arr.map((item: any) => {
+      setNewState(dispatch, `bug/${item}`, {}, () => {});
+    });
   }, []);
 
   //父级组件项目变化调用
@@ -169,7 +173,7 @@ let Demos = (props: any) => {
     if (projectId) {
       setNewState(
         dispatch,
-        'miss/querySelectListByProjectId',
+        'bug/querySelectListByProjectId',
         { projectId: projectId },
         () => {},
       );
@@ -185,29 +189,32 @@ let Demos = (props: any) => {
 
   let columns = [
     {
-      title: '任务编号',
-      dataIndex: 'taskNo',
-      key: 'taskNo',
+      title: '用例编号',
+      dataIndex: 'caseNo',
+      key: 'caseNo',
       sorter: {
         multiple: 100,
       },
-      ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
+      ellipsis: true,
+      width: 120,
+      ...getColumnSearchProps('caseNo', post.postdata, handleSearch),
     },
     {
-      title: '任务名称',
-      dataIndex: 'taskName',
-      key: 'taskName',
+      title: '用例标题',
+      dataIndex: 'caseName',
+      key: 'caseName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
-      ...getColumnSearchProps('taskName', post.postdata, handleSearch),
+      ...getColumnSearchProps('caseName', post.postdata, handleSearch),
       render(text: React.ReactNode, record: any) {
         return (
           <a
             onClick={() => {
               setNewState(
                 dispatch,
-                'miss/ProjqueryById',
+                'bug/DemoqueryById',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -228,12 +235,33 @@ let Demos = (props: any) => {
       },
     },
     {
+      title: '用例类型',
+      dataIndex: 'caseTypeName',
+      key: 'caseTypeName',
+      sorter: {
+        multiple: 111,
+      },
+      width: 180,
+      ...getColumnSelectProps(
+        'caseType',
+        bug.Demotype,
+        post.postdata,
+        handleSearch,
+      ),
+      render: (text: any, record: any) => (
+        <b style={{ color: rendercolor('Buglevel', record.caseType) }}>
+          {text}
+        </b>
+      ),
+    },
+    {
       title: '创建人',
       dataIndex: 'openUserName',
       key: 'openUserName',
       sorter: {
-        multiple: 100,
+        multiple: 98,
       },
+      width: 120,
       ...getColumnSelectProps(
         'openUserId',
         model.UserqueryAll,
@@ -242,29 +270,31 @@ let Demos = (props: any) => {
       ),
     },
     {
-      title: '指派给',
-      dataIndex: 'currentUserName',
-      key: 'currentUserName',
+      title: '执行人',
+      dataIndex: 'lastExecuteUserName',
+      key: 'lastExecuteUserName',
       sorter: {
-        multiple: 100,
+        multiple: 97,
       },
+      width: 120,
       ...getColumnSelectProps(
-        'currentUserId',
-        miss.querySelectListByProjectId && miss.querySelectListByProjectId,
+        'lastExecuteUserId',
+        model.UserqueryAll,
         post.postdata,
         handleSearch,
       ),
     },
     {
-      title: '创建时间',
-      dataIndex: 'openDate',
-      key: 'openDate',
+      title: '执行时间',
+      dataIndex: 'lastExecuteTime',
+      key: 'lastExecuteTime',
       sorter: {
-        multiple: 98,
+        multiple: 113,
       },
+      width: 140,
       ...getColumnRangeminProps(
-        'openDateStart',
-        'openDateEnd',
+        'lastExecuteMinTime',
+        'lastExecuteMaxTime',
         post.postdata,
         handleSearch,
       ),
@@ -277,171 +307,65 @@ let Demos = (props: any) => {
       },
     },
     {
-      title: '截止日期',
-      dataIndex: 'deadDate',
-      key: 'deadDate',
+      title: '结果',
+      dataIndex: 'lastResultName',
+      key: 'lastResultName',
       sorter: {
-        multiple: 97,
+        multiple: 96,
       },
-      ...getColumnRangeProps(
-        'deadDateStart',
-        'deadDateEnd',
+      width: 120,
+
+      ...getColumnSelectProps(
+        'lastResult',
+        [
+          {
+            dicName: '不通过',
+            dicKey: 0,
+          },
+          {
+            dicName: '通过',
+            dicKey: 1,
+          },
+        ],
         post.postdata,
         handleSearch,
       ),
-      render(text: any) {
-        return (
-          <span
-            style={{
-              color:
-                moment()
-                  .startOf('day')
-                  .valueOf() > moment(parseInt(text)).valueOf()
-                  ? 'red'
-                  : 'green',
-            }}
-          >
-            {text && moment(parseInt(text)).format('YYYY-MM-DD')}
-          </span>
-        );
+    },
+    {
+      title: '产生bug',
+      dataIndex: 'bugCount',
+      key: 'bugCount',
+      width: 120,
+      sorter: {
+        multiple: 95,
       },
+    },
+    {
+      title: '执行次数',
+      dataIndex: 'executeTimes',
+      key: 'executeTimes',
+      sorter: {
+        multiple: 94,
+      },
+      width: 120,
+    },
+    {
+      title: '步骤数',
+      dataIndex: 'stepCount',
+      key: 'stepCount',
+      sorter: {
+        multiple: 92,
+      },
+      width: 120,
     },
     {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 200,
-      render: (text: any, record: any) => renderAction(record),
+      width: 180,
+      render: (text: any, record: any) => renderAction(record, false),
     },
   ];
-
-  function renderAction(record: any) {
-    return (
-      <div>
-        <IconButton
-          disabled={record.status !== 1}
-          onClick={() => {
-            cf({
-              currentUserId: {
-                value: record.currentUserId, //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['currentUserId'], //唯一标识
-                required: true, //必填？
-                col: { span: 24 },
-                options:
-                  miss.querySelectListByProjectId &&
-                  miss.querySelectListByProjectId,
-              },
-            });
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '激活任务:' + record.taskName + ',并选择指派人',
-                key: 'jihuo',
-                curitem: record,
-                fullScreen: false,
-              };
-            });
-          }}
-        >
-          <PlayCircleOutlineIcon
-            color={record.status !== 1 ? 'action' : 'primary'}
-          />
-        </IconButton>
-
-        <Divider type="vertical"></Divider>
-        <IconButton
-          disabled={record.status === 4 || record.status === 5}
-          onClick={() => {
-            setNewState(
-              dispatch,
-              'miss/querySelectListByProjectId',
-              { projectId: record.projectId },
-              (res: any) => {
-                cf({
-                  taskName: {
-                    ...fields.taskName,
-                    value: record.taskName, //初始化值
-                  },
-                  projectId: {
-                    ...fields.projectId,
-                    value: record.projectId, //初始化值
-                  },
-                  taskDescription: {
-                    ...fields.taskDescription,
-                    value: record.taskDescription, //初始化值
-                  },
-                  requireDesctription: {
-                    ...fields.requireDesctription,
-                    value: record.requireDesctription, //初始化值
-                  },
-                  currentUserId: {
-                    ...fields.currentUserId,
-                    value: record.currentUserId, //初始化值
-                    options: res.data.dataList,
-                  },
-                  deadDate: {
-                    ...fields.deadDate,
-                    value: record.deadDate
-                      ? moment(parseInt(record.deadDate))
-                      : undefined, //初始化值
-                  },
-                  attachmentList: {
-                    ...fields.attachmentList,
-                    value: record.attachmentList
-                      ? mockfile(record.attachmentList)
-                      : [], //初始化值
-                  },
-                });
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: true,
-                    title: '修改' + record.taskName,
-                    key: 'edit',
-                    curitem: record,
-                    fullScreen: false,
-                  };
-                });
-              },
-            );
-          }}
-        >
-          <EditIcon
-            color={
-              record.status === 4 || record.status === 5 ? 'action' : 'primary'
-            }
-          />
-        </IconButton>
-        <Divider type="vertical"></Divider>
-
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认删除' + record.taskName + '？'}
-          onConfirm={() => {
-            setNewState(
-              dispatch,
-              'miss/MisdeleteById',
-              { id: record.id },
-              () => {
-                message.success('删除' + record.taskName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
-              },
-            );
-          }}
-        >
-          <IconButton disabled={record.status !== 1} aria-label="delete">
-            <DeleteIcon color={record.status !== 1 ? 'action' : 'error'} />
-          </IconButton>
-        </Popconfirm>
-      </div>
-    );
-  }
 
   function handleSearch(value: any, dataIndex: any, dataIndexs: any) {
     if (dataIndexs) {
@@ -495,24 +419,157 @@ let Demos = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    if (post.postdata.projectId) {
+      setNewState(dispatch, post.posturl, post.postdata, () => {});
+    }
   }, [post]);
 
   useMemo(() => {
     cf(defaultfields);
-  }, [miss]);
+  }, [bug]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
   };
+
+  function renderAction(record: any, shown: boolean) {
+    return (
+      <div>
+        <Tooltip title="执行记录">
+          <IconButton
+            onClick={() => {
+              setNewState(
+                dispatch,
+                'bug/DemoqueryListByCaseId',
+                { caseId: record.id },
+                () => {
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: true,
+                      title: '执行记录',
+                      key: 'records',
+                      curitem: record,
+                      fullScreen: false,
+                    };
+                  });
+                },
+              ); //DemoList
+            }}
+          >
+            <ListAltIcon color={'action'} />
+          </IconButton>
+        </Tooltip>
+
+        <Divider type="vertical"></Divider>
+
+        <Tooltip title="执行">
+          <IconButton
+            onClick={() => {
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: true,
+                  title: '执行用例',
+                  key: 'action',
+                  curitem: record,
+                  fullScreen: false,
+                };
+              });
+              ctree(record.stepTreeList);
+            }}
+          >
+            <PlayCircleOutlineIcon color={'primary'} />
+          </IconButton>
+        </Tooltip>
+
+        <Divider type="vertical"></Divider>
+        <Tooltip title="编辑">
+          <IconButton
+            onClick={() => {
+              cf({
+                projectId: {
+                  ...fields.projectId,
+                  value: record.projectId, //初始化值
+                },
+                caseType: {
+                  ...fields.caseType,
+                  value: record.caseType, //初始化值
+                },
+                caseName: {
+                  ...fields.caseName,
+                  value: record.caseName, //初始化值
+                },
+                precondition: {
+                  ...fields.precondition,
+                  value: record.precondition, //初始化值
+                },
+                stepList: {
+                  ...fields.stepList,
+                  value: record.stepTreeList, //初始化值
+                },
+                attachmentList: {
+                  ...fields.attachmentList,
+                  value: record.attachmentList
+                    ? mockfile(record.attachmentList)
+                    : [], //初始化值
+                },
+              });
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: true,
+                  title: '修改' + record.caseName,
+                  key: 'edit',
+                  curitem: record,
+                  fullScreen: false,
+                };
+              });
+            }}
+          >
+            <EditIcon color={'primary'} />
+          </IconButton>
+        </Tooltip>
+        <Divider type="vertical"></Divider>
+
+        <Tooltip title="转Bug">
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              setNewState(
+                dispatch,
+                'bug/DemoqueryFailListByCaseId',
+                { caseId: record.id },
+                () => {
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: true,
+                      title: '转Bug',
+                      key: 'tobug',
+                      curitem: record,
+                      fullScreen: false,
+                    };
+                  });
+                },
+              ); //DemoList
+            }}
+          >
+            <BugReportIcon color={'error'} />
+          </IconButton>
+        </Tooltip>
+      </div>
+    );
+  }
 
   return (
     <Container maxWidth="xl">
@@ -536,127 +593,258 @@ let Demos = (props: any) => {
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Projectdetail
-            showProduct={() => {
+          <Demodetail
+            showOther={() => {
               setNewState(
                 dispatch,
-                'miss/ProdqueryInfo',
-                { id: miss.ProjqueryById.data.data.projectId },
+                'bug/ProjqueryById',
+                { id: bug.DemoqueryById.data.data.projectId },
                 (res: any) => {
                   Modal.info({
+                    style: { top: 20 },
                     zIndex: 999999,
                     width: 800,
                     maskClosable: true,
-                    title: miss.ProjqueryById.data.data.productName,
-                    content: <Productdetail maindata={res.data.data} />,
+                    title: bug.DemoqueryById.data.data.projectName,
+                    content: (
+                      <Projectdetail
+                        showProduct={() => {
+                          setNewState(
+                            dispatch,
+                            'bug/ProdqueryInfo',
+                            { id: res.data.data.productId },
+                            (result: any) => {
+                              Modal.info({
+                                style: { top: 20 },
+                                zIndex: 999999,
+                                width: 800,
+                                maskClosable: true,
+                                title: res.data.data.productName,
+                                content: (
+                                  <Productdetail maindata={result.data.data} />
+                                ),
+                                okText: '晓得了',
+                              });
+                            },
+                          );
+                        }}
+                        maindata={res.data.data}
+                      />
+                    ),
                     okText: '晓得了',
                   });
                 },
               );
             }}
-            renderAction={() => renderAction(iftype.curitem)}
-            maindata={miss.ProjqueryById.data.data}
-          ></Projectdetail>
+            renderAction={() => renderAction(iftype.curitem, true)}
+            maindata={bug.DemoqueryById.data.data}
+          ></Demodetail>
+        ) : iftype.key == 'records' ? (
+          <DemoList
+            dataSource={bug.DemoqueryListByCaseId.data.dataList}
+          ></DemoList>
+        ) : iftype.key == 'action' && iftype.visible ? (
+          <DemoAction
+            dataSource={tree}
+            id={iftype.curitem.id}
+            onChange={(value: any) => {
+              ctree(value);
+            }}
+            cancelFn={() => {
+              message.success('执行成功！');
+              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: false,
+                  fullScreen: false,
+                };
+              });
+            }}
+          ></DemoAction>
+        ) : iftype.key == 'tobug' ? (
+          <DemoBug
+            dataSource={bug.DemoqueryFailListByCaseId.data.dataList}
+            cancelFn={async (data: any) => {
+              await ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: false,
+                  fullScreen: false,
+                };
+              });
+              history.push({
+                pathname: '/index/test/bugs',
+                query: {
+                  data,
+                  id: iftype.curitem.id,
+                },
+              });
+            }}
+          ></DemoBug>
         ) : (
-          <InitForm
-            fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
-              if (iftype.key == 'jihuo') {
-                setNewState(
-                  dispatch,
-                  'miss/Misactivation',
-                  {
-                    id: iftype.curitem.id,
-                    currentUserId: newfields.currentUserId,
-                  },
-                  () => {
+          iftype.visible && (
+            <InitForm
+              fields={fields}
+              submitData={() => {
+                let newfields = JSON.parse(JSON.stringify(fields));
+                for (let i in newfields) {
+                  newfields[i] = newfields[i].value;
+                }
+                //文件处理
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
+                newfields.attachmentList = newlist;
+
+                if (iftype.key == 'active') {
+                  setNewState(
+                    dispatch,
+                    'bug/Bugactivate',
+                    {
+                      ...newfields,
+                      id: iftype.curitem.id,
+                    },
+                    () => {
+                      ciftype(() => {
+                        return {
+                          ...iftype,
+                          visible: false,
+                        };
+                      });
+                      setNewState(dispatch, post.posturl, post.postdata, () => {
+                        message.success(
+                          '已激活' + iftype.curitem.bugName + '！',
+                        );
+                      });
+                    },
+                  );
+                  return;
+                }
+
+                if (iftype.key == 'deal') {
+                  setNewState(
+                    dispatch,
+                    'bug/Bugsolve',
+                    {
+                      ...newfields,
+                      id: iftype.curitem.id,
+                    },
+                    () => {
+                      ciftype(() => {
+                        return {
+                          ...iftype,
+                          visible: false,
+                        };
+                      });
+                      setNewState(dispatch, post.posturl, post.postdata, () => {
+                        message.success(
+                          '已处理' + iftype.curitem.bugName + '！',
+                        );
+                      });
+                    },
+                  );
+                  return;
+                }
+
+                if (iftype.key == 'checks') {
+                  setNewState(
+                    dispatch,
+                    'bug/Bugconfirm',
+                    {
+                      ...newfields,
+                      id: iftype.curitem.id,
+                    },
+                    () => {
+                      ciftype(() => {
+                        return {
+                          ...iftype,
+                          visible: false,
+                        };
+                      });
+                      setNewState(dispatch, post.posturl, post.postdata, () => {
+                        message.success(
+                          '已验收' + iftype.curitem.bugName + '！',
+                        );
+                      });
+                    },
+                  );
+
+                  return;
+                }
+
+                //新增修改
+                if (iftype.key == 'edit') {
+                  newfields.id = iftype.curitem.id;
+                }
+
+                newfields.stepList = newfields.stepList.map((item: any) => {
+                  if (item.id.indexOf('tts') != -1) {
+                    item.id = '';
+                    item.parentId = '';
+                  }
+                  item.children = item.children.map((it: any) => {
+                    if (it.id.indexOf('tts') != -1) {
+                      it.id = '';
+                      it.parentId = '';
+                    }
+                    return {
+                      id: it.id,
+                      parentId: it.parentId,
+                      step: it.step, //步骤，必填
+                      expection: it.expection,
+                      children: it.children,
+                    };
+                  });
+                  return {
+                    id: item.id,
+                    parentId: item.parentId,
+                    step: item.step, //步骤，必填
+                    expection: item.expection,
+                    children: item.children,
+                  };
+                });
+
+                setNewState(dispatch, 'bug/Demosave', newfields, () => {
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    message.success('操作成功');
                     ciftype(() => {
                       return {
                         ...iftype,
                         visible: false,
                       };
                     });
-                    setNewState(dispatch, post.posturl, post.postdata, () => {
-                      message.success(
-                        '激活' + iftype.curitem.taskName + '成功！',
-                      );
-                    });
-                  },
-                );
-                return;
-              }
-
-              if (iftype.key == 'edit') {
-                newfields.id = iftype.curitem.id;
-              }
-              newfields.deadDate = moment(newfields.deadDate).valueOf();
-
-              let newlist = newfields.attachmentList.fileList
-                ? newfields.attachmentList.fileList.map(
-                    (items: any, i: number) => {
-                      return {
-                        attachmentName: items.response
-                          ? items.response.data.dataList[0].name
-                          : items.name,
-                        attachUrl: items.response
-                          ? items.response.data.dataList[0].url
-                          : items.url,
-                      };
-                    },
-                  )
-                : [];
-
-              newfields.attachmentList = newlist;
-              setNewState(dispatch, 'miss/Missave', newfields, () => {
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
-                  ciftype(() => {
-                    return {
-                      ...iftype,
-                      visible: false,
-                    };
                   });
                 });
-              });
-            }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
-              }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value;
-              let key = name ? name[0] : '';
-              if (key == 'projectId') {
-                setNewState(
-                  dispatch,
-                  'miss/querySelectListByProjectId',
-                  { projectId: value },
-                  (res: any) => {
-                    cf(() => {
-                      fields[key].value = value;
-                      fields.currentUserId.value = '';
-                      fields.currentUserId.options = res.data.dataList;
-                      return {
-                        ...fields,
-                      };
-                    });
-                  },
-                );
-              } else {
+              }}
+              onChange={(newFields: any) => {
+                if (!newFields) {
+                  return;
+                }
+                let name = newFields ? newFields.name : '',
+                  value = newFields.value ? newFields.value : '';
+                let key = name ? name[0] : '';
                 cf(() => {
                   fields[key].value = value;
                   return {
                     ...fields,
                   };
                 });
-              }
-            }}
-            submitting={props.loading.effects['model/Missave']}
-          ></InitForm>
+              }}
+              submitting={props.loading.effects['model/Demosave']}
+            ></InitForm>
+          )
         )}
       </Dia>
       <Card
@@ -664,39 +852,56 @@ let Demos = (props: any) => {
         extra={
           <div>
             <IconButton
-              style={{ padding: 8 }}
+              style={{ padding: 8, borderRadius: 4 }}
               onClick={() => {
                 ciftype(() => {
                   return {
                     ...iftype,
                     visible: true,
-                    title: '新增任务',
+                    title: '新增用例',
                     key: 'add',
                   };
                 });
                 cf(defaultfields);
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22, color: '#000' }} />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
             </IconButton>
           </div>
         }
       >
         <AutoTable
-          data={miss.MisquerytaskRelease}
+          data={bug.DemoqueryList}
           columns={columns}
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>
   );
 };
 
-export default connect(({ miss, model, loading }: any) => ({
-  miss,
+export default connect(({ bug, model, loading }: any) => ({
+  bug,
   model,
   loading,
 }))(Demos);

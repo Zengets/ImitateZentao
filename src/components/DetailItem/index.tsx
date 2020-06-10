@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Tree, Card, Empty } from 'antd';
 
 let DetailItem = (props: any) => {
-  let { title, value, width, titlestyle, contentstyle, hdClick } = props;
+  let { title, value, width, titlestyle, contentstyle, hdClick, item } = props;
+  let items = item ? item : {};
+
   return (
     <div
       style={{
@@ -12,12 +14,23 @@ let DetailItem = (props: any) => {
         alignItems: 'center',
       }}
     >
-      <div style={{ ...titlestyle, width: width ? width : 110, fontSize: 16 }}>
+      <div
+        style={{
+          ...titlestyle,
+          width: width ? width : 100,
+          minWidth: width,
+          fontSize: 13,
+        }}
+      >
         {title} :
       </div>
-      <div style={{ ...contentstyle, flex: 1 }} onClick={hdClick}>
-        {value}
-      </div>
+      {items.type && items.type == 'innerhtml' ? (
+        <div dangerouslySetInnerHTML={{ __html: item.value }} />
+      ) : (
+        <div style={{ ...contentstyle, flex: 1 }} onClick={hdClick}>
+          {value}
+        </div>
+      )}
     </div>
   );
 };

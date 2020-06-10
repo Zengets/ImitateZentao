@@ -56,7 +56,7 @@ let Projectdetail = (props: any) => {
     let listdata: any,
       dataSource: any[] = [],
       newcolumns = JSON.parse(JSON.stringify(columns)).filter((it: any) => {
-        return it.dataIndex !== 'action' && it.dataIndex !== 'openUserName';
+        return it.dataIndex != 'action' && it.dataIndex != 'openUserName';
       }), //过滤不需要的
       addarr = [
         {
@@ -195,33 +195,34 @@ let Projectdetail = (props: any) => {
         <List
           dataSource={info1}
           bordered
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                hdClick={() => {
-                  if (item.dataIndex == 'productName') {
-                    showProduct();
+          renderItem={(item: any) =>
+            item.value && (
+              <List.Item>
+                <DetailItem
+                  key={item.dataIndex}
+                  hdClick={() => {
+                    if (item.dataIndex == 'productName') {
+                      showProduct();
+                    }
+                  }}
+                  title={item.title}
+                  value={
+                    item.dataIndex == 'attachmentList'
+                      ? renderList(item.value)
+                      : item.value
                   }
-                }}
-                width={138}
-                title={item.title}
-                value={
-                  item.dataIndex == 'attachmentList'
-                    ? renderList(item.value)
-                    : item.value
-                }
-                contentstyle={{
-                  color:
-                    item.dataIndex == 'productName'
-                      ? '#1183fb'
-                      : rendercolor('Projuctstatus', item.value),
-                  cursor:
-                    item.dataIndex == 'productName' ? 'pointer' : 'default',
-                }}
-              />
-            </List.Item>
-          )}
+                  contentstyle={{
+                    color:
+                      item.dataIndex == 'productName'
+                        ? '#1183fb'
+                        : rendercolor('Projuctstatus', item.value),
+                    cursor:
+                      item.dataIndex == 'productName' ? 'pointer' : 'default',
+                  }}
+                />
+              </List.Item>
+            )
+          }
         />
         <List
           style={{ marginTop: 24 }}
@@ -242,17 +243,18 @@ let Projectdetail = (props: any) => {
           }
           bordered
           dataSource={info3}
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                width={138}
-                title={item.title}
-                value={item.value}
-                contentstyle={{ color: '#666' }}
-              />
-            </List.Item>
-          )}
+          renderItem={(item: any) =>
+            item.value && (
+              <List.Item>
+                <DetailItem
+                  key={item.dataIndex}
+                  title={item.title}
+                  value={item.value}
+                  contentstyle={{ color: '#666' }}
+                />
+              </List.Item>
+            )
+          }
         />
       </div>
     );

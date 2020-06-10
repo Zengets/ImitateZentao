@@ -20,6 +20,7 @@ import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
 import Editor from '@/components/Editor';
 import Button from '@material-ui/core/Button';
 import { LoadingOutlined } from '@ant-design/icons';
+import EditTable from '../EditTable';
 
 const { TreeNode } = TreeSelect;
 let { Option } = Select;
@@ -219,7 +220,7 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
                   <InputNumber
                     style={{ width: '100%' }}
                     disabled={item.disabled}
-                    min={item.min}
+                    min={item.min ? item.min : 0}
                     max={item.max}
                   />
                 </Form.Item>
@@ -240,8 +241,8 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
                 fileList: any;
               }) {
                 const { status } = info.file;
-                if (status === 'done') {
-                } else if (status === 'error') {
+                if (status == 'done') {
+                } else if (status == 'error') {
                   message.error(`${info.file.name} 上传失败`);
                 }
               },
@@ -307,6 +308,21 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
                   ]}
                 >
                   <Editor value={item.value}></Editor>
+                </Form.Item>
+              </Col>
+            ) : null;
+          } else if (item.type == 'editable') {
+            return !item.hides ? (
+              <Col key={i} {...getCol(item.col)}>
+                <Form.Item
+                  style={{}}
+                  label={item.title}
+                  name={item.name[0]}
+                  rules={[
+                    { required: item.required, message: `请输入${item.title}` },
+                  ]}
+                >
+                  <EditTable></EditTable>
                 </Form.Item>
               </Col>
             ) : null;

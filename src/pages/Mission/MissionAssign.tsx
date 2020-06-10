@@ -3,18 +3,7 @@ import styles from './index.less';
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import {
-  Input,
-  message,
-  List,
-  Card,
-  Popconfirm,
-  Divider,
-  Tooltip,
-  Row,
-  Col,
-  Modal,
-} from 'antd';
+import { Input, message, List, Card, Tooltip, Row, Col, Modal } from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
@@ -30,7 +19,8 @@ import Dia from '@/components/Dia/index';
 import mockfile from '@/utils/mockfile';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
-import { ClusterOutlined } from '@ant-design/icons';
+import Missiondetail from '@/components/Missiondetail';
+import GroupIcon from '@material-ui/icons/Group';
 
 let MissionAssign = (props: any) => {
   let { miss, dispatch, loading, model } = props,
@@ -145,7 +135,7 @@ let MissionAssign = (props: any) => {
         type: 'textarea',
         title: '技术描述',
         name: ['techDesctription'],
-        required: true,
+        required: false,
         rows: 6,
         col: { span: 24 },
       },
@@ -154,16 +144,11 @@ let MissionAssign = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
-
-  useEffect(() => {
-    //setNewState(dispatch, post.posturl, post.postdata, () => { });
-    setNewState(dispatch, 'miss/ProjquerySelectList', {}, () => {});
-  }, []);
 
   //父级组件项目变化调用
   useMemo(() => {
@@ -193,12 +178,15 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 100,
       },
+      width: 120,
+      ellipsis: true,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
+      ellipsis: true,
       sorter: {
         multiple: 99,
       },
@@ -209,7 +197,7 @@ let MissionAssign = (props: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'miss/ProjqueryById',
+                'miss/MisquerytaskDetails',
                 { id: record.id },
                 () => {
                   ciftype({
@@ -236,6 +224,7 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 101,
       },
+      width: 120,
       ...getColumnSelectProps(
         'openUserId',
         model.UserqueryAll,
@@ -250,6 +239,7 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 102,
       },
+      width: 120,
       ...getColumnSelectProps(
         'currentUserId',
         miss.querySelectListByProjectId && miss.querySelectListByProjectId,
@@ -264,6 +254,7 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 98,
       },
+      width: 120,
       ...getColumnRangeminProps(
         'openDateStart',
         'openDateEnd',
@@ -285,6 +276,7 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 97,
       },
+      width: 120,
       ...getColumnRangeminProps(
         'activateDateStart',
         'activateDateEnd',
@@ -306,6 +298,7 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 96,
       },
+      width: 120,
       ...getColumnRangeProps(
         'deadDateStart',
         'deadDateEnd',
@@ -333,6 +326,7 @@ let MissionAssign = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
+      width: 60,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -341,7 +335,7 @@ let MissionAssign = (props: any) => {
     return (
       <div>
         <IconButton
-          disabled={record.status === 4 || record.status === 5}
+          disabled={record.status != 2}
           onClick={() => {
             setNewState(
               dispatch,
@@ -394,7 +388,12 @@ let MissionAssign = (props: any) => {
             );
           }}
         >
-          <ClusterOutlined style={{ color: '#1183fb' }} />
+          <Tooltip title="分配">
+            <GroupIcon
+              color={record.status != 2 ? 'action' : 'primary'}
+              style={{ fontSize: 26 }}
+            />
+          </Tooltip>
         </IconButton>
       </div>
     );
@@ -459,13 +458,14 @@ let MissionAssign = (props: any) => {
     cf(defaultfields);
   }, [miss]);
 
-  let pageChange = (page: any) => {
+  let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
         ...post,
         postdata: {
           ...post.postdata,
           pageIndex: page,
+          pageSize,
         },
       };
     });
@@ -490,27 +490,52 @@ let MissionAssign = (props: any) => {
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Projectdetail
-            showProduct={() => {
+          <Missiondetail
+            showOther={() => {
               setNewState(
                 dispatch,
-                'miss/ProdqueryInfo',
-                { id: miss.ProjqueryById.data.data.projectId },
+                'miss/ProjqueryById',
+                { id: miss.MisquerytaskDetails.data.data.info.projectId },
                 (res: any) => {
                   Modal.info({
+                    style: { top: 20 },
                     zIndex: 999999,
                     width: 800,
                     maskClosable: true,
-                    title: miss.ProjqueryById.data.data.productName,
-                    content: <Productdetail maindata={res.data.data} />,
+                    title: miss.MisquerytaskDetails.data.data.info.projectName,
+                    content: (
+                      <Projectdetail
+                        showProduct={() => {
+                          setNewState(
+                            dispatch,
+                            'miss/ProdqueryInfo',
+                            { id: res.data.data.productId },
+                            (result: any) => {
+                              Modal.info({
+                                style: { top: 20 },
+                                zIndex: 999999,
+                                width: 800,
+                                maskClosable: true,
+                                title: res.data.data.productName,
+                                content: (
+                                  <Productdetail maindata={result.data.data} />
+                                ),
+                                okText: '晓得了',
+                              });
+                            },
+                          );
+                        }}
+                        maindata={res.data.data}
+                      />
+                    ),
                     okText: '晓得了',
                   });
                 },
               );
             }}
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={miss.ProjqueryById.data.data}
-          ></Projectdetail>
+            maindata={miss.MisquerytaskDetails.data.data}
+          ></Missiondetail>
         ) : (
           <InitForm
             fields={fields}
@@ -522,16 +547,6 @@ let MissionAssign = (props: any) => {
               if (iftype.key == 'edit') {
                 newfields.id = iftype.curitem.id;
               }
-              newfields.devStageStartDate = newfields.devStageStartDate
-                ? moment(newfields.devStageStartDate)
-                    .startOf('day')
-                    .valueOf()
-                : '';
-              newfields.devStageEndDate = newfields.devStageEndDate
-                ? moment(newfields.devStageEndDate)
-                    .startOf('day')
-                    .valueOf()
-                : '';
 
               let newlist = newfields.attachmentList.fileList
                 ? newfields.attachmentList.fileList.map(
@@ -548,10 +563,20 @@ let MissionAssign = (props: any) => {
                   )
                 : [];
               newfields.attachmentList = newlist;
+              newfields.devStageStartDate = newfields.devStageStartDate
+                ? moment(newfields.devStageStartDate)
+                    .startOf('day')
+                    .valueOf()
+                : '';
+              newfields.devStageEndDate = newfields.devStageEndDate
+                ? moment(newfields.devStageEndDate)
+                    .startOf('day')
+                    .valueOf()
+                : '';
 
               setNewState(dispatch, 'miss/Misassign', newfields, () => {
                 setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
+                  message.success('分配成功');
                   ciftype(() => {
                     return {
                       ...iftype,
@@ -586,7 +611,7 @@ let MissionAssign = (props: any) => {
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
           onChange={handleTableChange}
-          scroll={'false'}
+          scroll={{ y: '65vh' }}
         />
       </Card>
     </Container>

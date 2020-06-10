@@ -4,6 +4,7 @@ import {
   ProjquerySelectList,
   ProjqueryByProjectId,
   UserqueryAll,
+  queryMenu,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -42,6 +43,7 @@ export default {
         },
       ],
     },
+    queryMenu: [],
   },
   effects: {
     *UserqueryAll({ payload }: any, { call, put }: any) {
@@ -71,7 +73,9 @@ export default {
       const responese = yield call(ProjquerySelectList, payload);
       yield put({
         type: 'updateState',
-        payload: { ProjquerySelectList: responese },
+        payload: {
+          ProjquerySelectList: responese.data && responese.data.dataList,
+        },
       });
       return responese;
     },
@@ -91,12 +95,20 @@ export default {
       });
       return responese;
     },
+    *queryMenu({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryMenu, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryMenu: responese },
+      });
+      return responese;
+    },
   },
 
   reducers: {
     updateState(state: any, { payload }: any) {
       for (let i in payload) {
-        if (payload[i].code !== '0000' && payload[i].code) {
+        if (payload[i].code != '0000' && payload[i].code) {
           message.destroy();
           message.warn(payload[i].msg);
         }

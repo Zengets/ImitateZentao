@@ -33,15 +33,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Header(props: any) {
+  let { model } = props,
+    Menudata = localStorage.getItem('Menu');
+  Menudata = JSON.parse(Menudata ? Menudata : '[]');
+
   let curindex = 0,
     curindexs = 0,
-    mainroutes = props.routes.filter((item: any) => {
+    mainroutes = Menudata.filter((item: any) => {
       return item.name;
     }),
     childroute: any[] = [];
 
   mainroutes.map((item: any, i: any) => {
-    if (history.location.pathname.indexOf(item.path) !== -1) {
+    if (history.location.pathname.indexOf(item.path) != -1) {
       curindex = i;
       childroute =
         item.routes &&
@@ -78,8 +82,8 @@ function Header(props: any) {
     //下拉框逻辑
     if (
       location.pathname == '/index/project/team' ||
-      location.pathname.indexOf('mission') !== -1 ||
-      location.pathname.indexOf('test') !== -1
+      location.pathname.indexOf('mission') != -1 ||
+      location.pathname.indexOf('test') != -1
     ) {
       setNewState(
         props.dispatch,
@@ -110,7 +114,9 @@ function Header(props: any) {
       return (
         <div>
           <Divider type="vertical"></Divider>
-          <span style={{ color: '#1183fb', opacity: 0.6 }}>项目 </span>
+          <span style={{ color: '#1183fb', opacity: 0.6, paddingRight: 6 }}>
+            项目{' '}
+          </span>
           <Select
             showSearch
             filterOption={(input: any, option: any) =>

@@ -24,7 +24,7 @@ const getParentKey = (key: any, tree: string | any[]) => {
   for (let i = 0; i < tree.length; i++) {
     const node = tree[i];
     if (node.children) {
-      if (node.children.some(item => item.key === key)) {
+      if (node.children.some(item => item.key == key)) {
         parentKey = node.key;
       } else if (getParentKey(key, node.children)) {
         parentKey = getParentKey(key, node.children);
@@ -75,7 +75,7 @@ let TreeDom = (props: any) => {
       })
       .filter(
         (item: any, i: any, self: string | any[]) =>
-          item && self.indexOf(item) === i,
+          item && self.indexOf(item) == i,
       );
     setState(() => {
       return {

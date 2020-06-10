@@ -54,7 +54,7 @@ let Productdetail = (props: any) => {
     let listdata: any,
       dataSource: any[] = [],
       newcolumns = JSON.parse(JSON.stringify(columns)).filter((it: any) => {
-        return it.dataIndex !== 'action' && it.dataIndex !== 'openUserName';
+        return it.dataIndex != 'action' && it.dataIndex != 'openUserName';
       }), //过滤不需要的
       addarr = [
         {
@@ -165,22 +165,24 @@ let Productdetail = (props: any) => {
         <List
           dataSource={info1}
           bordered
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                title={item.title}
-                value={
-                  item.dataIndex == 'attachmentList'
-                    ? renderList(item.value)
-                    : item.value
-                }
-                contentstyle={{
-                  color: rendercolor('Productstatus', item.value),
-                }}
-              />
-            </List.Item>
-          )}
+          renderItem={(item: any) =>
+            item.value && (
+              <List.Item>
+                <DetailItem
+                  key={item.dataIndex}
+                  title={item.title}
+                  value={
+                    item.dataIndex == 'attachmentList'
+                      ? renderList(item.value)
+                      : item.value
+                  }
+                  contentstyle={{
+                    color: rendercolor('Productstatus', item.value),
+                  }}
+                />
+              </List.Item>
+            )
+          }
         />
         <List
           style={{ marginTop: 24 }}
@@ -201,16 +203,18 @@ let Productdetail = (props: any) => {
           }
           bordered
           dataSource={info2}
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                title={item.title}
-                value={item.value}
-                contentstyle={{ color: '#666' }}
-              />
-            </List.Item>
-          )}
+          renderItem={(item: any) =>
+            item.value && (
+              <List.Item>
+                <DetailItem
+                  key={item.dataIndex}
+                  title={item.title}
+                  value={item.value}
+                  contentstyle={{ color: '#666' }}
+                />
+              </List.Item>
+            )
+          }
         />
       </div>
     );
