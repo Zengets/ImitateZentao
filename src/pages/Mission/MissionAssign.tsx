@@ -94,7 +94,7 @@ let MissionAssign = (props: any) => {
       devStagePlanHours: {
         value: '', //初始化值
         type: 'inputnumber',
-        title: '预计时长',
+        title: '预计时长(开发)',
         name: ['devStagePlanHours'],
         required: true,
       },
@@ -233,7 +233,7 @@ let MissionAssign = (props: any) => {
       ),
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
@@ -313,8 +313,15 @@ let MissionAssign = (props: any) => {
                 moment()
                   .startOf('day')
                   .valueOf() > moment(parseInt(text)).valueOf()
-                  ? 'red'
-                  : 'green',
+                  ? '#fff'
+                  : '#666',
+              backgroundColor:
+                moment()
+                  .startOf('day')
+                  .valueOf() > moment(parseInt(text)).valueOf()
+                  ? '#e84e0f'
+                  : 'transparent',
+              padding: '0 8px',
             }}
           >
             {text && moment(parseInt(text)).format('YYYY-MM-DD')}
@@ -451,12 +458,10 @@ let MissionAssign = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, () => {
+      cf(defaultfields);
+    });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [miss]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

@@ -52,7 +52,7 @@ let Bugdetail = (props: any) => {
       format: 'YYYY-MM-DD HH:mm',
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
     },
@@ -170,9 +170,9 @@ let Bugdetail = (props: any) => {
 
     if (listdata) {
       dataSource = columns.map((item: any) => {
-        let date =
-          listdata[item.dataIndex] &&
-          moment(parseInt(listdata[item.dataIndex])).format(item.format);
+        let date = listdata[item.dataIndex]
+          ? moment(parseInt(listdata[item.dataIndex])).format(item.format)
+          : '-';
         return {
           title: item.title,
           dataIndex: item.dataIndex,

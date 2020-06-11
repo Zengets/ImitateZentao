@@ -480,10 +480,6 @@ let SetUser = (props: any) => {
     setNewState(dispatch, post.posturl, post.postdata, () => {});
   }, [post]);
 
-  useMemo(() => {
-    cf(defaultfields);
-  }, [set]);
-
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {

@@ -438,7 +438,9 @@ let Allpro = (props: any) => {
               { id: record.id },
               () => {
                 message.success('删除' + record.projectName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {});
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  localStorage.removeItem('val');
+                });
               },
             );
           }}
@@ -504,12 +506,10 @@ let Allpro = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, () => {
+      cf(defaultfields);
+    });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [proj]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

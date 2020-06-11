@@ -418,7 +418,7 @@ let Bugs = (props: any) => {
       },
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
@@ -658,43 +658,43 @@ let Bugs = (props: any) => {
               (res: any) => {
                 cf({
                   bugName: {
-                    ...fields.bugName,
+                    ...defaultfields.bugName,
                     value: record.bugName, //初始化值
                   },
                   projectId: {
-                    ...fields.projectId,
+                    ...defaultfields.projectId,
                     value: record.projectId, //初始化值
                     hides: true,
                   },
                   solveUserId: {
-                    ...fields.solveUserId,
+                    ...defaultfields.solveUserId,
                     value: record.solveUserId, //初始化值
                     options: res.data.dataList,
                   },
                   bugType: {
-                    ...fields.bugType,
+                    ...defaultfields.bugType,
                     value: record.bugType, //初始化值
                   },
                   severity: {
-                    ...fields.severity,
+                    ...defaultfields.severity,
                     value: record.severity, //初始化值
                   },
                   priority: {
-                    ...fields.priority,
+                    ...defaultfields.priority,
                     value: record.priority, //初始化值
                   },
                   steps: {
-                    ...fields.steps,
+                    ...defaultfields.steps,
                     value: record.steps, //初始化值
                   },
                   endDate: {
-                    ...fields.endDate,
+                    ...defaultfields.endDate,
                     value: record.endDate
                       ? moment(parseInt(record.endDate))
                       : undefined, //初始化值
                   },
                   attachmentList: {
-                    ...fields.attachmentList,
+                    ...defaultfields.attachmentList,
                     value: record.attachmentList
                       ? mockfile(record.attachmentList)
                       : [], //初始化值
@@ -810,10 +810,6 @@ let Bugs = (props: any) => {
     }
   }, [post]);
 
-  useMemo(() => {
-    cf(defaultfields);
-  }, [bug]);
-
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {
       return {
@@ -835,9 +831,6 @@ let Bugs = (props: any) => {
         fullScreen: false,
       };
     });
-    setTimeout(() => {
-      cf(defaultfields);
-    }, 200);
   }
   return (
     <Container maxWidth="xl">

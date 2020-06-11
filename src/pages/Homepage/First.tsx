@@ -4,7 +4,7 @@ import { connect, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import { message, Modal, Card, Row, Col, List, Divider } from 'antd';
+import { message, Modal, Card, Row, Col, List, Divider, Empty } from 'antd';
 import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
@@ -36,7 +36,11 @@ let First = ({ dispatch, home, model, proj }: any) => {
     setNewState(dispatch, 'model/ProjquerySelectList', {}, (res: any) => {
       cdata(res.data.dataList);
       if (!projectId) {
-        setpro(res.data.dataList[0].dicKey);
+        setpro(
+          res.data.dataList && res.data.dataList.length > 0
+            ? res.data.dataList[0].dicKey
+            : '',
+        );
       } else {
         setpro(projectId);
       }
@@ -153,7 +157,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
               borderRight: '#f0f0f0 solid 1px',
             }}
           >
-            {dataList &&
+            {dataList && dataList.length > 0 ? (
               dataList.map((item: any, i: number) => {
                 return (
                   <div
@@ -195,163 +199,187 @@ let First = ({ dispatch, home, model, proj }: any) => {
                     </div>
                   </div>
                 );
-              })}
+              })
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                imageStyle={{
+                  height: 60,
+                }}
+                description="暂无数据"
+                style={{ margin: '36px auto', marginTop: 66 }}
+              ></Empty>
+            )}
           </div>
         </Col>
-        <Col {...cols} style={{ display: 'flex' }}>
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <p
+        {dataList && dataList.length > 0 ? (
+          <Col {...cols} style={{ display: 'flex' }}>
+            <div
               style={{
-                alignSelf: 'flex-start',
-                paddingLeft: 20,
-                fontSize: 14,
-                color: '#000',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              项目完成率
-            </p>
-            <ReactEcharts
+              <p
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingLeft: 20,
+                  fontSize: 14,
+                  color: '#000',
+                }}
+              >
+                项目完成率
+              </p>
+              <ReactEcharts
+                style={{
+                  width: '100%',
+                  height: 200,
+                  marginTop: 12,
+                  marginBottom: 24,
+                }}
+                option={getOption('项目完成率', home.IndexFirst.data.data.rate)}
+              ></ReactEcharts>
+              <Row style={{ width: '100%' }}>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>预计</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.planHours}小时
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>消耗</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.expendHours}小时
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#f50' }}>剩余</p>
+                  <p style={{ color: 'orange' }}>
+                    {home.IndexFirst.data.data.leftHours}小时
+                  </p>
+                </Col>
+              </Row>
+            </div>
+            <div
               style={{
-                width: '100%',
-                height: 200,
-                marginTop: 12,
-                marginBottom: 24,
-              }}
-              option={getOption('项目完成率', home.IndexFirst.data.data.rate)}
-            ></ReactEcharts>
-            <Row style={{ width: '100%' }}>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>预计</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.planHours}小时
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>消耗</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.expendHours}小时
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#f50' }}>剩余</p>
-                <p style={{ color: 'orange' }}>
-                  {home.IndexFirst.data.data.leftHours}小时
-                </p>
-              </Col>
-            </Row>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderLeft: '#f0f0f0 solid 1px',
-              borderRight: '#f0f0f0 solid 1px',
-            }}
-          >
-            <p
-              style={{
-                alignSelf: 'flex-start',
-                paddingLeft: 20,
-                fontSize: 14,
-                color: '#000',
-              }}
-            >
-              任务完成率
-            </p>
-            <ReactEcharts
-              style={{
-                width: '100%',
-                height: 200,
-                marginTop: 12,
-                marginBottom: 24,
-              }}
-              option={getOption(
-                '任务完成率',
-                home.IndexFirst.data.data.taskRate,
-              )}
-            ></ReactEcharts>
-            <Row style={{ width: '100%' }}>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>所有任务</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.totalTaskNum}个
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>未完成任务</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.notFinishTask}个
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: 'green' }}>昨天完成任务</p>
-                <p style={{ color: '#4caf50' }}>
-                  {home.IndexFirst.data.data.lastDayTask}个
-                </p>
-              </Col>
-            </Row>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <p
-              style={{
-                alignSelf: 'flex-start',
-                paddingLeft: 20,
-                fontSize: 14,
-                color: '#000',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderLeft: '#f0f0f0 solid 1px',
+                borderRight: '#f0f0f0 solid 1px',
               }}
             >
-              Bug修复率
-            </p>
-            <ReactEcharts
+              <p
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingLeft: 20,
+                  fontSize: 14,
+                  color: '#000',
+                }}
+              >
+                任务完成率
+              </p>
+              <ReactEcharts
+                style={{
+                  width: '100%',
+                  height: 200,
+                  marginTop: 12,
+                  marginBottom: 24,
+                }}
+                option={getOption(
+                  '任务完成率',
+                  home.IndexFirst.data.data.taskRate,
+                )}
+              ></ReactEcharts>
+              <Row style={{ width: '100%' }}>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>所有任务</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.totalTaskNum}个
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>未完成任务</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.notFinishTask}个
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: 'green' }}>昨天完成任务</p>
+                  <p style={{ color: '#4caf50' }}>
+                    {home.IndexFirst.data.data.lastDayTask}个
+                  </p>
+                </Col>
+              </Row>
+            </div>
+            <div
               style={{
-                width: '100%',
-                height: 200,
-                marginTop: 12,
-                marginBottom: 24,
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              option={getOption('Bug修复率', home.IndexFirst.data.data.bugRate)}
-            ></ReactEcharts>
-            <Row style={{ width: '100%' }}>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>所有Bug</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.totalBugNum}个
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#999' }}>未解决Bug</p>
-                <p style={{ color: '#000' }}>
-                  {home.IndexFirst.data.data.notSolvedBug}个
-                </p>
-              </Col>
-              <Col span={8} className={styles.center}>
-                <p style={{ color: '#dc004e' }}>昨天解决Bug数</p>
-                <p style={{ color: 'red' }}>
-                  {home.IndexFirst.data.data.lastDayBug}个
-                </p>
-              </Col>
-            </Row>
-          </div>
-        </Col>
+            >
+              <p
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingLeft: 20,
+                  fontSize: 14,
+                  color: '#000',
+                }}
+              >
+                Bug修复率
+              </p>
+              <ReactEcharts
+                style={{
+                  width: '100%',
+                  height: 200,
+                  marginTop: 12,
+                  marginBottom: 24,
+                }}
+                option={getOption(
+                  'Bug修复率',
+                  home.IndexFirst.data.data.bugRate,
+                )}
+              ></ReactEcharts>
+              <Row style={{ width: '100%' }}>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>所有Bug</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.totalBugNum}个
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#999' }}>未解决Bug</p>
+                  <p style={{ color: '#000' }}>
+                    {home.IndexFirst.data.data.notSolvedBug}个
+                  </p>
+                </Col>
+                <Col span={8} className={styles.center}>
+                  <p style={{ color: '#dc004e' }}>昨天解决Bug数</p>
+                  <p style={{ color: 'red' }}>
+                    {home.IndexFirst.data.data.lastDayBug}个
+                  </p>
+                </Col>
+              </Row>
+            </div>
+          </Col>
+        ) : (
+          <Empty
+            description="暂无数据"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            imageStyle={{
+              height: 60,
+            }}
+            style={{ margin: '36px auto', marginTop: 66 }}
+          ></Empty>
+        )}
       </Row>
     </Card>
   );

@@ -70,7 +70,11 @@ let Department = (props: any) => {
                 });
               }}
               onSelect={onSelect}
-              data={props.set.DepqueryTreeList.data.dataList}
+              data={
+                props.set.DepqueryTreeList.data.dataList
+                  ? props.set.DepqueryTreeList.data.dataList
+                  : []
+              }
             ></TreeDom>
           </Card>
         </Col>

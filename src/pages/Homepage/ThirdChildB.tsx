@@ -334,7 +334,7 @@ let ThirdChildB = (props: any) => {
       ),
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
@@ -693,12 +693,9 @@ let ThirdChildB = (props: any) => {
   useMemo(() => {
     setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
       cdata(res.data.dataList);
+      cf(defaultfields);
     });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [bug]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

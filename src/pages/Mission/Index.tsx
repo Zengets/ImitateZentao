@@ -225,7 +225,7 @@ let MissionCheck = (props: any) => {
       },
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
@@ -304,13 +304,28 @@ let MissionCheck = (props: any) => {
                   ? moment(parseInt(record.acceptStageTime))
                       .startOf('day')
                       .valueOf() > moment(parseInt(text)).valueOf()
-                    ? 'red'
-                    : 'green'
+                    ? '#fff'
+                    : '#666'
                   : moment()
                       .startOf('day')
                       .valueOf() > moment(parseInt(text)).valueOf()
-                  ? 'red'
-                  : 'green',
+                  ? '#fff'
+                  : '#666',
+              backgroundColor:
+                record.status == 8
+                  ? 'transparent'
+                  : record.status == 7
+                  ? moment(parseInt(record.acceptStageTime))
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                    ? '#e84e0f'
+                    : 'transparent'
+                  : moment()
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                  ? '#e84e0f'
+                  : 'transparent',
+              padding: '0 8px',
             }}
           >
             {text && moment(parseInt(text)).format('YYYY-MM-DD')}
@@ -455,12 +470,10 @@ let MissionCheck = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, () => {
+      cf(defaultfields);
+    });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [miss]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

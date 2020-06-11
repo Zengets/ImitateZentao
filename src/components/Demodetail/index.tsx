@@ -9,6 +9,7 @@ import setNewState from '@/utils/setNewState';
 import { connect, history } from 'umi';
 import Projectdetail from '../Projectdetail';
 import Productdetail from '../Productdetail';
+import IconButton from '@material-ui/core/IconButton';
 
 let Demodetail = (props: any) => {
   let { renderAction, maindata, showOther, dispatch, bug } = props;
@@ -200,78 +201,83 @@ let Demodetail = (props: any) => {
           return (
             listdata[item.dataIndex] &&
             listdata[item.dataIndex].map((item: any, i: any) => (
-              <a
-                key={i}
-                onClick={() => {
-                  setNewState(
-                    dispatch,
-                    'bug/BugqueryById',
-                    { id: item.id },
-                    (rest: any) => {
-                      Modal.info({
-                        style: { top: 20 },
-                        zIndex: 999999,
-                        width: 1200,
-                        maskClosable: true,
-                        title: item.bugName,
-                        content: (
-                          <Bugdetail
-                            showOther={() => {
-                              setNewState(
-                                dispatch,
-                                'bug/ProjqueryById',
-                                { id: rest.data.data.projectId },
-                                (res: any) => {
-                                  Modal.info({
-                                    style: { top: 20 },
-                                    zIndex: 999999,
-                                    width: 800,
-                                    maskClosable: true,
-                                    title: rest.data.data.projectName,
-                                    content: (
-                                      <Projectdetail
-                                        showProduct={() => {
-                                          setNewState(
-                                            dispatch,
-                                            'bug/ProdqueryInfo',
-                                            { id: res.data.data.productId },
-                                            (result: any) => {
-                                              Modal.info({
-                                                style: { top: 20 },
-                                                zIndex: 999999,
-                                                width: 800,
-                                                maskClosable: true,
-                                                title:
-                                                  res.data.data.productName,
-                                                content: (
-                                                  <Productdetail
-                                                    maindata={result.data.data}
-                                                  />
-                                                ),
-                                                okText: '晓得了',
-                                              });
-                                            },
-                                          );
-                                        }}
-                                        maindata={res.data.data}
-                                      />
-                                    ),
-                                    okText: '晓得了',
-                                  });
-                                },
-                              );
-                            }}
-                            maindata={rest.data.data}
-                          ></Bugdetail>
-                        ),
-                        okText: '晓得了',
-                      });
-                    },
-                  );
-                }}
-              >
-                {item.bugName}
-              </a>
+              <IconButton style={{ margin: '4px 6px', borderRadius: 4 }}>
+                <a
+                  key={i}
+                  style={{ fontSize: 12 }}
+                  onClick={() => {
+                    setNewState(
+                      dispatch,
+                      'bug/BugqueryById',
+                      { id: item.id },
+                      (rest: any) => {
+                        Modal.info({
+                          style: { top: 20 },
+                          zIndex: 999999,
+                          width: 1200,
+                          maskClosable: true,
+                          title: item.bugName,
+                          content: (
+                            <Bugdetail
+                              showOther={() => {
+                                setNewState(
+                                  dispatch,
+                                  'bug/ProjqueryById',
+                                  { id: rest.data.data.projectId },
+                                  (res: any) => {
+                                    Modal.info({
+                                      style: { top: 20 },
+                                      zIndex: 999999,
+                                      width: 800,
+                                      maskClosable: true,
+                                      title: rest.data.data.projectName,
+                                      content: (
+                                        <Projectdetail
+                                          showProduct={() => {
+                                            setNewState(
+                                              dispatch,
+                                              'bug/ProdqueryInfo',
+                                              { id: res.data.data.productId },
+                                              (result: any) => {
+                                                Modal.info({
+                                                  style: { top: 20 },
+                                                  zIndex: 999999,
+                                                  width: 800,
+                                                  maskClosable: true,
+                                                  title:
+                                                    res.data.data.productName,
+                                                  content: (
+                                                    <Productdetail
+                                                      maindata={
+                                                        result.data.data
+                                                      }
+                                                    />
+                                                  ),
+                                                  okText: '晓得了',
+                                                });
+                                              },
+                                            );
+                                          }}
+                                          maindata={res.data.data}
+                                        />
+                                      ),
+                                      okText: '晓得了',
+                                    });
+                                  },
+                                );
+                              }}
+                              maindata={rest.data.data}
+                            ></Bugdetail>
+                          ),
+                          okText: '晓得了',
+                        });
+                      },
+                    );
+                  }}
+                >
+                  {item.bugName}
+                </a>
+              </IconButton>
             ))
           );
         };

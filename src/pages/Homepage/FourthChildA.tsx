@@ -148,7 +148,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       devStagePlanHours: {
         value: '', //初始化值
         type: 'inputnumber',
-        title: '预计时长',
+        title: '预计时长(开发)',
         name: ['devStagePlanHours'],
         required: true,
       },
@@ -275,7 +275,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       ),
     },
     {
-      title: '负责人',
+      title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
@@ -303,16 +303,39 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
         post.postdata,
         handleSearch,
       ),
-      render(text: any) {
+      render(text: any, record: any) {
         return (
           <span
             style={{
               color:
-                moment()
-                  .startOf('day')
-                  .valueOf() > moment(parseInt(text)).valueOf()
-                  ? 'red'
-                  : 'green',
+                record.status == 8
+                  ? '#666'
+                  : record.status == 7
+                  ? moment(parseInt(record.acceptStageTime))
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                    ? '#fff'
+                    : '#666'
+                  : moment()
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                  ? '#fff'
+                  : '#666',
+              backgroundColor:
+                record.status == 8
+                  ? 'transparent'
+                  : record.status == 7
+                  ? moment(parseInt(record.acceptStageTime))
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                    ? '#e84e0f'
+                    : 'transparent'
+                  : moment()
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                  ? '#e84e0f'
+                  : 'transparent',
+              padding: '0 8px',
             }}
           >
             {text && moment(parseInt(text)).format('YYYY-MM-DD')}
@@ -525,7 +548,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
               devStageExpendHours: {
                 value: '', //初始化值
                 type: 'inputnumber',
-                title: '消耗时长',
+                title: '消耗时长(开发)',
                 min: 1,
                 name: ['devStageExpendHours'],
                 required: true,

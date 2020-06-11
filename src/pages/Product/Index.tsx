@@ -465,12 +465,10 @@ let Product = (props: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, post.posturl, post.postdata, () => {
+      cf(defaultfields);
+    });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [prod]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

@@ -111,7 +111,7 @@ let Project = (props: any) => {
       key: 'workDays',
     },
     {
-      title: '可用工时/日',
+      title: '可用工时/天',
       dataIndex: 'workDayHours',
       key: 'workDayHours',
     },
@@ -450,7 +450,7 @@ let Project = (props: any) => {
       >
         {iftype.edit ? (
           <div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginBottom: 9 }}>
               <Row gutter={12} style={{ flex: 1 }}>
                 <Col {...col}>
                   <p>
@@ -491,7 +491,11 @@ let Project = (props: any) => {
           </div>
         ) : (
           <AutoTable
-            data={{ list: model.ProjqueryByProjectId.data.dataList }}
+            data={{
+              list: model.ProjqueryByProjectId
+                ? model.ProjqueryByProjectId.data.dataList
+                : [],
+            }}
             columns={columns}
             loading={loading.effects[posturl]}
             pageChange={null}

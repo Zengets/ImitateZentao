@@ -437,12 +437,9 @@ let FourthChildB = (props: any) => {
   useMemo(() => {
     setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
       cdata(res.data.dataList);
+      cf(defaultfields);
     });
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [proj]);
 
   function hides(key: any) {
     ciftype(() => {

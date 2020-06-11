@@ -80,17 +80,17 @@ let Projectdetail = (props: any) => {
           key: 'totalHours',
         },
         {
-          title: '创建日期(h)',
+          title: '由谁创建',
           dataIndex: 'createTime',
           key: 'createTime',
         },
         {
-          title: '开始日期(h)',
+          title: '由谁开始',
           dataIndex: 'realStartTime',
           key: 'realStartTime',
         },
         {
-          title: '完成日期(h)',
+          title: '由谁完成',
           dataIndex: 'realFinishTime',
           key: 'realFinishTime',
         },
@@ -104,9 +104,9 @@ let Projectdetail = (props: any) => {
 
     if (listdata) {
       dataSource = newcolumns.map((item: any) => {
-        let date =
-          listdata[item.dataIndex] &&
-          moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD');
+        let date = listdata[item.dataIndex]
+          ? moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD')
+          : '-';
         return {
           title: item.title,
           dataIndex: item.dataIndex,

@@ -34,17 +34,17 @@ let Productdetail = (props: any) => {
       key: 'openUserName',
     },
     {
-      title: '创建日期',
+      title: '由谁创建',
       dataIndex: 'openDate',
       key: 'openDate',
     },
     {
-      title: '激活日期',
+      title: '由谁激活',
       dataIndex: 'activateDate',
       key: 'activateDate',
     },
     {
-      title: '关闭日期',
+      title: '由谁关闭',
       dataIndex: 'closeDate',
       key: 'closeDate',
     },
@@ -76,9 +76,9 @@ let Productdetail = (props: any) => {
 
     if (listdata) {
       dataSource = newcolumns.map((item: any) => {
-        let date =
-          listdata[item.dataIndex] &&
-          moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD');
+        let date = listdata[item.dataIndex]
+          ? moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD')
+          : '-';
         return {
           title: item.title,
           dataIndex: item.dataIndex,

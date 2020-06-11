@@ -420,13 +420,11 @@ let Demos = (props: any) => {
 
   useMemo(() => {
     if (post.postdata.projectId) {
-      setNewState(dispatch, post.posturl, post.postdata, () => {});
+      setNewState(dispatch, post.posturl, post.postdata, () => {
+        cf(defaultfields);
+      });
     }
   }, [post]);
-
-  useMemo(() => {
-    cf(defaultfields);
-  }, [bug]);
 
   let pageChange = (page: any, pageSize: any) => {
     cpost(() => {

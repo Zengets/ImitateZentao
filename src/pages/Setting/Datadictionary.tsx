@@ -118,7 +118,7 @@ let Charactor = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 60,
+      width: 120,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
