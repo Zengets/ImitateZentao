@@ -323,6 +323,7 @@ let SetUser = (props: any) => {
               accountName: {
                 ...fields.accountName,
                 value: record.accountName, //初始化值
+                disabled: true,
               },
               password: {
                 ...fields.password,

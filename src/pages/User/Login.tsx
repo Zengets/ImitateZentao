@@ -38,7 +38,9 @@ let Login = ({ user, loadings, dispatch }: any) => {
         accountName: data.username,
         password: data.password,
       },
-      () => {
+      (result: any) => {
+        localStorage.setItem('userInfo', JSON.stringify(result.data.user));
+
         setNewState(dispatch, 'model/queryMenu', {}, (res: any) => {
           history.replace('/index');
           localStorage.setItem('Menu', JSON.stringify(res.data.dataList));

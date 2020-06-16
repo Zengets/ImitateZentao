@@ -14,6 +14,11 @@ if (allStr) {
 }
 
 export default defineConfig({
+  publicPath: './',
+  manifest: {
+    basePath: './',
+  },
+  history: { type: 'hash' },
   nodeModulesTransform: {
     type: 'none',
   },

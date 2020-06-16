@@ -36,7 +36,9 @@ function Header(props: any) {
   let { model } = props,
     Menudata = localStorage.getItem('Menu');
   Menudata = JSON.parse(Menudata ? Menudata : '[]');
+  let userInfo = JSON.parse(localStorage.getItem('userInfo')); //获取权限菜单
 
+  //二级导航逻辑
   let curindex = 0,
     curindexs = 0,
     mainroutes = Menudata.filter((item: any) => {
@@ -54,6 +56,7 @@ function Header(props: any) {
         });
     }
   });
+  //二级导航逻辑
   const [value, setValue] = useState(curindex);
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
@@ -81,15 +84,16 @@ function Header(props: any) {
     setValue(curindex);
     //下拉框逻辑
     if (
-      location.pathname == '/index/project/team' ||
-      location.pathname.indexOf('mission') != -1 ||
-      location.pathname.indexOf('test') != -1
+      history.location.pathname == '/index/project/team' ||
+      history.location.pathname.indexOf('mission') != -1 ||
+      history.location.pathname.indexOf('test') != -1
     ) {
       setNewState(
         props.dispatch,
         'model/ProjquerySelectList',
         {},
         (res: any) => {
+          console.log(res);
           cdata(res.data.dataList);
           //初始化下拉框数据
           let fval: any;
@@ -203,8 +207,21 @@ function Header(props: any) {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 color="inherit"
+                style={{ borderRadius: 8 }}
               >
-                <AccountCircle style={{ fontSize: 36 }} />
+                <div
+                  style={{
+                    margin: '4px 6px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <AccountCircle style={{ fontSize: 36 }} />
+                  <span style={{ fontSize: 16, paddingLeft: 6 }}>
+                    {userInfo.realName}
+                  </span>
+                </div>
               </IconButton>
             </div>
           </Dropdown>
