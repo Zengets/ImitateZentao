@@ -381,6 +381,8 @@ let MissionStart = (props: any) => {
                   projectId: {
                     ...fields.projectId,
                     value: record.projectId, //初始化值
+                    options:
+                      model.ProjquerySelectList && model.ProjquerySelectList,
                   },
                   taskDescription: {
                     ...fields.taskDescription,
@@ -702,7 +704,7 @@ let MissionStart = (props: any) => {
                 });
               }
             }}
-            submitting={props.loading.effects['model/Missave']}
+            submitting={props.loading.effects['miss/Missave']}
           ></InitForm>
         )}
       </Dia>

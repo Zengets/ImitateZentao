@@ -357,7 +357,7 @@ let Charactor = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Chasave']}
+            submitting={props.loading.effects['set/Chasave']}
           ></InitForm>
         )}
       </Dia>

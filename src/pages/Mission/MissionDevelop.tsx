@@ -608,7 +608,7 @@ let MissionDevelop = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/MisdevelopEnd']}
+            submitting={props.loading.effects['miss/MisdevelopEnd']}
           ></InitForm>
         )}
       </Dia>

@@ -1165,7 +1165,14 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 });
               }
             }}
-            submitting={loading.effects['model/Mischeck']}
+            submitting={
+              loading.effects['miss/Misactivation'] ||
+              loading.effects['miss/Misassign'] ||
+              loading.effects['miss/MisdevelopEnd'] ||
+              loading.effects['miss/Mistest'] ||
+              loading.effects['miss/Mischeck'] ||
+              loading.effects['miss/Missave']
+            }
           ></InitForm>
         )}
       </Dia>

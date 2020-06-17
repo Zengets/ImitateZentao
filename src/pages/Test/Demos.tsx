@@ -674,7 +674,13 @@ let Demos = (props: any) => {
               history.push({
                 pathname: '/index/test/bugs',
                 query: {
-                  data,
+                  data: JSON.stringify(
+                    data.map((item: any) => ({
+                      step: item.step,
+                      reality: item.reality,
+                      expection: item.expection,
+                    })),
+                  ),
                   id: iftype.curitem.id,
                 },
               });
@@ -840,7 +846,7 @@ let Demos = (props: any) => {
                   };
                 });
               }}
-              submitting={props.loading.effects['model/Demosave']}
+              submitting={props.loading.effects['bug/Demosave']}
             ></InitForm>
           )
         )}

@@ -332,14 +332,17 @@ let SetUser = (props: any) => {
               departmentId: {
                 ...fields.departmentId,
                 value: record.departmentId, //初始化值
+                options: set.UserqueryTreeList && set.UserqueryTreeList,
               },
               workwechatId: {
                 ...fields.workwechatId,
                 value: record.workwechatId, //初始化值
+                options: set.UserqueryWechatList && set.UserqueryWechatList,
               },
               roleId: {
                 ...fields.roleId,
                 value: record.roleId, //初始化值
+                options: set.UserqueryAllSelect && set.UserqueryAllSelect,
               },
               jobTitle: {
                 ...fields.jobTitle,
@@ -348,6 +351,7 @@ let SetUser = (props: any) => {
               superId: {
                 ...fields.superId,
                 value: record.superId, //初始化值
+                options: set.UserqueryAll && set.UserqueryAll,
               },
               telephone: {
                 ...fields.telephone,
@@ -560,7 +564,7 @@ let SetUser = (props: any) => {
               };
             });
           }}
-          submitting={props.loading.effects['model/Usersave']}
+          submitting={props.loading.effects['set/Usersave']}
         ></InitForm>
       </Dia>
       <Card

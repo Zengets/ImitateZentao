@@ -340,7 +340,7 @@ let Charactor = (props: any) => {
               };
             });
           }}
-          submitting={props.loading.effects['model/Datasave']}
+          submitting={props.loading.effects['set/Datasave']}
         ></InitForm>
       </Dia>
       <Card title={props.route.name}>

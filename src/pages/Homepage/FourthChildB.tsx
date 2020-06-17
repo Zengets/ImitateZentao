@@ -552,7 +552,7 @@ let FourthChildB = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Projsave']}
+            submitting={props.loading.effects['proj/Projsave']}
           ></InitForm>
         )}
       </Dia>

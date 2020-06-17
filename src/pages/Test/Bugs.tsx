@@ -211,10 +211,12 @@ let Bugs = (props: any) => {
     }
 
     let query = history.location.query.data;
-    if (query) {
+    query = query ? JSON.parse(query) : null;
+
+    if (query && query.length > 0) {
       let step = '',
         reality = '',
-        expection = '';
+        expection = ''; //step,reality,expection
       query.map((item: any, i: number) => {
         step += item.step ? `<br/>${i + 1} : ${item.step}` : '';
         reality += item.reality ? `<br/>${i + 1} : ${item.reality}` : '';
@@ -1060,7 +1062,12 @@ let Bugs = (props: any) => {
                   });
                 }
               }}
-              submitting={props.loading.effects['model/Bugsave']}
+              submitting={
+                props.loading.effects['bug/Bugsave'] ||
+                props.loading.effects['bug/Bugsolve'] ||
+                props.loading.effects['bug/Bugconfirm'] ||
+                props.loading.effects['bug/Bugactivate']
+              }
             ></InitForm>
           )
         )}

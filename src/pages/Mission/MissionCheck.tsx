@@ -521,7 +521,7 @@ let MissionCheck = (props: any) => {
                 });
               }
             }}
-            submitting={props.loading.effects['model/Mischeck']}
+            submitting={props.loading.effects['miss/Mischeck']}
           ></InitForm>
         )}
       </Dia>

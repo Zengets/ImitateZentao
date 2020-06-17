@@ -367,6 +367,7 @@ let Product = (props: any) => {
               chargeUserId: {
                 ...fields.chargeUserId,
                 value: record.chargeUserId, //初始化值
+                options: prod.UserqueryAll && prod.UserqueryAll,
               },
               description: {
                 ...fields.description,
@@ -566,7 +567,7 @@ let Product = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Prodsave']}
+            submitting={props.loading.effects['prod/Prodsave']}
           ></InitForm>
         )}
       </Dia>

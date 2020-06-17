@@ -246,6 +246,7 @@ let DemoAction = (props: any) => {
         style={{ margin: '24px 0px 12px 0px' }}
         variant="contained"
         color="primary"
+        disabled={loading.effects['bug/Demoexecute']}
         disableElevation
         onClick={() => {
           let postarr: any[] = [];

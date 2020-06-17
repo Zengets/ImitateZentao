@@ -59,6 +59,8 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
       }
     });
 
+  console.log(submitting);
+
   return (
     <Form
       form={form}

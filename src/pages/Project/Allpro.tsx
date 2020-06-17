@@ -367,6 +367,7 @@ let Allpro = (props: any) => {
               productId: {
                 ...fields.productId,
                 value: record.productId, //初始化值
+                options: proj.ProdqueryAllSelect && proj.ProdqueryAllSelect,
               },
               projectNo: {
                 ...fields.projectNo,
@@ -630,7 +631,7 @@ let Allpro = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Projsave']}
+            submitting={props.loading.effects['proj/Projsave']}
           ></InitForm>
         )}
       </Dia>

@@ -955,7 +955,12 @@ let ThirdChildB = (props: any) => {
                   });
                 }
               }}
-              submitting={props.loading.effects['model/Bugsave']}
+              submitting={
+                props.loading.effects['bug/Bugsave'] ||
+                props.loading.effects['bug/Bugsolve'] ||
+                props.loading.effects['bug/Bugconfirm'] ||
+                props.loading.effects['bug/Bugactivate']
+              }
             ></InitForm>
           )
         )}

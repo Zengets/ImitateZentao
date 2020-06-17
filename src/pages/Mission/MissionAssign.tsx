@@ -605,7 +605,7 @@ let MissionAssign = (props: any) => {
                 };
               });
             }}
-            submitting={props.loading.effects['model/Misassign']}
+            submitting={props.loading.effects['miss/Misassign']}
           ></InitForm>
         )}
       </Dia>
