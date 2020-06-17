@@ -660,7 +660,7 @@ let MissionStart = (props: any) => {
               newfields.attachmentList = newlist;
               setNewState(dispatch, 'miss/Missave', newfields, () => {
                 setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('修改成功');
+                  message.success('操作成功');
                   ciftype(() => {
                     return {
                       ...iftype,

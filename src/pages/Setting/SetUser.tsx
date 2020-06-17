@@ -52,7 +52,7 @@ let SetUser = (props: any) => {
           //------------------------------------------------------排序字段
           {
             fieldName: 'userNo', //-------编号
-            sort: false,
+            sort: '',
           },
           {
             fieldName: 'realName', //-----------姓名
