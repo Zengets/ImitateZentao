@@ -14,6 +14,9 @@ if (allStr) {
 }
 
 export default defineConfig({
+  targets: {
+    ie: 11,
+  },
   publicPath: './',
   manifest: {
     basePath: './',

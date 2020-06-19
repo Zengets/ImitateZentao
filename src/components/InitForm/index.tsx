@@ -26,7 +26,8 @@ const { TreeNode } = TreeSelect;
 let { Option } = Select;
 
 let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
-  let [Dom, cDom] = useState([]);
+  let [Dom, cDom] = useState([]),
+    [loading, sload] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -338,12 +339,16 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
             color="primary"
             size="large"
             disableElevation
-            disabled={submitting}
+            disabled={submitting || loading}
             onClick={() => {
+              sload(true);
               form
                 .validateFields()
                 .then(values => {
                   submitData();
+                  setTimeout(() => {
+                    sload(false);
+                  }, 1000);
                 })
                 .catch(error => {});
             }}
