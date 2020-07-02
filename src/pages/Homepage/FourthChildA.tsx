@@ -506,71 +506,76 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
           disabled={record.status != 4}
           aria-label="delete"
           onClick={() => {
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '完成开发',
-                curitem: record,
-                fullScreen: false,
-                key: 'finishdev',
-              };
-            });
-            cf({
-              currentUserId: {
-                value: '', //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['currentUserId'], //唯一标识
-                required: true, //必填？
-                options:
-                  miss.querySelectListByProjectId &&
-                  miss.querySelectListByProjectId,
+            setNewState(
+              dispatch,
+              'miss/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  currentUserId: {
+                    value: '', //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['currentUserId'], //唯一标识
+                    required: true, //必填？
+                    options: res.data.dataList,
+                  },
+                  realFinishTime: {
+                    value: '', //初始化值
+                    type: 'datepicker',
+                    title: '完成时间',
+                    name: ['realFinishTime'],
+                    showTime: { format: 'HH:mm' },
+                    format: 'YYYY-MM-DD HH:mm',
+                    required: true,
+                    disabledDate: (current: any) => {
+                      return (
+                        current &&
+                        current <
+                          moment()
+                            .add('day', -1)
+                            .endOf('day')
+                      );
+                    },
+                  },
+                  devStageExpendHours: {
+                    value: '', //初始化值
+                    type: 'inputnumber',
+                    title: '消耗时长(开发)',
+                    min: 1,
+                    name: ['devStageExpendHours'],
+                    required: true,
+                  },
+                  devStageFinishDescription: {
+                    value: '', //初始化值
+                    type: 'textarea',
+                    title: '开发描述',
+                    name: ['devStageFinishDescription'],
+                    required: false,
+                    rows: 6,
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '完成开发',
+                    curitem: record,
+                    fullScreen: false,
+                    key: 'finishdev',
+                  };
+                });
               },
-              realFinishTime: {
-                value: '', //初始化值
-                type: 'datepicker',
-                title: '完成时间',
-                name: ['realFinishTime'],
-                showTime: { format: 'HH:mm' },
-                format: 'YYYY-MM-DD HH:mm',
-                required: true,
-                disabledDate: (current: any) => {
-                  return (
-                    current &&
-                    current <
-                      moment()
-                        .add('day', -1)
-                        .endOf('day')
-                  );
-                },
-              },
-              devStageExpendHours: {
-                value: '', //初始化值
-                type: 'inputnumber',
-                title: '消耗时长(开发)',
-                min: 1,
-                name: ['devStageExpendHours'],
-                required: true,
-              },
-              devStageFinishDescription: {
-                value: '', //初始化值
-                type: 'textarea',
-                title: '开发描述',
-                name: ['devStageFinishDescription'],
-                required: false,
-                rows: 6,
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: false,
-                col: { span: 24 },
-              },
-            });
+            );
           }}
         >
           <Tooltip title="完成开发">
@@ -584,63 +589,68 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
           aria-label="delete"
           disabled={record.status != 5}
           onClick={() => {
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '测试信息',
-                curitem: record,
-                key: 'test',
-                fullScreen: false,
-              };
-            });
-            cf({
-              testStageResult: {
-                value: '', //初始化值
-                type: 'radio',
-                title: '测试结果',
-                name: ['testStageResult'],
-                required: true,
-                options: [
-                  {
-                    dicName: '通过',
-                    dicKey: '1',
+            setNewState(
+              dispatch,
+              'miss/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  testStageResult: {
+                    value: '', //初始化值
+                    type: 'radio',
+                    title: '测试结果',
+                    name: ['testStageResult'],
+                    required: true,
+                    options: [
+                      {
+                        dicName: '通过',
+                        dicKey: '1',
+                      },
+                      {
+                        dicName: '不通过',
+                        dicKey: '2',
+                      },
+                    ],
+                    col: { span: 24 },
                   },
-                  {
-                    dicName: '不通过',
-                    dicKey: '2',
+                  currentUserId: {
+                    value: '', //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['currentUserId'], //唯一标识
+                    required: true, //必填？
+                    options: res.data.dataList,
                   },
-                ],
-                col: { span: 24 },
+                  testStageDescription: {
+                    value: '', //初始化值
+                    type: 'textarea',
+                    title: '测试描述',
+                    name: ['testStageDescription'],
+                    required: false,
+                    rows: 6,
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '测试信息',
+                    curitem: record,
+                    key: 'test',
+                    fullScreen: false,
+                  };
+                });
               },
-              currentUserId: {
-                value: '', //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['currentUserId'], //唯一标识
-                required: true, //必填？
-                options:
-                  miss.querySelectListByProjectId &&
-                  miss.querySelectListByProjectId,
-              },
-              testStageDescription: {
-                value: '', //初始化值
-                type: 'textarea',
-                title: '测试描述',
-                name: ['testStageDescription'],
-                required: false,
-                rows: 6,
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: false,
-                col: { span: 24 },
-              },
-            });
+            );
           }}
         >
           <Tooltip title="测试">
@@ -656,64 +666,69 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
           disabled={record.status != 6}
           aria-label="delete"
           onClick={() => {
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '验收信息',
-                curitem: record,
-                key: 'check',
-                fullScreen: false,
-              };
-            });
-            cf({
-              acceptStageResult: {
-                value: '', //初始化值
-                type: 'radio',
-                title: '验收结果',
-                name: ['acceptStageResult'],
-                required: true,
-                options: [
-                  {
-                    dicName: '通过',
-                    dicKey: '1',
+            setNewState(
+              dispatch,
+              'miss/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  acceptStageResult: {
+                    value: '', //初始化值
+                    type: 'radio',
+                    title: '验收结果',
+                    name: ['acceptStageResult'],
+                    required: true,
+                    options: [
+                      {
+                        dicName: '通过',
+                        dicKey: '1',
+                      },
+                      {
+                        dicName: '不通过',
+                        dicKey: '2',
+                      },
+                    ],
+                    col: { span: 24 },
                   },
-                  {
-                    dicName: '不通过',
-                    dicKey: '2',
+                  currentUserId: {
+                    value: '', //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['currentUserId'], //唯一标识
+                    required: true, //必填？
+                    hides: true,
+                    options: res.data.dataList,
                   },
-                ],
-                col: { span: 24 },
+                  acceptStageDescription: {
+                    value: '', //初始化值
+                    type: 'textarea',
+                    title: '验收描述',
+                    name: ['acceptStageDescription'],
+                    required: false,
+                    rows: 6,
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '验收信息',
+                    curitem: record,
+                    key: 'check',
+                    fullScreen: false,
+                  };
+                });
               },
-              currentUserId: {
-                value: '', //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['currentUserId'], //唯一标识
-                required: true, //必填？
-                hides: true,
-                options:
-                  miss.querySelectListByProjectId &&
-                  miss.querySelectListByProjectId,
-              },
-              acceptStageDescription: {
-                value: '', //初始化值
-                type: 'textarea',
-                title: '验收描述',
-                name: ['acceptStageDescription'],
-                required: false,
-                rows: 6,
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: false,
-                col: { span: 24 },
-              },
-            });
+            );
           }}
         >
           <Tooltip title="验收">
@@ -945,7 +960,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   Modal.info({
                     style: { top: 20 },
                     zIndex: 999999,
-                    width: 800,
+                    width: 1200,
                     maskClosable: true,
                     title: iftype.resdata.info.projectName,
                     content: (
@@ -959,7 +974,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                               Modal.info({
                                 style: { top: 20 },
                                 zIndex: 999999,
-                                width: 800,
+                                width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,
                                 content: (

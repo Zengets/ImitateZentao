@@ -53,43 +53,48 @@ export default function Dia({
         aria-labelledby="draggable-dialog-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle id="draggable-dialog-title">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            {title}
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() => cshow(false)}
-              aria-label="close"
+        <div
+          style={{ backgroundColor: fullScreen ? '#f0f0f0' : '#fff', flex: 1 }}
+        >
+          <DialogTitle id="draggable-dialog-title">
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: 16,
+              }}
             >
-              <CloseIcon />
-            </IconButton>
-          </div>
-        </DialogTitle>
-        <DialogContent>{children}</DialogContent>
-        {footer ? (
-          footer
-        ) : (
-          <DialogActions>
-            <Button onClick={() => cshow(false)} color="primary">
-              取消
-            </Button>
-            <Button
-              onClick={() => onOk()}
-              color="primary"
-              variant="contained"
-              disableElevation
-            >
-              确定
-            </Button>
-          </DialogActions>
-        )}
+              {title}
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => cshow(false)}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </DialogTitle>
+          <DialogContent>{children}</DialogContent>
+          {footer ? (
+            footer
+          ) : (
+            <DialogActions>
+              <Button onClick={() => cshow(false)} color="primary">
+                取消
+              </Button>
+              <Button
+                onClick={() => onOk()}
+                color="primary"
+                variant="contained"
+                disableElevation
+              >
+                确定
+              </Button>
+            </DialogActions>
+          )}
+        </div>
       </Dialog>
     </div>
   );

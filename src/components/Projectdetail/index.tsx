@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
-import { List, Card, Row, Col } from 'antd';
+import { List, Card, Row, Col, Divider } from 'antd';
 import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
@@ -177,86 +177,110 @@ let Projectdetail = (props: any) => {
         return '';
       }
     }
+
+    let col = {
+        xs: 24,
+        sm: 24,
+        md: 16,
+        lg: 16,
+        xl: 16,
+        xxl: 16,
+      },
+      cols = {
+        xs: 24,
+        sm: 24,
+        md: 8,
+        lg: 8,
+        xl: 8,
+        xxl: 8,
+      };
     return (
-      <div>
-        <Card bordered={false}>
-          <Row gutter={24}>
-            {info2 &&
-              info2.map((item, i) => (
-                <Col key={i} span={6}>
-                  <h4>{item.title}</h4>
-                  <span style={{ fontSize: 20, color: 'green' }}>
-                    {item.value}
-                  </span>
-                </Col>
-              ))}
-          </Row>
-        </Card>
-        <List
-          dataSource={info1}
-          bordered
-          renderItem={(item: any) =>
-            item.value && (
-              <List.Item>
-                <DetailItem
-                  key={item.dataIndex}
-                  hdClick={() => {
-                    if (item.dataIndex == 'productName') {
-                      showProduct();
-                    }
-                  }}
-                  title={item.title}
-                  value={
-                    item.dataIndex == 'attachmentList'
-                      ? renderList(item.value)
-                      : item.value
-                  }
-                  contentstyle={{
-                    color:
-                      item.dataIndex == 'productName'
-                        ? '#1183fb'
-                        : rendercolor('Projuctstatus', item.value),
-                    cursor:
-                      item.dataIndex == 'productName' ? 'pointer' : 'default',
-                  }}
-                />
-              </List.Item>
-            )
-          }
-        />
-        <List
-          style={{ marginTop: 24 }}
-          footer={
-            renderAction ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {renderAction()}
-              </div>
-            ) : (
-              false
-            )
-          }
-          bordered
-          dataSource={info3}
-          renderItem={(item: any) =>
-            item.value && (
-              <List.Item>
-                <DetailItem
-                  key={item.dataIndex}
-                  title={item.title}
-                  value={item.value}
-                  contentstyle={{ color: '#666' }}
-                />
-              </List.Item>
-            )
-          }
-        />
-      </div>
+      <Row gutter={24} style={{ width: '100%' }}>
+        <Col {...col} style={{ marginBottom: 24 }}>
+          <Card title={'项目信息'}>
+            <List
+              style={{ marginTop: -24 }}
+              dataSource={info1}
+              renderItem={(item: any) =>
+                item.value && (
+                  <List.Item>
+                    <DetailItem
+                      key={item.dataIndex}
+                      hdClick={() => {
+                        if (item.dataIndex == 'productName') {
+                          showProduct();
+                        }
+                      }}
+                      title={item.title}
+                      value={
+                        item.dataIndex == 'attachmentList'
+                          ? renderList(item.value)
+                          : item.value
+                      }
+                      contentstyle={{
+                        color:
+                          item.dataIndex == 'productName'
+                            ? '#1183fb'
+                            : rendercolor('Projuctstatus', item.value),
+                        cursor:
+                          item.dataIndex == 'productName'
+                            ? 'pointer'
+                            : 'default',
+                      }}
+                    />
+                  </List.Item>
+                )
+              }
+            />
+            <List
+              style={{ marginTop: 24 }}
+              dataSource={info3}
+              renderItem={(item: any) =>
+                item.value && (
+                  <List.Item>
+                    <DetailItem
+                      key={item.dataIndex}
+                      title={item.title}
+                      value={item.value}
+                      contentstyle={{ color: '#666' }}
+                    />
+                  </List.Item>
+                )
+              }
+            />
+            <Divider style={{ marginTop: 0 }}></Divider>
+            <Row gutter={24}>
+              {info2 &&
+                info2.map((item, i) => (
+                  <Col key={i} span={6}>
+                    <h4>{item.title}</h4>
+                    <span style={{ fontSize: 20, color: 'green' }}>
+                      {item.value}
+                    </span>
+                  </Col>
+                ))}
+            </Row>
+          </Card>
+        </Col>
+        <Col {...cols} style={{ marginBottom: 24 }}>
+          <Card title="历史记录"></Card>
+        </Col>
+
+        {renderAction && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 36,
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {renderAction()}
+          </div>
+        )}
+      </Row>
     );
   };
   return renderdetail();

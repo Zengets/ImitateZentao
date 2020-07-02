@@ -180,7 +180,7 @@ let Product = (props: any) => {
                     ...iftype,
                     curitem: record,
                     visible: true,
-                    title: text + '详情',
+                    title: `[${record.productNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
                   });
@@ -310,9 +310,20 @@ let Product = (props: any) => {
               { id: record.id },
               () => {
                 message.success('激活' + record.productName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  hides(false);
-                });
+                setNewState(
+                  dispatch,
+                  post.posturl,
+                  post.postdata,
+                  (res: any) => {
+                    let result = res.data.page.list;
+                    ciftype({
+                      ...iftype,
+                      curitem: result.filter((items: any) => {
+                        return items.id == record.id;
+                      })[0],
+                    });
+                  },
+                );
               },
             );
           }}
@@ -336,8 +347,14 @@ let Product = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'prod/Prodclose', { id: record.id }, () => {
               message.success(record.productName + '关闭成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {
-                hides(false);
+              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
               });
             });
           }}

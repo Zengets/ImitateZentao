@@ -196,7 +196,7 @@ let Allpro = (props: any) => {
                     ...iftype,
                     curitem: record,
                     visible: true,
-                    title: text + '详情',
+                    title: `[${record.projectNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
                   });
@@ -321,7 +321,15 @@ let Allpro = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'proj/Projstart', { id: record.id }, () => {
               message.success('开始' + record.projectName + '成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
+              });
             });
           }}
         >
@@ -343,7 +351,15 @@ let Allpro = (props: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'proj/Projfinish', { id: record.id }, () => {
               message.success(record.projectName + '完成成功！');
-              setNewState(dispatch, post.posturl, post.postdata, () => {});
+              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
+              });
             });
           }}
         >
@@ -554,7 +570,7 @@ let Allpro = (props: any) => {
                   Modal.info({
                     style: { top: 20 },
                     zIndex: 999999,
-                    width: 800,
+                    width: 1200,
                     maskClosable: true,
                     title: proj.ProjqueryById.data.data.productName,
                     content: <Productdetail maindata={res.data.data} />,

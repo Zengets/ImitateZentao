@@ -10,6 +10,7 @@ import { connect, history } from 'umi';
 import Projectdetail from '../Projectdetail';
 import Productdetail from '../Productdetail';
 import IconButton from '@material-ui/core/IconButton';
+import { type } from './../../.umi/plugin-model/useModel';
 
 let Demodetail = (props: any) => {
   let { renderAction, maindata, showOther, dispatch, bug } = props;
@@ -34,6 +35,7 @@ let Demodetail = (props: any) => {
       title: '用例步骤',
       dataIndex: 'stepTreeList',
       key: 'stepTreeList',
+      type: 'start',
     },
     //"projectName","caseTypeName","stepCount","executeTimes","bugCount"
     {
@@ -228,7 +230,7 @@ let Demodetail = (props: any) => {
                                     Modal.info({
                                       style: { top: 20 },
                                       zIndex: 999999,
-                                      width: 800,
+                                      width: 1200,
                                       maskClosable: true,
                                       title: rest.data.data.projectName,
                                       content: (
@@ -242,7 +244,7 @@ let Demodetail = (props: any) => {
                                                 Modal.info({
                                                   style: { top: 20 },
                                                   zIndex: 999999,
-                                                  width: 800,
+                                                  width: 1200,
                                                   maskClosable: true,
                                                   title:
                                                     res.data.data.productName,
@@ -336,57 +338,64 @@ let Demodetail = (props: any) => {
         return it.dataIndex == item;
       })[0];
     });
-
+    let col = {
+        xs: 24,
+        sm: 24,
+        md: 16,
+        lg: 16,
+        xl: 16,
+        xxl: 16,
+      },
+      cols = {
+        xs: 24,
+        sm: 24,
+        md: 8,
+        lg: 8,
+        xl: 8,
+        xxl: 8,
+      };
     return (
       <div>
-        <List
-          dataSource={info1}
-          bordered
-          style={{ marginBottom: 24 }}
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                width={70}
-                title={item.title}
-                value={item.value}
-                item={item}
-                hdClick={() => {
-                  if (item.dataIndex == 'projectName') {
-                    showOther();
-                  }
-                }}
-                contentstyle={{
-                  color:
-                    item.dataIndex == 'projectName'
-                      ? '#1183fb'
-                      : rendercolor('任务level', item.value),
-                  cursor:
-                    item.dataIndex == 'projectName' ? 'pointer' : 'default',
-                }}
-              />
-            </List.Item>
-          )}
-          footer={
-            renderAction ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {renderAction()}
-              </div>
-            ) : (
-              false
-            )
-          }
-        />
         <Row gutter={24}>
-          <Col span={8}>
-            <Card title="基本信息" style={{ borderColor: '#d9d9d9' }}>
+          <Col {...col}>
+            <Card title="用例信息" style={{ marginBottom: 24 }}>
               <List
+                style={{ marginTop: -24, marginBottom: -20 }}
+                dataSource={info1}
+                renderItem={(item: any) => (
+                  <List.Item>
+                    <DetailItem
+                      key={item.dataIndex}
+                      width={70}
+                      title={item.title}
+                      value={item.value}
+                      item={item}
+                      hdClick={() => {
+                        if (item.dataIndex == 'projectName') {
+                          showOther();
+                        }
+                      }}
+                      contentstyle={{
+                        color:
+                          item.dataIndex == 'projectName'
+                            ? '#1183fb'
+                            : rendercolor('任务level', item.value),
+                        cursor:
+                          item.dataIndex == 'projectName'
+                            ? 'pointer'
+                            : 'default',
+                      }}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+            <Card title="历史记录" style={{ marginBottom: 24 }}></Card>
+          </Col>
+          <Col {...cols}>
+            <Card title="基本信息" style={{ marginBottom: 24 }}>
+              <List
+                style={{ marginTop: -24, marginBottom: -20 }}
                 bordered={false}
                 dataSource={info2}
                 renderItem={(item: any) => (
@@ -419,10 +428,9 @@ let Demodetail = (props: any) => {
                 )}
               />
             </Card>
-          </Col>
-          <Col span={8}>
-            <Card title="相关Bug" style={{ borderColor: '#d9d9d9' }}>
+            <Card title="相关Bug" style={{ marginBottom: 24 }}>
               <List
+                style={{ marginTop: -24, marginBottom: -20 }}
                 bordered={false}
                 dataSource={info3}
                 renderItem={(item: any) => (
@@ -439,11 +447,9 @@ let Demodetail = (props: any) => {
                 )}
               />
             </Card>
-          </Col>
-
-          <Col span={8}>
-            <Card title="工时信息" style={{ borderColor: '#d9d9d9' }}>
+            <Card title="工时信息" style={{ marginBottom: 24 }}>
               <List
+                style={{ marginTop: -24, marginBottom: -20 }}
                 bordered={false}
                 dataSource={info4}
                 renderItem={(item: any) => (
@@ -462,6 +468,20 @@ let Demodetail = (props: any) => {
             </Card>
           </Col>
         </Row>
+        {renderAction && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 36,
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {renderAction()}
+          </div>
+        )}
       </div>
     );
   };

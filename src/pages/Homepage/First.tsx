@@ -135,7 +135,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
                 Modal.info({
                   style: { top: 20 },
                   zIndex: 999999,
-                  width: 800,
+                  width: 1200,
                   maskClosable: true,
                   title: proj.ProjqueryById.data.data.productName,
                   content: <Productdetail maindata={res.data.data} />,

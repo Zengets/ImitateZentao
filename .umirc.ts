@@ -10,6 +10,8 @@ if (allStr) {
     IpAndPort = 'http://172.21.3.124:8081/';
   } else if (allStr.indexOf('9001') != -1) {
     IpAndPort = 'http://172.21.3.137:8081/';
+  } else {
+    IpAndPort = 'http://172.21.2.164/zentao/';
   }
 }
 

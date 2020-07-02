@@ -569,7 +569,7 @@ let MissionStart = (props: any) => {
                   Modal.info({
                     style: { top: 20 },
                     zIndex: 999999,
-                    width: 800,
+                    width: 1200,
                     maskClosable: true,
                     title: miss.MisquerytaskDetails.data.data.info.projectName,
                     content: (
@@ -583,7 +583,7 @@ let MissionStart = (props: any) => {
                               Modal.info({
                                 style: { top: 20 },
                                 zIndex: 999999,
-                                width: 800,
+                                width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,
                                 content: (

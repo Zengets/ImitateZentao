@@ -11,7 +11,8 @@ let DetailItem = (props: any) => {
         width: '100%',
         display: 'flex',
         justifyContent: 'flex-start',
-        alignItems: 'center',
+        alignItems:
+          items.type && items.type == 'innerhtml' ? 'flex-start' : 'center',
       }}
     >
       <div

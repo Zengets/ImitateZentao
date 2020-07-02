@@ -164,19 +164,80 @@ let Demos = (props: any) => {
   useEffect(() => {
     let arr = ['Demotype']; //下拉框汇总
     arr.map((item: any) => {
-      setNewState(dispatch, `bug/${item}`, {}, () => {});
+      setNewState(dispatch, `bug/${item}`, {}, res => {
+        //options:res.data.dataList
+        cf({
+          projectId: {
+            value: projectId, //初始化值
+            type: 'select', //类型
+            title: '所属项目', //placeholder
+            name: ['projectId'], //唯一标识
+            required: true, //必填？
+            disabled: true,
+            options: model.ProjquerySelectList && model.ProjquerySelectList,
+          },
+          caseType: {
+            value: '', //初始化值
+            type: 'select', //类型
+            title: '用例类型', //placeholder
+            name: ['caseType'], //唯一标识
+            required: true, //必填？
+            options: res.data.dataList,
+          },
+          caseName: {
+            value: '', //初始化值
+            type: 'input', //类型
+            title: '用例名称', //placeholder
+            name: ['caseName'], //唯一标识
+            required: true, //必填？
+            col: { span: 24 },
+          },
+          precondition: {
+            value: '', //初始化值
+            type: 'textarea', //类型
+            title: '前置条件', //placeholder
+            name: ['precondition'], //唯一标识
+            required: false, //必填？
+            col: { span: 24 },
+          },
+          stepList: {
+            value: defaultvalue, //初始化值
+            type: 'editable', //类型
+            title: '用例步骤', //placeholder
+            name: ['stepList'], //唯一标识
+            required: true, //必填？
+            col: { span: 24 },
+          },
+          attachmentList: {
+            value: [], //初始化值
+            type: 'upload',
+            title: '附件',
+            name: ['attachmentList'],
+            required: false,
+            col: { span: 24 },
+          },
+        });
+      });
     });
   }, []);
 
   //父级组件项目变化调用
   useMemo(() => {
     if (projectId) {
-      setNewState(
-        dispatch,
-        'bug/querySelectListByProjectId',
-        { projectId: projectId },
-        () => {},
-      );
+      cf((fields: any) => {
+        return {
+          ...fields,
+          projectId: {
+            value: projectId, //初始化值
+            type: 'select', //类型
+            title: '所属项目', //placeholder
+            name: ['projectId'], //唯一标识
+            required: true, //必填？
+            disabled: true,
+            options: model.ProjquerySelectList && model.ProjquerySelectList,
+          },
+        };
+      });
       cpost({
         ...post,
         postdata: {
@@ -421,7 +482,57 @@ let Demos = (props: any) => {
   useMemo(() => {
     if (post.postdata.projectId) {
       setNewState(dispatch, post.posturl, post.postdata, () => {
-        cf(defaultfields);
+        cf({
+          projectId: {
+            value: post.postdata.projectId, //初始化值
+            type: 'select', //类型
+            title: '所属项目', //placeholder
+            name: ['projectId'], //唯一标识
+            required: true, //必填？
+            disabled: true,
+            options: model.ProjquerySelectList && model.ProjquerySelectList,
+          },
+          caseType: {
+            value: '', //初始化值
+            type: 'select', //类型
+            title: '用例类型', //placeholder
+            name: ['caseType'], //唯一标识
+            required: true, //必填？
+            options: bug.Demotype && bug.Demotype,
+          },
+          caseName: {
+            value: '', //初始化值
+            type: 'input', //类型
+            title: '用例名称', //placeholder
+            name: ['caseName'], //唯一标识
+            required: true, //必填？
+            col: { span: 24 },
+          },
+          precondition: {
+            value: '', //初始化值
+            type: 'textarea', //类型
+            title: '前置条件', //placeholder
+            name: ['precondition'], //唯一标识
+            required: false, //必填？
+            col: { span: 24 },
+          },
+          stepList: {
+            value: defaultvalue, //初始化值
+            type: 'editable', //类型
+            title: '用例步骤', //placeholder
+            name: ['stepList'], //唯一标识
+            required: true, //必填？
+            col: { span: 24 },
+          },
+          attachmentList: {
+            value: [], //初始化值
+            type: 'upload',
+            title: '附件',
+            name: ['attachmentList'],
+            required: false,
+            col: { span: 24 },
+          },
+        });
       });
     }
   }, [post]);
@@ -582,9 +693,9 @@ let Demos = (props: any) => {
               fullScreen: false,
             };
           });
-          setTimeout(() => {
-            cf(defaultfields);
-          }, 200);
+          // setTimeout(() => {
+          //   cf(defaultfields);
+          // }, 200);
         }}
         maxWidth="lg"
         title={iftype.title}
@@ -601,7 +712,7 @@ let Demos = (props: any) => {
                   Modal.info({
                     style: { top: 20 },
                     zIndex: 999999,
-                    width: 800,
+                    width: 1200,
                     maskClosable: true,
                     title: bug.DemoqueryById.data.data.projectName,
                     content: (
@@ -615,7 +726,7 @@ let Demos = (props: any) => {
                               Modal.info({
                                 style: { top: 20 },
                                 zIndex: 999999,
-                                width: 800,
+                                width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,
                                 content: (
@@ -687,168 +798,162 @@ let Demos = (props: any) => {
             }}
           ></DemoBug>
         ) : (
-          iftype.visible && (
-            <InitForm
-              fields={fields}
-              submitData={() => {
-                let newfields = JSON.parse(JSON.stringify(fields));
-                for (let i in newfields) {
-                  newfields[i] = newfields[i].value;
-                }
-                //文件处理
-                let newlist = newfields.attachmentList.fileList
-                  ? newfields.attachmentList.fileList.map(
-                      (items: any, i: number) => {
-                        return {
-                          attachmentName: items.response
-                            ? items.response.data.dataList[0].name
-                            : items.name,
-                          attachUrl: items.response
-                            ? items.response.data.dataList[0].url
-                            : items.url,
-                        };
-                      },
-                    )
-                  : [];
-                newfields.attachmentList = newlist;
-
-                if (iftype.key == 'active') {
-                  setNewState(
-                    dispatch,
-                    'bug/Bugactivate',
-                    {
-                      ...newfields,
-                      id: iftype.curitem.id,
+          <InitForm
+            fields={fields}
+            submitData={() => {
+              let newfields = JSON.parse(JSON.stringify(fields));
+              for (let i in newfields) {
+                newfields[i] = newfields[i].value;
+              }
+              //文件处理
+              let newlist = newfields.attachmentList.fileList
+                ? newfields.attachmentList.fileList.map(
+                    (items: any, i: number) => {
+                      return {
+                        attachmentName: items.response
+                          ? items.response.data.dataList[0].name
+                          : items.name,
+                        attachUrl: items.response
+                          ? items.response.data.dataList[0].url
+                          : items.url,
+                      };
                     },
-                    () => {
-                      ciftype(() => {
-                        return {
-                          ...iftype,
-                          visible: false,
-                        };
-                      });
-                      setNewState(dispatch, post.posturl, post.postdata, () => {
-                        message.success(
-                          '已激活' + iftype.curitem.bugName + '！',
-                        );
-                      });
-                    },
-                  );
-                  return;
-                }
+                  )
+                : [];
+              newfields.attachmentList = newlist;
 
-                if (iftype.key == 'deal') {
-                  setNewState(
-                    dispatch,
-                    'bug/Bugsolve',
-                    {
-                      ...newfields,
-                      id: iftype.curitem.id,
-                    },
-                    () => {
-                      ciftype(() => {
-                        return {
-                          ...iftype,
-                          visible: false,
-                        };
-                      });
-                      setNewState(dispatch, post.posturl, post.postdata, () => {
-                        message.success(
-                          '已处理' + iftype.curitem.bugName + '！',
-                        );
-                      });
-                    },
-                  );
-                  return;
-                }
-
-                if (iftype.key == 'checks') {
-                  setNewState(
-                    dispatch,
-                    'bug/Bugconfirm',
-                    {
-                      ...newfields,
-                      id: iftype.curitem.id,
-                    },
-                    () => {
-                      ciftype(() => {
-                        return {
-                          ...iftype,
-                          visible: false,
-                        };
-                      });
-                      setNewState(dispatch, post.posturl, post.postdata, () => {
-                        message.success(
-                          '已验收' + iftype.curitem.bugName + '！',
-                        );
-                      });
-                    },
-                  );
-
-                  return;
-                }
-
-                //新增修改
-                if (iftype.key == 'edit') {
-                  newfields.id = iftype.curitem.id;
-                }
-
-                newfields.stepList = newfields.stepList.map((item: any) => {
-                  if (item.id.indexOf('tts') != -1) {
-                    item.id = '';
-                    item.parentId = '';
-                  }
-                  item.children = item.children.map((it: any) => {
-                    if (it.id.indexOf('tts') != -1) {
-                      it.id = '';
-                      it.parentId = '';
-                    }
-                    return {
-                      id: it.id,
-                      parentId: it.parentId,
-                      step: it.step, //步骤，必填
-                      expection: it.expection,
-                      children: it.children,
-                    };
-                  });
-                  return {
-                    id: item.id,
-                    parentId: item.parentId,
-                    step: item.step, //步骤，必填
-                    expection: item.expection,
-                    children: item.children,
-                  };
-                });
-
-                setNewState(dispatch, 'bug/Demosave', newfields, () => {
-                  setNewState(dispatch, post.posturl, post.postdata, () => {
-                    message.success('操作成功');
+              if (iftype.key == 'active') {
+                setNewState(
+                  dispatch,
+                  'bug/Bugactivate',
+                  {
+                    ...newfields,
+                    id: iftype.curitem.id,
+                  },
+                  () => {
                     ciftype(() => {
                       return {
                         ...iftype,
                         visible: false,
                       };
                     });
-                  });
-                });
-              }}
-              onChange={(newFields: any) => {
-                if (!newFields) {
-                  return;
+                    setNewState(dispatch, post.posturl, post.postdata, () => {
+                      message.success('已激活' + iftype.curitem.bugName + '！');
+                    });
+                  },
+                );
+                return;
+              }
+
+              if (iftype.key == 'deal') {
+                setNewState(
+                  dispatch,
+                  'bug/Bugsolve',
+                  {
+                    ...newfields,
+                    id: iftype.curitem.id,
+                  },
+                  () => {
+                    ciftype(() => {
+                      return {
+                        ...iftype,
+                        visible: false,
+                      };
+                    });
+                    setNewState(dispatch, post.posturl, post.postdata, () => {
+                      message.success('已处理' + iftype.curitem.bugName + '！');
+                    });
+                  },
+                );
+                return;
+              }
+
+              if (iftype.key == 'checks') {
+                setNewState(
+                  dispatch,
+                  'bug/Bugconfirm',
+                  {
+                    ...newfields,
+                    id: iftype.curitem.id,
+                  },
+                  () => {
+                    ciftype(() => {
+                      return {
+                        ...iftype,
+                        visible: false,
+                      };
+                    });
+                    setNewState(dispatch, post.posturl, post.postdata, () => {
+                      message.success('已验收' + iftype.curitem.bugName + '！');
+                    });
+                  },
+                );
+
+                return;
+              }
+
+              //新增修改
+              if (iftype.key == 'edit') {
+                newfields.id = iftype.curitem.id;
+              } else if (iftype.key == 'add') {
+                delete newfields.id;
+              }
+
+              newfields.stepList = newfields.stepList.map((item: any) => {
+                if (item.id.indexOf('tts') != -1) {
+                  item.id = '';
+                  item.parentId = '';
                 }
-                let name = newFields ? newFields.name : '',
-                  value = newFields.value ? newFields.value : '';
-                let key = name ? name[0] : '';
-                cf(() => {
-                  fields[key].value = value;
+                item.children = item.children.map((it: any) => {
+                  if (it.id.indexOf('tts') != -1) {
+                    it.id = '';
+                    it.parentId = '';
+                  }
                   return {
-                    ...fields,
+                    id: it.id,
+                    parentId: it.parentId,
+                    step: it.step, //步骤，必填
+                    expection: it.expection,
+                    children: it.children,
                   };
                 });
-              }}
-              submitting={props.loading.effects['bug/Demosave']}
-            ></InitForm>
-          )
+                return {
+                  id: item.id,
+                  parentId: item.parentId,
+                  step: item.step, //步骤，必填
+                  expection: item.expection,
+                  children: item.children,
+                };
+              });
+
+              setNewState(dispatch, 'bug/Demosave', newfields, () => {
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  message.success('操作成功');
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: false,
+                    };
+                  });
+                });
+              });
+            }}
+            onChange={(newFields: any) => {
+              if (!newFields) {
+                return;
+              }
+              let name = newFields ? newFields.name : '',
+                value = newFields.value ? newFields.value : '';
+              let key = name ? name[0] : '';
+              cf(() => {
+                fields[key].value = value;
+                return {
+                  ...fields,
+                };
+              });
+            }}
+            submitting={props.loading.effects['bug/Demosave']}
+          ></InitForm>
         )}
       </Dia>
       <Card
@@ -862,11 +967,12 @@ let Demos = (props: any) => {
                   return {
                     ...iftype,
                     visible: true,
+                    fullScreen: true,
                     title: '新增用例',
                     key: 'add',
                   };
                 });
-                cf(defaultfields);
+                //cf(defaultfields);
               }}
             >
               <div
