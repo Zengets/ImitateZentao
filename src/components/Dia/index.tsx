@@ -54,7 +54,13 @@ export default function Dia({
         aria-describedby="alert-dialog-slide-description"
       >
         <div
-          style={{ backgroundColor: fullScreen ? '#f0f0f0' : '#fff', flex: 1 }}
+          style={{
+            backgroundColor: fullScreen ? '#f0f0f0' : '#fff',
+            height: '100%',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
           <DialogTitle id="draggable-dialog-title">
             <div
@@ -76,7 +82,7 @@ export default function Dia({
               </IconButton>
             </div>
           </DialogTitle>
-          <DialogContent>{children}</DialogContent>
+          <DialogContent style={{ flex: 1 }}>{children}</DialogContent>
           {footer ? (
             footer
           ) : (

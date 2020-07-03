@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Tree, Card, Empty } from 'antd';
-
+import styles from './style.less';
 let DetailItem = (props: any) => {
   let { title, value, width, titlestyle, contentstyle, hdClick, item } = props;
   let items = item ? item : {};
@@ -12,7 +12,10 @@ let DetailItem = (props: any) => {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems:
-          items.type && items.type == 'innerhtml' ? 'flex-start' : 'center',
+          (items.type && items.type == 'innerhtml') ||
+          (items.type && items.type == 'start')
+            ? 'flex-start'
+            : 'center',
       }}
     >
       <div
@@ -26,7 +29,10 @@ let DetailItem = (props: any) => {
         {title} :
       </div>
       {items.type && items.type == 'innerhtml' ? (
-        <div dangerouslySetInnerHTML={{ __html: item.value }} />
+        <div
+          className={styles.inits}
+          dangerouslySetInnerHTML={{ __html: item.value }}
+        />
       ) : (
         <div style={{ ...contentstyle, flex: 1 }} onClick={hdClick}>
           {value}
