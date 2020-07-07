@@ -4,80 +4,62 @@ import { List, Card, Row, Col, Divider } from 'antd';
 import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
+import { type } from './../../.umi/plugin-model/useModel';
 
-let Projectdetail = (props: any) => {
-  let { renderAction, maindata, showProduct } = props;
+let Needsdetail = (props: any) => {
+  let { renderAction, maindata } = props;
   let columns = [
     {
-      title: '项目编号',
-      dataIndex: 'projectNo',
-      key: 'projectNo',
+      title: '编号',
+      dataIndex: 'requireNo',
+      key: 'requireNo',
     },
     {
-      title: '项目名称',
+      title: '优先级',
+      dataIndex: 'priorityName',
+      key: 'priorityName',
+    },
+    {
+      title: '需求名称',
+      dataIndex: 'requireName',
+      key: 'requireName',
+    },
+    {
+      title: '创建人',
+      dataIndex: 'createUserName',
+      key: 'createUserName',
+    },
+    {
+      title: '所属项目',
       dataIndex: 'projectName',
       key: 'projectName',
-    },
-    {
-      title: '所属产品',
-      dataIndex: 'productName',
-      key: 'productName',
-    },
-    {
-      title: '预计开始日期',
-      dataIndex: 'startDate',
-      key: 'startDate',
-    },
-    {
-      title: '截止日期',
-      dataIndex: 'endDate',
-      key: 'endDate',
-    },
-    {
-      title: '预计工时(h)',
-      dataIndex: 'planHours',
-    },
-    {
-      title: '消耗工时(h)',
-      dataIndex: 'expendHours',
-    },
-    {
-      title: '剩余工时(h)',
-      dataIndex: 'leftHours',
     },
     {
       title: '状态',
       dataIndex: 'statusName',
       key: 'statusName',
     },
+    {
+      title: '阶段',
+      dataIndex: 'stageName',
+      key: 'stageName',
+    },
+    {
+      title: '任务数',
+      dataIndex: 'taskNum',
+      key: 'taskNum',
+    },
   ];
 
   let renderdetail = () => {
     let listdata: any,
       dataSource: any[] = [],
-      newcolumns = JSON.parse(JSON.stringify(columns)).filter((it: any) => {
-        return it.dataIndex != 'action' && it.dataIndex != 'openUserName';
-      }), //过滤不需要的
+      newcolumns = JSON.parse(JSON.stringify(columns)), //过滤不需要的
       addarr = [
         {
-          title: '产品描述',
-          dataIndex: 'description',
-          key: 'description',
-        },
-        {
-          title: '附件',
-          dataIndex: 'attachmentList',
-          key: 'attachmentList',
-        },
-        {
-          title: '可用工作日(天)',
-          dataIndex: 'availableDays',
-          key: 'availableDays',
-        },
-        {
-          title: '可用工时(h)',
-          dataIndex: 'totalHours',
-          key: 'totalHours',
+          title: '所属产品',
+          dataIndex: 'productName',
+          key: 'productName',
         },
         {
           title: '由谁创建',
@@ -85,17 +67,33 @@ let Projectdetail = (props: any) => {
           key: 'createTime',
         },
         {
-          title: '由谁开始',
-          dataIndex: 'realStartTime',
-          key: 'realStartTime',
+          title: '由谁激活',
+          dataIndex: 'activateDate',
+          key: 'activateDate',
         },
         {
-          title: '由谁完成',
-          dataIndex: 'realFinishTime',
-          key: 'realFinishTime',
+          title: '由谁关闭',
+          dataIndex: 'closeTime',
+          key: 'closeTime',
+        },
+        {
+          title: '需求描述',
+          dataIndex: 'requireDescription',
+          key: 'requireDescription',
+          type: 'innerhtml',
+        },
+        {
+          title: '验收标准',
+          dataIndex: 'acceptStandard',
+          key: 'acceptStandard',
+          type: 'innerhtml',
+        },
+        {
+          title: '附件',
+          dataIndex: 'attachmentList',
+          key: 'attachmentList',
         },
       ]; //初始化
-
     if (maindata) {
       listdata = maindata;
     }
@@ -110,54 +108,50 @@ let Projectdetail = (props: any) => {
         return {
           title: item.title,
           dataIndex: item.dataIndex,
+          type: item.type,
           value:
             item.dataIndex == 'createTime'
               ? listdata.createUserName &&
                 `${listdata.createUserName} 于 ${date}创建`
-              : item.dataIndex == 'realStartTime'
-              ? listdata.startUserName &&
-                `${listdata.startUserName} 于 ${date}开始`
-              : item.dataIndex == 'realFinishTime'
-              ? listdata.finishUserName &&
-                `${listdata.finishUserName} 于 ${date}完成`
-              : item.dataIndex == 'startDate'
-              ? date
-              : item.dataIndex == 'endDate'
-              ? date
+              : item.dataIndex == 'closeTime'
+              ? listdata.closeUserName &&
+                `${listdata.closeUserName} 于 ${date}关闭`
+              : item.dataIndex == 'activateDate'
+              ? listdata.activateUserName &&
+                `${listdata.activateUserName} 于 ${date}激活`
               : listdata[item.dataIndex],
         };
       });
     }
 
     let info1 = [
-      'statusName',
-      'projectNo',
-      'projectName',
+      'requireNo',
       'productName',
-      'description',
+      'projectName',
+      'priorityName',
+      'statusName',
+      'stageName',
+      'requireName',
+      'requireDescription',
+      'acceptStandard',
       'attachmentList',
-      'startDate',
-      'endDate',
-      'availableDays',
     ].map((item: any) => {
       return dataSource.filter((it: any) => {
         return it.dataIndex == item;
       })[0];
     });
-    let info2 = ['totalHours', 'planHours', 'expendHours', 'leftHours'].map(
-      (item: any) => {
-        return dataSource.filter((it: any) => {
-          return it.dataIndex == item;
-        })[0];
-      },
-    );
-    let info3 = ['createTime', 'realStartTime', 'realFinishTime'].map(
-      (item: any) => {
-        return dataSource.filter((it: any) => {
-          return it.dataIndex == item;
-        })[0];
-      },
-    );
+
+    let info2 = ['createTime', 'activateDate', 'closeTime'].map((item: any) => {
+      return dataSource.filter((it: any) => {
+        return it.dataIndex == item;
+      })[0];
+    });
+
+    let info3 = ['taskNum'].map((item: any) => {
+      return dataSource.filter((it: any) => {
+        return it.dataIndex == item;
+      })[0];
+    });
 
     function renderList(list: any[]) {
       if (list) {
@@ -194,10 +188,11 @@ let Projectdetail = (props: any) => {
         xl: 8,
         xxl: 8,
       };
+
     return (
       <Row gutter={24} style={{ width: '100%' }}>
         <Col {...col} style={{ marginBottom: 24 }}>
-          <Card title={'项目信息'}>
+          <Card title={'需求信息'}>
             <List
               split={false}
               size="small"
@@ -207,12 +202,8 @@ let Projectdetail = (props: any) => {
                 item.value && (
                   <List.Item>
                     <DetailItem
+                      item={item}
                       key={item.dataIndex}
-                      hdClick={() => {
-                        if (item.dataIndex == 'productName') {
-                          showProduct();
-                        }
-                      }}
                       title={item.title}
                       value={
                         item.dataIndex == 'attachmentList'
@@ -220,22 +211,42 @@ let Projectdetail = (props: any) => {
                           : item.value
                       }
                       contentstyle={{
-                        color:
-                          item.dataIndex == 'productName'
-                            ? '#1183fb'
-                            : rendercolor('Projuctstatus', item.value),
-                        cursor:
-                          item.dataIndex == 'productName'
-                            ? 'pointer'
-                            : 'default',
+                        color: rendercolor('Productstatus', item.value),
                       }}
                     />
                   </List.Item>
                 )
               }
             />
+            <Divider></Divider>
             <List
-              style={{ marginTop: 24 }}
+              split={false}
+              size="small"
+              dataSource={info2}
+              renderItem={(item: any) =>
+                item.value && (
+                  <List.Item>
+                    <DetailItem
+                      item={item}
+                      key={item.dataIndex}
+                      title={item.title}
+                      value={
+                        item.dataIndex == 'attachmentList'
+                          ? renderList(item.value)
+                          : item.value
+                      }
+                      contentstyle={{
+                        color: rendercolor('Productstatus', item.value),
+                      }}
+                    />
+                  </List.Item>
+                )
+              }
+            />
+            <Divider></Divider>
+            <List
+              split={false}
+              size="small"
               dataSource={info3}
               renderItem={(item: any) =>
                 item.value && (
@@ -243,31 +254,25 @@ let Projectdetail = (props: any) => {
                     <DetailItem
                       key={item.dataIndex}
                       title={item.title}
-                      value={item.value}
-                      contentstyle={{ color: '#666' }}
+                      item={item}
+                      value={
+                        item.dataIndex == 'attachmentList'
+                          ? renderList(item.value)
+                          : item.value
+                      }
+                      contentstyle={{
+                        color: rendercolor('Productstatus', item.value),
+                      }}
                     />
                   </List.Item>
                 )
               }
             />
-            <Divider></Divider>
-            <Row gutter={24}>
-              {info2 &&
-                info2.map((item, i) => (
-                  <Col key={i} span={6}>
-                    <h4>{item.title}</h4>
-                    <span style={{ fontSize: 20, color: 'green' }}>
-                      {item.value}
-                    </span>
-                  </Col>
-                ))}
-            </Row>
           </Card>
         </Col>
         <Col {...cols} style={{ marginBottom: 24 }}>
           <Card title="历史记录"></Card>
         </Col>
-
         {renderAction && (
           <div
             style={{
@@ -285,7 +290,8 @@ let Projectdetail = (props: any) => {
       </Row>
     );
   };
+
   return renderdetail();
 };
 
-export default Projectdetail;
+export default Needsdetail;

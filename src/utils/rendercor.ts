@@ -72,6 +72,36 @@ export default function rendercolor(model: any, key: any) {
         color = '#333';
         break;
     }
+  } else if (model == 'Productstage') {
+    switch (key) {
+      case '1': //未激活
+        color = '#999';
+        break;
+      case '未开始':
+        color = '#999';
+        break;
+      case '2':
+        color = '#000';
+        break;
+      case '已立项':
+        color = '#000';
+        break;
+      case '3':
+        color = 'green';
+        break;
+      case '研发中':
+        color = 'green';
+        break;
+      case '4':
+        color = '#f50';
+        break;
+      case '已完成':
+        color = '#f50';
+        break;
+      default:
+        color = '#333';
+        break;
+    }
   } else if (model == 'Projuctstatus') {
     switch (key) {
       case 1:

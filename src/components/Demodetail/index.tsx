@@ -360,7 +360,9 @@ let Demodetail = (props: any) => {
           <Col {...col}>
             <Card title="用例信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info1}
                 renderItem={(item: any) => (
                   <List.Item>
@@ -395,7 +397,9 @@ let Demodetail = (props: any) => {
           <Col {...cols}>
             <Card title="基本信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 bordered={false}
                 dataSource={info2}
                 renderItem={(item: any) => (
@@ -430,7 +434,9 @@ let Demodetail = (props: any) => {
             </Card>
             <Card title="相关Bug" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 bordered={false}
                 dataSource={info3}
                 renderItem={(item: any) => (
@@ -449,7 +455,9 @@ let Demodetail = (props: any) => {
             </Card>
             <Card title="工时信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 bordered={false}
                 dataSource={info4}
                 renderItem={(item: any) => (

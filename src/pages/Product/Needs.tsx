@@ -33,58 +33,33 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
-import Productdetail from '@/components/Productdetail';
+import Needsdetail from '@/components/Needsdetail';
+import { models } from './../../.umi/plugin-model/Provider';
 
-let Product = (props: any) => {
-  let { prod, dispatch, loading } = props,
+let Needs = (props: any) => {
+  let { prod, model, dispatch, loading } = props,
+    productId = model.prod,
     [post, cpost] = useState({
-      posturl: 'prod/ProdqueryList',
+      posturl: 'prod/umRequirequeryList',
       postdata: {
         pageIndex: '1', //----------------页码 *
         pageSize: '10', //-----------------条数*
-        productNo: '', //----------------产品编号
-        productName: '', //--------------产品名称
-        chargeUserId: '', //-------------产品负责人
-        openUserId: '', //---------------创建人
-        status: '', //-----------------状态
-        openDateStart: '', //-------------------创建日期搜索
-        openDateEnd: '', //-------------------创建日期搜索
-        activateDateStart: '', //-------------------激活日期搜索
-        activateDateEnd: '', //-------------------激活日期搜索
-        closeDateStart: '', //-------------------关闭日期搜索
-        closeDateEnd: '', //-------------------关闭日期搜索
+        requireNo: '', // 需求编号
+        priorityType: '', // 优先级，1：高，2：中，3：低
+        requireName: '', // 需求名称
+        createUserId: '', // 创建人
+        projectId: '', // 项目主键（在项目需求列表中必传）
+        status: '', // 状态， 1：未激活、2：已激活、3：已关闭
+        stage: '', // 阶段，1：未开始、2：已立项、2：研发中、3：已完成
+        productId: productId, // 产品主键（在产品需求列表中必传）
         sortList: [
-          //----------------------------------排序字段集合
+          // 更具字段名称和字段顺序排序
           {
-            fieldName: 'productNo', //---------编号
+            fieldName: 'requireName',
             sort: '',
           },
           {
-            fieldName: 'productName', //------------名称
-            sort: '',
-          },
-          {
-            fieldName: 'chargeUserId', //--------------负责人
-            sort: '',
-          },
-          {
-            fieldName: 'openUserId', //----------------创建人
-            sort: '',
-          },
-          {
-            fieldName: 'openDate', //----------------创建日期
-            sort: '',
-          },
-          {
-            fieldName: 'activateDate', //----------------激活日期
-            sort: '',
-          },
-          {
-            fieldName: 'closeDate', //----------------关闭日期
-            sort: '',
-          },
-          {
-            fieldName: 'status', //---------------状态
+            fieldName: 'priorityType',
             sort: '',
           },
         ],
@@ -98,35 +73,46 @@ let Product = (props: any) => {
       key: '',
     }),
     defaultfields: any = {
-      productNo: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '产品编号', //placeholder
-        name: ['productNo'], //唯一标识
+      productId: {
+        value: productId, //初始化值
+        type: 'select', //类型
+        title: '所属产品', //placeholder
+        name: ['productId'], //唯一标识
         required: true, //必填？
+        disabled: true,
+        options: model.ProdqueryAllSelectAll && model.ProdqueryAllSelectAll,
       },
-      productName: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '产品名称', //placeholder
-        name: ['productName'], //唯一标识
-        required: true, //必填？
-      },
-      chargeUserId: {
+      priorityType: {
         value: '', //初始化值
         type: 'select', //类型
-        title: '产品负责人', //placeholder
-        name: ['chargeUserId'], //唯一标识
+        title: '优先级', //placeholder
+        name: ['priorityType'], //唯一标识
         required: true, //必填？
-        options: prod.UserqueryAll && prod.UserqueryAll,
+        options: prod.Bugpriority && prod.Bugpriority,
       },
-      description: {
+      requireName: {
         value: '', //初始化值
-        type: 'textarea',
-        title: '产品描述',
-        name: ['description'],
+        type: 'input', //类型
+        title: '需求名称', //placeholder
+        name: ['requireName'], //唯一标识
+        required: true, //必填？
+      },
+      requireDescription: {
+        value: '<p></p>', //初始化值
+        type: 'editor',
+        title: '需求描述',
+        name: ['requireDescription'],
+        required: true,
+        height: 240,
+        col: { span: 24 },
+      },
+      acceptStandard: {
+        value: '<p></p>', //初始化值
+        type: 'editor',
+        title: '验收标准',
+        name: ['acceptStandard'],
         required: false,
-        rows: 6,
+        height: 240,
         col: { span: 24 },
       },
       attachmentList: {
@@ -141,46 +127,68 @@ let Product = (props: any) => {
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    setNewState(dispatch, post.posturl, post.postdata, () => {});
+    setNewState(dispatch, 'prod/Bugpriority', {}, () => {});
     setNewState(dispatch, 'prod/UserqueryAll', {}, () => {});
-    setNewState(dispatch, 'prod/ProdqueryStatus', {}, () => {});
+    setNewState(dispatch, 'prod/queryRequireStatusSelectList', {}, () => {});
+    setNewState(dispatch, 'prod/queryRequireStageSelectList', {}, () => {});
   }, []);
 
   let columns = [
     {
-      title: '产品编号',
-      dataIndex: 'productNo',
-      key: 'productNo',
+      title: '编号',
+      dataIndex: 'requireNo',
+      key: 'requireNo',
       sorter: {
         multiple: 100,
       },
       ellipsis: true,
       width: 120,
-      ...getColumnSearchProps('productNo', post.postdata, handleSearch),
+      ...getColumnSearchProps('requireNo', post.postdata, handleSearch),
     },
     {
-      title: '产品名称',
+      title: '优先级',
+      dataIndex: 'priorityName',
+      key: 'priorityName',
+      sorter: {
+        multiple: 100,
+      },
+      ellipsis: true,
+      width: 90,
+      ...getColumnSelectProps(
+        'priorityType',
+        prod.Bugpriority,
+        post.postdata,
+        handleSearch,
+      ),
+      render: (text: any, record: any) => (
+        <b style={{ color: rendercolor('Buglevel', record.priorityType) }}>
+          {text}
+        </b>
+      ),
+    },
+    {
+      title: '需求名称',
       sorter: {
         multiple: 99,
       },
       ellipsis: true,
-      dataIndex: 'productName',
-      key: 'productName',
-      ...getColumnSearchProps('productName', post.postdata, handleSearch),
+      dataIndex: 'requireName',
+      key: 'requireName',
+      ...getColumnSearchProps('requireName', post.postdata, handleSearch),
       render(text: React.ReactNode, record: any) {
         return (
           <a
             onClick={() => {
               setNewState(
                 dispatch,
-                'prod/ProdqueryInfo',
+                'prod/queryDetailInfo',
                 { id: record.id },
                 () => {
                   ciftype({
                     ...iftype,
                     curitem: record,
                     visible: true,
-                    title: `[${record.productNo}]` + text,
+                    title: `[${record.requireNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
                   });
@@ -194,76 +202,35 @@ let Product = (props: any) => {
       },
     },
     {
-      title: '产品负责人',
-      sorter: {
-        multiple: 98,
-      },
-      width: 120,
-      dataIndex: 'chargeUserName',
-      key: 'chargeUserName',
-      ...getColumnSelectProps(
-        'chargeUserId',
-        prod.UserqueryAll,
-        post.postdata,
-        handleSearch,
-      ),
-    },
-    {
       title: '创建人',
       sorter: {
         multiple: 97,
       },
       width: 120,
-      dataIndex: 'openUserName',
-      key: 'openUserName',
+      dataIndex: 'createUserName',
+      key: 'createUserName',
       ...getColumnSelectProps(
-        'openUserId',
+        'createUserId',
         prod.UserqueryAll,
         post.postdata,
         handleSearch,
       ),
     },
     {
-      title: '创建日期',
+      title: '所属项目',
+      dataIndex: 'projectName',
+      key: 'projectName',
       sorter: {
-        multiple: 96,
+        multiple: 100,
       },
+      ellipsis: true,
       width: 120,
-      dataIndex: 'openDate',
-      key: 'openDate',
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
-    },
-    {
-      title: '激活日期',
-      sorter: {
-        multiple: 95,
-      },
-      width: 120,
-      dataIndex: 'activateDate',
-      key: 'activateDate',
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
-    },
-    {
-      title: '关闭日期',
-      sorter: {
-        multiple: 94,
-      },
-      dataIndex: 'closeDate',
-      key: 'closeDate',
-      width: 120,
-      render(text: any) {
-        return (
-          <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
-        );
-      },
+      ...getColumnSelectProps(
+        'projectId',
+        prod.umRequiretoproj,
+        post.postdata,
+        handleSearch,
+      ),
     },
     {
       title: '状态',
@@ -275,7 +242,7 @@ let Product = (props: any) => {
       width: 120,
       ...getColumnSelectProps(
         'status',
-        prod.ProdqueryStatus,
+        prod.queryRequireStatusSelectList,
         post.postdata,
         handleSearch,
       ),
@@ -284,6 +251,35 @@ let Product = (props: any) => {
           {text}
         </span>
       ),
+    },
+    {
+      title: '阶段',
+      sorter: {
+        multiple: 93,
+      },
+      dataIndex: 'stageName',
+      key: 'stageName',
+      width: 120,
+      ...getColumnSelectProps(
+        'stage',
+        prod.queryRequireStageSelectList,
+        post.postdata,
+        handleSearch,
+      ),
+      render: (text: React.ReactNode, record: { status: any }) => (
+        <span style={{ color: rendercolor('Productstage', record.stage) }}>
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: '任务数',
+      sorter: {
+        multiple: 12,
+      },
+      dataIndex: 'taskNum',
+      key: 'taskNum',
+      width: 120,
     },
     {
       title: '操作',
@@ -302,14 +298,14 @@ let Product = (props: any) => {
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认激活' + record.productName + '？'}
+          title={'确认激活' + record.requireName + '？'}
           onConfirm={() => {
             setNewState(
               dispatch,
-              'prod/Prodactivation',
+              'prod/Requireactivate',
               { id: record.id },
               () => {
-                message.success('激活' + record.productName + '成功！');
+                message.success('激活' + record.requireName + '成功！');
                 setNewState(
                   dispatch,
                   post.posturl,
@@ -336,27 +332,36 @@ let Product = (props: any) => {
             </IconButton>
           </Tooltip>
         </Popconfirm>
-
         <Divider type="vertical"></Divider>
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认关闭' + record.productName + '？'}
+          title={'确认关闭' + record.requireName + '？'}
           onConfirm={() => {
-            setNewState(dispatch, 'prod/Prodclose', { id: record.id }, () => {
-              message.success(record.productName + '关闭成功！');
-              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
-                let result = res.data.page.list;
-                ciftype({
-                  ...iftype,
-                  curitem: result.filter((items: any) => {
-                    return items.id == record.id;
-                  })[0],
-                });
-              });
-            });
+            setNewState(
+              dispatch,
+              'prod/Requireclose',
+              { id: record.id },
+              () => {
+                message.success(record.requireName + '关闭成功！');
+                setNewState(
+                  dispatch,
+                  post.posturl,
+                  post.postdata,
+                  (res: any) => {
+                    let result = res.data.page.list;
+                    ciftype({
+                      ...iftype,
+                      curitem: result.filter((items: any) => {
+                        return items.id == record.id;
+                      })[0],
+                    });
+                  },
+                );
+              },
+            );
           }}
         >
           <Tooltip title="关闭">
@@ -368,27 +373,32 @@ let Product = (props: any) => {
           </Tooltip>
         </Popconfirm>
         <Divider type="vertical"></Divider>
-
         <IconButton
           disabled={record.status == 3}
           onClick={() => {
             cf({
-              productNo: {
-                ...fields.productNo,
-                value: record.productNo, //初始化值
+              productId: {
+                ...fields.productId,
+                value: record.productId, //初始化值
+                options:
+                  model.ProdqueryAllSelectAll && model.ProdqueryAllSelectAll,
               },
-              productName: {
-                ...fields.productName,
-                value: record.productName, //初始化值
+              priorityType: {
+                ...fields.priorityType,
+                value: record.priorityType, //初始化值
+                options: prod.Bugpriority && prod.Bugpriority,
               },
-              chargeUserId: {
-                ...fields.chargeUserId,
-                value: record.chargeUserId, //初始化值
-                options: prod.UserqueryAll && prod.UserqueryAll,
+              requireName: {
+                ...fields.requireName,
+                value: record.requireName, //初始化值
               },
-              description: {
-                ...fields.description,
-                value: record.description, //初始化值
+              requireDescription: {
+                ...fields.requireDescription,
+                value: record.requireDescription, //初始化值
+              },
+              acceptStandard: {
+                ...fields.acceptStandard,
+                value: record.acceptStandard, //初始化值
               },
               attachmentList: {
                 ...fields.attachmentList,
@@ -401,7 +411,7 @@ let Product = (props: any) => {
               return {
                 ...iftype,
                 visible: true,
-                title: '修改' + record.productName,
+                title: '修改' + record.requireName,
                 key: 'edit',
                 curitem: record,
                 fullScreen: false,
@@ -420,17 +430,16 @@ let Product = (props: any) => {
           okText="确认"
           cancelText="取消"
           placement="bottom"
-          title={'确认删除' + record.productName + '？'}
+          title={'确认删除' + record.requireName + '？'}
           onConfirm={() => {
             setNewState(
               dispatch,
-              'prod/ProddeleteById',
+              'prod/RequiredeleteById',
               { id: record.id },
               () => {
-                message.success('删除' + record.productName + '成功！');
+                message.success('删除' + record.requireName + '成功！');
                 setNewState(dispatch, post.posturl, post.postdata, () => {
                   hides(false);
-                  localStorage.removeItem('vals');
                 });
               },
             );
@@ -484,6 +493,22 @@ let Product = (props: any) => {
   };
 
   useMemo(() => {
+    if (productId) {
+      cpost({
+        ...post,
+        postdata: {
+          ...post.postdata,
+          productId,
+        },
+      });
+      setNewState(dispatch, 'prod/umRequiretoproj', { productId }, () => {});
+    }
+  }, [model.prod]);
+
+  useMemo(() => {
+    if (!productId) {
+      return;
+    }
     setNewState(dispatch, post.posturl, post.postdata, () => {
       cf(defaultfields);
     });
@@ -525,68 +550,53 @@ let Product = (props: any) => {
         footer={<div style={{ height: 24 }}></div>}
       >
         {iftype.key == 'detail' ? (
-          <Productdetail
+          <Needsdetail
             renderAction={() => renderAction(iftype.curitem)}
-            maindata={prod.ProdqueryInfo.data.data}
-          ></Productdetail>
+            maindata={prod.queryDetailInfo.data.data}
+          ></Needsdetail>
         ) : (
-          <InitForm
-            fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
-              if (iftype.key == 'edit') {
-                newfields.id = iftype.curitem.id;
-              }
+          iftype.visible && (
+            <InitForm
+              fields={fields}
+              submitData={(value: any) => {
+                let newfields = value;
+                if (iftype.key == 'edit') {
+                  newfields.id = iftype.curitem.id;
+                }
 
-              let newlist = newfields.attachmentList.fileList
-                ? newfields.attachmentList.fileList.map(
-                    (items: any, i: number) => {
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
+
+                newfields.attachmentList = newlist;
+
+                setNewState(dispatch, 'prod/Requiresave', newfields, () => {
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    message.success('操作成功');
+                    ciftype(() => {
                       return {
-                        attachmentName: items.response
-                          ? items.response.data.dataList[0].name
-                          : items.name,
-                        attachUrl: items.response
-                          ? items.response.data.dataList[0].url
-                          : items.url,
+                        ...iftype,
+                        visible: false,
                       };
-                    },
-                  )
-                : [];
-
-              newfields.attachmentList = newlist;
-
-              setNewState(dispatch, 'prod/Prodsave', newfields, () => {
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
-                  ciftype(() => {
-                    return {
-                      ...iftype,
-                      visible: false,
-                    };
+                    });
                   });
                 });
-              });
-            }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
-              }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value;
-              let key = name ? name[0] : '';
-              cf(() => {
-                fields[key].value = value;
-
-                return {
-                  ...fields,
-                };
-              });
-            }}
-            submitting={props.loading.effects['prod/Prodsave']}
-          ></InitForm>
+              }}
+              onChange={(newFields: any) => {}}
+              submitting={props.loading.effects['prod/Requiresave']}
+            ></InitForm>
+          )
         )}
       </Dia>
       <Card
@@ -630,7 +640,7 @@ let Product = (props: any) => {
         }
       >
         <AutoTable
-          data={prod.ProdqueryList}
+          data={prod.umRequirequeryList}
           columns={columns}
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
@@ -642,7 +652,8 @@ let Product = (props: any) => {
   );
 };
 
-export default connect(({ prod, loading }: any) => ({
+export default connect(({ prod, model, loading }: any) => ({
   prod,
+  model,
   loading,
-}))(Product);
+}))(Needs);

@@ -283,7 +283,9 @@ let Bugdetail = (props: any) => {
           <Col {...col}>
             <Card title="bug信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info1}
                 renderItem={(item: any) =>
                   item.value && (
@@ -324,7 +326,9 @@ let Bugdetail = (props: any) => {
           <Col {...cols}>
             <Card title="基本信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info2}
                 renderItem={(item: any) =>
                   item.value && (
@@ -364,7 +368,9 @@ let Bugdetail = (props: any) => {
             </Card>
             <Card title="工时信息" style={{ marginBottom: 24 }}>
               <List
-                style={{ marginTop: -24, marginBottom: -20 }}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info3}
                 renderItem={(item: any) =>
                   item.value && (

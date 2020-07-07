@@ -308,7 +308,7 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
                     { required: item.required, message: `请输入${item.title}` },
                   ]}
                 >
-                  <Editor value={item.value}></Editor>
+                  <Editor value={item.value} height={item.height}></Editor>
                 </Form.Item>
               </Col>
             ) : null;
@@ -343,7 +343,7 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
               form
                 .validateFields()
                 .then(values => {
-                  submitData();
+                  submitData(values);
                   setTimeout(() => {
                     sload(false);
                   }, 1000);

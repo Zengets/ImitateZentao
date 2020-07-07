@@ -153,7 +153,9 @@ let Productdetail = (props: any) => {
         <Col {...col} style={{ marginBottom: 24 }}>
           <Card title={'产品信息'}>
             <List
-              style={{ marginTop: -24 }}
+              split={false}
+              size="small"
+              style={{ marginTop: -12 }}
               dataSource={info1}
               renderItem={(item: any) =>
                 item.value && (
@@ -174,7 +176,7 @@ let Productdetail = (props: any) => {
                 )
               }
             />
-            <Divider style={{ marginTop: 0 }}></Divider>
+            <Divider></Divider>
             <Row gutter={24}>
               <Col span={6}>
                 <h4>项目数</h4>

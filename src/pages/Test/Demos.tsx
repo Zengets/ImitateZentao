@@ -40,6 +40,7 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import DemoBug from './DemoBug';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 let defaultvalue = [
   {
@@ -282,7 +283,7 @@ let Demos = (props: any) => {
                     ...iftype,
                     curitem: record,
                     visible: true,
-                    title: text + '详情',
+                    title: `[${record.caseNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
                   });
@@ -423,7 +424,7 @@ let Demos = (props: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 180,
+      width: 220,
       render: (text: any, record: any) => renderAction(record, false),
     },
   ];
@@ -676,8 +677,45 @@ let Demos = (props: any) => {
             <BugReportIcon color={'error'} />
           </IconButton>
         </Tooltip>
+        <Divider type="vertical"></Divider>
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'确认删除' + record.caseName + '？'}
+          onConfirm={() => {
+            setNewState(
+              dispatch,
+              'bug/DemodeleteById',
+              { id: record.id },
+              () => {
+                message.success('删除' + record.caseName + '成功！');
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
+              },
+            );
+          }}
+        >
+          <Tooltip title="删除">
+            <IconButton aria-label="delete">
+              <DeleteIcon color={'error'} />
+            </IconButton>
+          </Tooltip>
+        </Popconfirm>
       </div>
     );
+  }
+
+  function hides() {
+    ciftype(() => {
+      return {
+        ...iftype,
+        visible: false,
+        fullScreen: false,
+      };
+    });
   }
 
   return (

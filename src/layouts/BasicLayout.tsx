@@ -112,117 +112,111 @@ let BasicLayout = (props: any) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ minWidth: 1366 }}>
-        <Dia
-          maxWidth="xs"
-          title="修改密码"
-          show={show}
-          cshow={(key: any) => {
-            cshow(key);
-          }}
-          onOk={handleSubmit(onSubmit)}
+      <Dia
+        maxWidth="xs"
+        title="修改密码"
+        show={show}
+        cshow={(key: any) => {
+          cshow(key);
+        }}
+        onOk={handleSubmit(onSubmit)}
+      >
+        <form
+          className={useStyles().root}
+          onSubmit={handleSubmit(onSubmit)}
+          id="resetpwd"
+          name="resetpwd"
         >
-          <form
-            className={useStyles().root}
-            onSubmit={handleSubmit(onSubmit)}
-            id="resetpwd"
-            name="resetpwd"
+          <FormControl
+            variant="outlined"
+            style={{ width: '100%', marginBottom: 18 }}
           >
-            <FormControl
-              variant="outlined"
-              style={{ width: '100%', marginBottom: 18 }}
-            >
-              <InputLabel htmlFor="outlined-adornment-password">
-                旧密码
-              </InputLabel>
-              <OutlinedInput
-                name="password"
-                fullWidth
-                id="outlined-adornment-password"
-                type={values.showPassword ? 'text' : 'password'}
-                error={Boolean(errors.password)}
-                inputRef={register({ required: true })}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => handleClickShowPassword('showPassword')}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                labelWidth={70}
-              />
-              <span style={{ fontSize: 12, color: '#f50', paddingLeft: 14 }}>
-                {errors.password ? (
-                  '请输入密码'
-                ) : (
-                  <span style={{ opacity: 0 }}>11</span>
-                )}
-              </span>
-            </FormControl>
-            <FormControl variant="outlined" style={{ width: '100%' }}>
-              <InputLabel htmlFor="outlined-adornment-password">
-                新密码
-              </InputLabel>
-              <OutlinedInput
-                name="newpassword"
-                fullWidth
-                id="outlined-adornment-password"
-                type={values.showPasswords ? 'text' : 'password'}
-                error={Boolean(errors.newpassword)}
-                inputRef={register({ required: true })}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => handleClickShowPassword('showPasswords')}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {values.showPasswords ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                labelWidth={70}
-              />
-              <span style={{ fontSize: 12, color: '#f50', paddingLeft: 14 }}>
-                {errors.newpassword ? (
-                  '请输入新密码'
-                ) : (
-                  <span style={{ opacity: 0 }}>11</span>
-                )}
-              </span>
-            </FormControl>
+            <InputLabel htmlFor="outlined-adornment-password">
+              旧密码
+            </InputLabel>
+            <OutlinedInput
+              name="password"
+              fullWidth
+              id="outlined-adornment-password"
+              type={values.showPassword ? 'text' : 'password'}
+              error={Boolean(errors.password)}
+              inputRef={register({ required: true })}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => handleClickShowPassword('showPassword')}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={70}
+            />
+            <span style={{ fontSize: 12, color: '#f50', paddingLeft: 14 }}>
+              {errors.password ? (
+                '请输入密码'
+              ) : (
+                <span style={{ opacity: 0 }}>11</span>
+              )}
+            </span>
+          </FormControl>
+          <FormControl variant="outlined" style={{ width: '100%' }}>
+            <InputLabel htmlFor="outlined-adornment-password">
+              新密码
+            </InputLabel>
+            <OutlinedInput
+              name="newpassword"
+              fullWidth
+              id="outlined-adornment-password"
+              type={values.showPasswords ? 'text' : 'password'}
+              error={Boolean(errors.newpassword)}
+              inputRef={register({ required: true })}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => handleClickShowPassword('showPasswords')}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {values.showPasswords ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={70}
+            />
+            <span style={{ fontSize: 12, color: '#f50', paddingLeft: 14 }}>
+              {errors.newpassword ? (
+                '请输入新密码'
+              ) : (
+                <span style={{ opacity: 0 }}>11</span>
+              )}
+            </span>
+          </FormControl>
 
-            <Button style={{ display: 'none' }} type="submit">
-              hidden
-            </Button>
-          </form>
-        </Dia>
-        <Header
-          menu={menu}
-          routes={props.route.routes}
-          location={props.history.location}
-        ></Header>
-        <div style={{ height: 106 }}></div>
+          <Button style={{ display: 'none' }} type="submit">
+            hidden
+          </Button>
+        </form>
+      </Dia>
+      <Header
+        menu={menu}
+        routes={props.route.routes}
+        location={props.history.location}
+      ></Header>
+      <div style={{ height: 106 }}></div>
 
-        <div
-          style={{
-            backgroundColor: '#f0f0f0',
-            paddingTop: 20,
-            minHeight: 'calc(100vh - 108px)',
-          }}
-        >
-          <ConfigProvider locale={zhCN}>{children}</ConfigProvider>
-        </div>
+      <div
+        style={{
+          backgroundColor: '#f0f0f0',
+          paddingTop: 20,
+          minHeight: 'calc(100vh - 108px)',
+        }}
+      >
+        <ConfigProvider locale={zhCN}>{children}</ConfigProvider>
       </div>
     </ThemeProvider>
   );

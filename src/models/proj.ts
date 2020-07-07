@@ -12,11 +12,33 @@ import {
   TeamdeleteById,
   TeamqueryAllUser,
   Teamsave,
+  associate,
+  queryChoosedList,
+  queryNoChooseList,
+  Bugpriority,
+  umRequirequeryList,
+  queryRequireStageSelectList,
+  queryRequireStatusSelectList,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
 export default {
   state: {
+    umRequirequeryList: {
+      data: {
+        page: {},
+      },
+    },
+    queryChoosedList: {
+      data: {
+        page: {},
+      },
+    },
+    queryNoChooseList: {
+      data: {
+        page: {},
+      },
+    },
     ProjqueryList: {
       data: {
         page: {},
@@ -32,6 +54,9 @@ export default {
         data: {},
       },
     },
+    Bugpriority: [],
+    queryRequireStageSelectList: [],
+    queryRequireStatusSelectList: [],
     TeamqueryAllUser: [],
     ProdqueryAllSelect: [],
     ProjqueryProjectStatusSelectList: [],
@@ -39,6 +64,36 @@ export default {
     res: {},
   },
   effects: {
+    *queryRequireStageSelectList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryRequireStageSelectList, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          queryRequireStageSelectList:
+            responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *queryRequireStatusSelectList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryRequireStatusSelectList, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          queryRequireStatusSelectList:
+            responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *umRequirequeryList({ payload }: any, { call, put }: any) {
+      const responese = yield call(umRequirequeryList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { umRequirequeryList: responese },
+      });
+      return responese;
+    },
     *ProdqueryInfo({ payload }: any, { call, put }: any) {
       const responese = yield call(ProdqueryInfo, payload);
       yield put({
@@ -52,6 +107,22 @@ export default {
       yield put({
         type: 'updateState',
         payload: { ProjqueryById: responese },
+      });
+      return responese;
+    },
+    *queryChoosedList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryChoosedList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryChoosedList: responese },
+      });
+      return responese;
+    },
+    *queryNoChooseList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryNoChooseList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryNoChooseList: responese },
       });
       return responese;
     },
@@ -108,8 +179,24 @@ export default {
       });
       return responese;
     },
+    *Bugpriority({ payload }: any, { call, put }: any) {
+      const responese = yield call(Bugpriority, payload);
+      yield put({
+        type: 'updateState',
+        payload: { Bugpriority: responese.data && responese.data.dataList },
+      });
+      return responese;
+    },
     *Teamsave({ payload }: any, { call, put }: any) {
       const responese = yield call(Teamsave, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *associate({ payload }: any, { call, put }: any) {
+      const responese = yield call(associate, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },

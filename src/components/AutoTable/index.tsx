@@ -11,6 +11,7 @@ let AutoTable = ({
   scroll,
   expandedRowRender,
   pagination,
+  rowSelection,
 }: any) => {
   let dataSource = pageChange
     ? data.data
@@ -45,6 +46,7 @@ let AutoTable = ({
       rowKey={rowKey ? rowKey : 'id'}
       onChange={onChange}
       expandedRowRender={expandedRowRender}
+      rowSelection={rowSelection}
       size="small"
     ></Table>
   );

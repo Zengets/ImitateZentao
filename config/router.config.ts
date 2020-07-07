@@ -21,7 +21,19 @@ export default [
       {
         name: '产品',
         path: '/index/product',
-        component: '@/pages/Product/Index',
+        routes: [
+          { path: '/index/product', redirect: '/index/product/all' },
+          {
+            name: '所有产品',
+            path: '/index/product/all',
+            component: '@/pages/Product/Index',
+          },
+          {
+            name: '需求',
+            path: '/index/product/needs',
+            component: '@/pages/Product/Needs',
+          },
+        ],
       },
       {
         name: '项目',
@@ -32,6 +44,11 @@ export default [
             name: '所有项目',
             path: '/index/project/allpro',
             component: '@/pages/Project/Allpro',
+          },
+          {
+            name: '需求',
+            path: '/index/project/toneeds',
+            component: '@/pages/Project/ToNeeds',
           },
           {
             name: '团队',
@@ -83,7 +100,7 @@ export default [
         routes: [
           { path: '/index/test', redirect: '/index/test/bugs' },
           {
-            name: 'Bug',
+            name: '所有BUG',
             path: '/index/test/bugs',
             component: '@/pages/Test/Bugs',
           },
@@ -94,6 +111,25 @@ export default [
           },
         ],
       },
+
+      {
+        name: '统计',
+        path: '/index/statistics',
+        routes: [
+          { path: '/index/statistics', redirect: '/index/statistics/project' },
+          {
+            name: '项目',
+            path: '/index/statistics/project',
+            component: '@/pages/Statistics/Project',
+          },
+          {
+            name: '组织',
+            path: '/index/statistics/organize',
+            component: '@/pages/Statistics/Organize',
+          },
+        ],
+      },
+
       {
         name: '设置',
         path: '/index/setting',

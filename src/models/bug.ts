@@ -24,6 +24,7 @@ import {
   Demotree,
   Demoexecute,
   DemoqueryById,
+  DemodeleteById,
 } from '@/services/api.ts';
 
 import { message } from 'antd';
@@ -202,6 +203,14 @@ export default {
     },
     *Demoexecute({ payload }: any, { call, put }: any) {
       const responese = yield call(Demoexecute, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *DemodeleteById({ payload }: any, { call, put }: any) {
+      const responese = yield call(DemodeleteById, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },

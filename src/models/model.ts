@@ -5,6 +5,7 @@ import {
   ProjqueryByProjectId,
   UserqueryAll,
   queryMenu,
+  ProdqueryAllSelectAll,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -43,9 +44,21 @@ export default {
         },
       ],
     },
+    prod: '',
     queryMenu: [],
+    ProdqueryAllSelectAll: [],
   },
   effects: {
+    *ProdqueryAllSelectAll({ payload }: any, { call, put }: any) {
+      const responese = yield call(ProdqueryAllSelectAll, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          ProdqueryAllSelectAll: responese.data && responese.data.data,
+        },
+      });
+      return responese;
+    },
     *UserqueryAll({ payload }: any, { call, put }: any) {
       const responese = yield call(UserqueryAll, payload);
       yield put({
@@ -58,6 +71,13 @@ export default {
       yield put({
         type: 'updateState',
         payload: { postdata: payload },
+      });
+      return 'responese';
+    },
+    *prod({ payload }: any, { call, put }: any) {
+      yield put({
+        type: 'updateState',
+        payload: { prod: payload },
       });
       return 'responese';
     },

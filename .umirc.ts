@@ -9,7 +9,9 @@ if (allStr) {
   if (allStr.indexOf('9000') != -1) {
     IpAndPort = 'http://172.21.3.155:8081/';
   } else if (allStr.indexOf('9001') != -1) {
-    IpAndPort = 'http://172.21.3.137:8081/';
+    IpAndPort = 'http://172.21.3.149:8081/';
+  } else if (allStr.indexOf('9003') != -1) {
+    IpAndPort = 'http://172.21.3.85:8088/';
   } else {
     IpAndPort = 'http://172.21.2.164/zentao/';
   }

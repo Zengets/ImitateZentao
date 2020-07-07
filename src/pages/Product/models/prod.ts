@@ -7,6 +7,16 @@ import {
   Prodclose,
   ProddeleteById,
   ProdqueryInfo,
+  umRequirequeryList,
+  Bugpriority,
+  umRequiretoproj,
+  queryRequireStatusSelectList,
+  queryRequireStageSelectList,
+  Requireactivate,
+  Requiresave,
+  Requireclose,
+  RequiredeleteById,
+  queryDetailInfo,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -22,11 +32,42 @@ export default {
         data: {},
       },
     },
+    queryDetailInfo: {
+      data: {
+        data: {},
+      },
+    },
     ProdqueryStatus: [],
     UserqueryAll: [],
+    umRequirequeryList: {
+      data: {
+        page: {},
+      },
+    },
+    umRequiretoproj: [],
+    queryRequireStatusSelectList: [],
+    queryRequireStageSelectList: [],
+    Bugpriority: [],
     res: {},
+    code: {},
   },
   effects: {
+    *queryDetailInfo({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryDetailInfo, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryDetailInfo: responese },
+      });
+      return responese;
+    },
+    *umRequirequeryList({ payload }: any, { call, put }: any) {
+      const responese = yield call(umRequirequeryList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { umRequirequeryList: responese },
+      });
+      return responese;
+    },
     *ProdqueryInfo({ payload }: any, { call, put }: any) {
       const responese = yield call(ProdqueryInfo, payload);
       yield put({
@@ -67,6 +108,38 @@ export default {
       });
       return responese;
     },
+    *Requireactivate({ payload }: any, { call, put }: any) {
+      const responese = yield call(Requireactivate, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *Requiresave({ payload }: any, { call, put }: any) {
+      const responese = yield call(Requiresave, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *Requireclose({ payload }: any, { call, put }: any) {
+      const responese = yield call(Requireclose, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *RequiredeleteById({ payload }: any, { call, put }: any) {
+      const responese = yield call(RequiredeleteById, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
     *Prodactivation({ payload }: any, { call, put }: any) {
       const responese = yield call(Prodactivation, payload);
       yield put({
@@ -91,12 +164,50 @@ export default {
       });
       return responese;
     },
+    *Bugpriority({ payload }: any, { call, put }: any) {
+      const responese = yield call(Bugpriority, payload);
+      yield put({
+        type: 'updateState',
+        payload: { Bugpriority: responese.data && responese.data.dataList },
+      });
+      return responese;
+    },
+    *umRequiretoproj({ payload }: any, { call, put }: any) {
+      const responese = yield call(umRequiretoproj, payload);
+      yield put({
+        type: 'updateState',
+        payload: { umRequiretoproj: responese.data && responese.data.dataList },
+      });
+      return responese;
+    },
+    *queryRequireStatusSelectList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryRequireStatusSelectList, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          queryRequireStatusSelectList:
+            responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *queryRequireStageSelectList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryRequireStageSelectList, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          queryRequireStageSelectList:
+            responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
   },
 
   reducers: {
     updateState(state: any, { payload }: any) {
       for (let i in payload) {
-        if (payload[i].code !== '0000' && payload[i].code) {
+        if (payload[i].code && payload[i].code !== '0000') {
           message.destroy();
           message.warn(payload[i].msg);
         }

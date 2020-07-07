@@ -334,6 +334,108 @@ export async function ProdqueryAllSelectAll(params: any) {
   });
 }
 
+//根据产品下拉框找项目列表 下拉框
+export async function umRequiretoproj(params: any) {
+  return request(`/zentao/umProject/querySelectByProductId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//需求列表
+export async function umRequirequeryList(params: any) {
+  return request(`/zentao/umRequire/queryList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//需求状态列表
+export async function queryRequireStatusSelectList(params: any) {
+  return request(`/zentao/sysDic/queryRequireStatusSelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//需求阶段列表
+export async function queryRequireStageSelectList(params: any) {
+  return request(`/zentao/sysDic/queryRequireStageSelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//激活需求 Requireactivate,Requiresave,Requireclose,RequiredeleteById
+export async function Requireactivate(params: any) {
+  return request(`/zentao/umRequire/activate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//保存需求
+export async function Requiresave(params: any) {
+  return request(`/zentao/umRequire/save`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//关闭需求
+export async function Requireclose(params: any) {
+  return request(`/zentao/umRequire/close`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//删除需求
+export async function RequiredeleteById(params: any) {
+  return request(`/zentao/umRequire/deleteById`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//需求详情
+export async function queryDetailInfo(params: any) {
+  return request(`/zentao/umRequire/queryDetailInfo`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//已关联需求 queryChoosedList,queryNoChooseList
+export async function queryChoosedList(params: any) {
+  return request(`/zentao/umRequire/queryChoosedList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//未关联需求
+export async function queryNoChooseList(params: any) {
+  return request(`/zentao/umRequire/queryNoChooseList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//未关联需求 associate
+export async function associate(params: any) {
+  return request(`/zentao/umRequire/associate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //项目列表
 export async function ProjqueryList(params: any) {
   return request(`/zentao/umProject/queryList`, {
@@ -791,6 +893,15 @@ export async function DemoqueryById(params: any) {
   });
 }
 
+//用例删除
+export async function DemodeleteById(params: any) {
+  return request(`/zentao/umTestCase/deleteById`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //首页 统计
 export async function IndexFirst(params: any) {
   return request(`/zentao/umProject/queryProjectStatistics`, {
@@ -846,6 +957,15 @@ export async function IndexSixth(params: any) {
 
 export async function queryMenu(params: any) {
   return request(`/zentao/sysPermission/queryMenu`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//项目-项目任务状态统计
+export async function queryProjectTaskStatus(params: any) {
+  return request(`/zentao/umProject/queryProjectTaskStatus`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),

@@ -33,15 +33,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Header(props: any) {
-  let { model } = props,
+  let { model, routes } = props,
     Menudata = localStorage.getItem('Menu');
   Menudata = JSON.parse(Menudata ? Menudata : '[]');
-  let userInfo = JSON.parse(localStorage.getItem('userInfo')); //获取权限菜单
-
-  //二级导航逻辑
+  let userInfo = JSON.parse(localStorage.getItem('userInfo')), //获取权限菜单
+    [name, cname] = useState('');
+  //二级导航逻辑, Menudata
   let curindex = 0,
     curindexs = 0,
-    mainroutes = Menudata.filter((item: any) => {
+    mainroutes = routes.filter((item: any) => {
       return item.name;
     }),
     childroute: any[] = [];
@@ -79,12 +79,17 @@ function Header(props: any) {
     setNewState(props.dispatch, 'model/postdata', val, () => {});
   };
 
+  let cprod = (val: any) => {
+    setNewState(props.dispatch, 'model/prod', val, () => {});
+  };
+
   useMemo(() => {
     setValues(curindexs);
     setValue(curindex);
     //下拉框逻辑
     if (
       history.location.pathname == '/index/project/team' ||
+      history.location.pathname == '/index/project/toneeds' ||
       history.location.pathname.indexOf('mission') != -1 ||
       history.location.pathname.indexOf('test') != -1
     ) {
@@ -93,7 +98,7 @@ function Header(props: any) {
         'model/ProjquerySelectList',
         {},
         (res: any) => {
-          console.log(res);
+          cname('项目'); //rename
           cdata(res.data.dataList);
           //初始化下拉框数据
           let fval: any;
@@ -108,6 +113,24 @@ function Header(props: any) {
           });
         },
       );
+    } else if (history.location.pathname == '/index/product/needs') {
+      setNewState(
+        props.dispatch,
+        'model/ProdqueryAllSelectAll',
+        {},
+        (res: any) => {
+          cname('产品'); //rename
+          cdata(res.data.data);
+          //初始化下拉框数据
+          let fval: any;
+          if (localStorage.getItem('vals')) {
+            fval = localStorage.getItem('vals');
+          } else if (res.data.data.length > 0) {
+            fval = res.data.data[0].dicKey;
+          }
+          cprod(fval);
+        },
+      );
     } else {
       cdata([]);
     }
@@ -119,7 +142,7 @@ function Header(props: any) {
         <div>
           <Divider type="vertical"></Divider>
           <span style={{ color: '#1183fb', opacity: 0.6, paddingRight: 6 }}>
-            项目{' '}
+            {name + ' '}
           </span>
           <Select
             showSearch
@@ -129,13 +152,20 @@ function Header(props: any) {
                 .indexOf(input.toLowerCase()) >= 0
             }
             style={{ width: 155, color: '#1183fb' }}
-            value={props.model.postdata.projectId}
+            value={
+              name == '产品' ? props.model.prod : props.model.postdata.projectId
+            }
             onChange={(val: any) => {
-              localStorage.setItem('val', val);
-              cpostdata({
-                ...props.model.postdata,
-                projectId: val,
-              });
+              if (name == '产品') {
+                localStorage.setItem('vals', val);
+                cprod(val);
+              } else {
+                localStorage.setItem('val', val);
+                cpostdata({
+                  ...props.model.postdata,
+                  projectId: val,
+                });
+              }
             }}
           >
             {dataList &&
