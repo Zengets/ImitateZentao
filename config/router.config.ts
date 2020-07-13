@@ -60,39 +60,40 @@ export default [
       {
         name: '任务',
         path: '/index/mission',
-        routes: [
-          { path: '/index/mission', redirect: '/index/mission/overview' },
-          {
-            name: '任务总览',
-            path: '/index/mission/overview',
-            component: '@/pages/Mission/Index',
-          },
-          {
-            name: '任务下达',
-            path: '/index/mission/start',
-            component: '@/pages/Mission/MissionStart',
-          },
-          {
-            name: '任务分配',
-            path: '/index/mission/assign',
-            component: '@/pages/Mission/MissionAssign',
-          },
-          {
-            name: '任务开发',
-            path: '/index/mission/develop',
-            component: '@/pages/Mission/MissionDevelop',
-          },
-          {
-            name: '任务测试',
-            path: '/index/mission/test',
-            component: '@/pages/Mission/MissionTest',
-          },
-          {
-            name: '任务验收',
-            path: '/index/mission/check',
-            component: '@/pages/Mission/MissionCheck',
-          },
-        ],
+        component: '@/pages/Mission/Index',
+        // routes: [
+        //   { path: '/index/mission', redirect: '/index/mission/overview' },
+        //   {
+        //     name: '任务总览',
+        //     path: '/index/mission/overview',
+        //     component: '@/pages/Mission/Index',
+        //   },
+        //   {
+        //     name: '任务下达',
+        //     path: '/index/mission/start',
+        //     component: '@/pages/Mission/MissionStart',
+        //   },
+        //   {
+        //     name: '任务分配',
+        //     path: '/index/mission/assign',
+        //     component: '@/pages/Mission/MissionAssign',
+        //   },
+        //   {
+        //     name: '任务开发',
+        //     path: '/index/mission/develop',
+        //     component: '@/pages/Mission/MissionDevelop',
+        //   },
+        //   {
+        //     name: '任务测试',
+        //     path: '/index/mission/test',
+        //     component: '@/pages/Mission/MissionTest',
+        //   },
+        //   {
+        //     name: '任务验收',
+        //     path: '/index/mission/check',
+        //     component: '@/pages/Mission/MissionCheck',
+        //   },
+        // ],
       },
       {
         name: '测试',

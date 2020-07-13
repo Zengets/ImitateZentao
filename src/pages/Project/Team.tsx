@@ -37,7 +37,8 @@ import proj from './models/proj';
 
 let n = 0; //mockid
 let Project = (props: any) => {
-  let { proj, model, dispatch, loading } = props;
+  let { proj, model, dispatch, loading } = props,
+    projectId = model.postdata.projectId;
   let posturl = 'model/ProjqueryByProjectId';
   let cpostdata = (val: any) => {
       setNewState(props.dispatch, 'model/postdata', val, () => {});
@@ -66,6 +67,12 @@ let Project = (props: any) => {
         props.model.postdata,
         () => {},
       ); //全局改变数据
+      setNewState(
+        dispatch,
+        'model/querySelectListByProjectId',
+        { projectId: props.model.postdata.projectId },
+        () => {},
+      );
     }
   }, [props.model.postdata]);
 

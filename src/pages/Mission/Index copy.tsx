@@ -3,7 +3,18 @@ import styles from './index.less';
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import { Input, message, List, Card, Tooltip, Row, Col, Modal } from 'antd';
+import {
+  Input,
+  message,
+  List,
+  Card,
+  Popconfirm,
+  Divider,
+  Tooltip,
+  Row,
+  Col,
+  Modal,
+} from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,56 +30,67 @@ import Dia from '@/components/Dia/index';
 import mockfile from '@/utils/mockfile';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
+import rendercolor from '@/utils/rendercor';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Missiondetail from '@/components/Missiondetail';
-import GroupIcon from '@material-ui/icons/Group';
 
-let MissionAssign = (props: any) => {
+let MissionCheck = (props: any) => {
   let { miss, dispatch, loading, model } = props,
-    projectId = model.postdata.projectId, //props projectid
+    projectId = model.postdata.projectId, //props projectid MisquerytaskOverview,Mischeck
     [post, cpost] = useState({
-      posturl: 'miss/MisquerytaskAssign',
+      posturl: 'miss/MisquerytaskOverview',
       postdata: {
-        pageIndex: '1', //--------------页码 *
-        pageSize: '10', //-------------------条数 *
-        taskNo: '', //-------------------任务编号
-        taskName: '', //--------------------任务名称
-        openUserId: '', //---------------创建人id
-        currentUserId: '', //------------------指派人id
-        projectId: projectId, //---------------项目id
-        openDateStart: '', //-----------------创建时间搜索  (到分钟)
-        openDateEnd: '', //-----------------创建时间搜索  (到分钟)
-        deadDateStart: '', //-----------------截止日期搜索  (到日)
-        deadDateEnd: '', //-----------------截止日期搜索  (到日)
-        activateDateStart: '', //------------------激活时间搜索  (到分钟)
-        activateDateEnd: '', //------------------激活时间搜索  (到分钟)
+        pageIndex: '1', //-------------页码*
+        pageSize: '10', //--------------条数*
+        taskNo: '', //----------------任务编号
+        taskName: '', //-------------------任务名称
+        currentUserId: '', //----------------------当前负责人
+        devStagePlanHours: '', //--------------------------------预计时长(开发)
+        devStageExpendHours: '', //------------------------消耗时长(开发)
+        deadDateStart: '', //-------------------------------截止日期搜索(到日)
+        deadDateEnd: '', //-------------------------------截止日期搜索(到日)
+        activateDateStart: '', //-------------------------------激活日期搜索(到日)
+        activateDateEnd: '', //-------------------------------激活日期搜索(到日)
+        acceptStageTimeStart: '', //-------------------------------验收时间搜索(到分钟)
+        acceptStageTimeEnd: '', //-------------------------------验收时间搜索(到分钟)
+        projectId: projectId, //-----------------------------项目id*
+        status: '', //-------------------------状态
         sortList: [
-          //-------------------------------------------------------------------------排序字段
+          //------------------排序字段
           {
-            fieldName: 'taskNo', //-------------------任务编号
+            fieldName: 'taskNo', //------------编号
             sort: '',
           },
           {
-            fieldName: 'taskName', //--------------------任务名称
+            fieldName: 'taskName', //-----------------任务名称
             sort: '',
           },
           {
-            fieldName: 'openUserName', //---------------创建人id
+            fieldName: 'currentUserName', //-------------------当前负责人
             sort: '',
           },
           {
-            fieldName: 'currentUserName', //------------------指派人id
+            fieldName: 'devStagePlanHours', //---------------------预计时长(开发)
             sort: '',
           },
           {
-            fieldName: 'openDate', //---------------------创建时间
+            fieldName: 'devStageExpendHours', //----------------消耗时长(开发)
             sort: '',
           },
           {
-            fieldName: 'deadDate', //--------------------------截止时间
+            fieldName: 'deadDate', //-----------------------截止日期
             sort: '',
           },
           {
-            fieldName: 'activateDate', //----------------------------激活时间
+            fieldName: 'activateDate', //----------------------激活日期
+            sort: '',
+          },
+          {
+            fieldName: 'acceptStageTime', //--------------------------验收时间
+            sort: '',
+          },
+          {
+            fieldName: 'status', //--------------------------------状态
             sort: '',
           },
         ],
@@ -82,60 +104,40 @@ let MissionAssign = (props: any) => {
       key: '',
     }),
     defaultfields: any = {
+      acceptStageResult: {
+        value: '', //初始化值
+        type: 'radio',
+        title: '验证结果',
+        name: ['acceptStageResult'],
+        required: true,
+        options: [
+          {
+            dicName: '通过',
+            dicKey: '1',
+          },
+          {
+            dicName: '不通过',
+            dicKey: '2',
+          },
+        ],
+        col: { span: 24 },
+      },
       currentUserId: {
         value: '', //初始化值
         type: 'select', //类型
         title: '指派给', //placeholder
         name: ['currentUserId'], //唯一标识
         required: true, //必填？
+        hides: true,
         options:
           miss.querySelectListByProjectId && miss.querySelectListByProjectId,
       },
-      devStagePlanHours: {
-        value: '', //初始化值
-        type: 'inputnumber',
-        title: '预计时长(开发)',
-        name: ['devStagePlanHours'],
-        required: true,
-      },
-      devStageStartDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '开始日期',
-        name: ['devStageStartDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      devStageEndDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['devStageEndDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      techDesctription: {
+      acceptStageDescription: {
         value: '', //初始化值
         type: 'textarea',
-        title: '技术描述',
-        name: ['techDesctription'],
-        required: false,
+        title: '验证描述',
+        name: ['acceptStageDescription'],
+        required: true,
         rows: 6,
         col: { span: 24 },
       },
@@ -144,11 +146,16 @@ let MissionAssign = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: false,
+        required: true,
         col: { span: 24 },
       },
     },
     [fields, cf] = useState(defaultfields);
+
+  useEffect(() => {
+    //setNewState(dispatch, post.posturl, post.postdata, () => { });
+    setNewState(dispatch, 'miss/queryTaskStatusSelectList', {}, () => {});
+  }, []);
 
   //父级组件项目变化调用
   useMemo(() => {
@@ -178,8 +185,8 @@ let MissionAssign = (props: any) => {
       sorter: {
         multiple: 100,
       },
-      width: 120,
       ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
@@ -218,21 +225,6 @@ let MissionAssign = (props: any) => {
       },
     },
     {
-      title: '创建人',
-      dataIndex: 'openUserName',
-      key: 'openUserName',
-      sorter: {
-        multiple: 101,
-      },
-      width: 120,
-      ...getColumnSelectProps(
-        'openUserId',
-        model.UserqueryAll,
-        post.postdata,
-        handleSearch,
-      ),
-    },
-    {
       title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
@@ -248,35 +240,13 @@ let MissionAssign = (props: any) => {
       ),
     },
     {
-      title: '创建时间',
-      dataIndex: 'openDate',
-      key: 'openDate',
-      sorter: {
-        multiple: 98,
-      },
-      width: 120,
-      ...getColumnRangeminProps(
-        'openDateStart',
-        'openDateEnd',
-        post.postdata,
-        handleSearch,
-      ),
-      render(text: any) {
-        return (
-          <span>
-            {text && moment(parseInt(text)).format('YYYY-MM-DD HH:mm')}
-          </span>
-        );
-      },
-    },
-    {
       title: '激活时间',
+      width: 120,
       dataIndex: 'activateDate',
       key: 'activateDate',
       sorter: {
-        multiple: 97,
+        multiple: 96,
       },
-      width: 120,
       ...getColumnRangeminProps(
         'activateDateStart',
         'activateDateEnd',
@@ -292,33 +262,67 @@ let MissionAssign = (props: any) => {
       },
     },
     {
+      title: '预计时长(开发)',
+      dataIndex: 'devStagePlanHours',
+      key: 'devStagePlanHours',
+      width: 120,
+      sorter: {
+        multiple: 98,
+      },
+    },
+    {
+      title: '消耗时长(开发)',
+      dataIndex: 'devStageExpendHours',
+      key: 'devStageExpendHours',
+      width: 120,
+      sorter: {
+        multiple: 97,
+      },
+    },
+    {
       title: '截止日期',
       dataIndex: 'deadDate',
       key: 'deadDate',
-      sorter: {
-        multiple: 96,
-      },
       width: 120,
+      sorter: {
+        multiple: 95,
+      },
       ...getColumnRangeProps(
         'deadDateStart',
         'deadDateEnd',
         post.postdata,
         handleSearch,
       ),
-      render(text: any) {
+      render(text: any, record: any) {
         return (
           <span
             style={{
               color:
-                moment()
-                  .startOf('day')
-                  .valueOf() > moment(parseInt(text)).valueOf()
+                record.status == 8
+                  ? '#666'
+                  : record.status == 7
+                  ? moment(parseInt(record.acceptStageTime))
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                    ? '#fff'
+                    : '#666'
+                  : moment()
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
                   ? '#fff'
                   : '#666',
               backgroundColor:
-                moment()
-                  .startOf('day')
-                  .valueOf() > moment(parseInt(text)).valueOf()
+                record.status == 8
+                  ? 'transparent'
+                  : record.status == 7
+                  ? moment(parseInt(record.acceptStageTime))
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
+                    ? '#e84e0f'
+                    : 'transparent'
+                  : moment()
+                      .startOf('day')
+                      .valueOf() > moment(parseInt(text)).valueOf()
                   ? '#e84e0f'
                   : 'transparent',
               padding: '0 8px',
@@ -328,6 +332,48 @@ let MissionAssign = (props: any) => {
           </span>
         );
       },
+    },
+    {
+      title: '验收时间',
+      dataIndex: 'acceptStageTime',
+      key: 'acceptStageTime',
+      sorter: {
+        multiple: 96,
+      },
+      width: 120,
+      ...getColumnRangeminProps(
+        'acceptStageTimeStart',
+        'acceptStageTimeEnd',
+        post.postdata,
+        handleSearch,
+      ),
+      render(text: any) {
+        return (
+          <span>
+            {text && moment(parseInt(text)).format('YYYY-MM-DD HH:mm')}
+          </span>
+        );
+      },
+    },
+    {
+      title: '状态',
+      dataIndex: 'statusName',
+      key: 'statusName',
+      sorter: {
+        multiple: 94,
+      },
+      width: 120,
+      ...getColumnSelectProps(
+        'status',
+        miss.queryTaskStatusSelectList && miss.queryTaskStatusSelectList,
+        post.postdata,
+        handleSearch,
+      ),
+      render: (text: any) => (
+        <span style={{ color: rendercolor('Missionstatus', text) }}>
+          {text}
+        </span>
+      ),
     },
     {
       title: '操作',
@@ -341,67 +387,34 @@ let MissionAssign = (props: any) => {
   function renderAction(record: any) {
     return (
       <div>
-        <IconButton
-          disabled={record.status != 2}
-          onClick={() => {
-            setNewState(
-              dispatch,
-              'miss/querySelectListByProjectId',
-              { projectId: record.projectId },
-              (res: any) => {
-                cf({
-                  currentUserId: {
-                    ...fields.currentUserId,
-                    options: res.data.dataList,
-                  },
-                  devStagePlanHours: {
-                    ...fields.devStagePlanHours,
-                    value: record.devStagePlanHours, //初始化值
-                  },
-                  devStageStartDate: {
-                    ...fields.devStageStartDate,
-                    value: record.devStageStartDate
-                      ? moment(parseInt(record.devStageStartDate))
-                      : undefined, //初始化值
-                  },
-                  devStageEndDate: {
-                    ...fields.devStageEndDate,
-                    value: record.devStageEndDate
-                      ? moment(parseInt(record.devStageEndDate))
-                      : undefined, //初始化值
-                  },
-                  techDesctription: {
-                    ...fields.techDesctription,
-                    value: record.techDesctription, //初始化值
-                  },
-                  attachmentList: {
-                    ...fields.attachmentList,
-                    value: record.attachmentList
-                      ? mockfile(record.attachmentList)
-                      : [], //初始化值
-                  },
-                });
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: true,
-                    title: '分配任务:' + record.taskName,
-                    key: 'edit',
-                    curitem: record,
-                    fullScreen: false,
-                  };
-                });
-              },
-            );
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'确认关闭任务：' + record.taskName + '？'}
+          onConfirm={() => {
+            setNewState(dispatch, 'miss/Misclose', { id: record.id }, () => {
+              message.success('关闭任务：' + record.taskName + '成功！');
+              setNewState(dispatch, post.posturl, post.postdata, () => {
+                hides(false);
+              });
+            });
           }}
         >
-          <Tooltip title="分配">
-            <GroupIcon
-              color={record.status != 2 ? 'action' : 'primary'}
-              style={{ fontSize: 26 }}
-            />
+          <Tooltip title="关闭">
+            <IconButton
+              disabled={record.status == 7 || record.status == 8}
+              aria-label="delete"
+            >
+              <HighlightOffIcon
+                color={
+                  record.status == 7 || record.status == 8 ? 'action' : 'error'
+                }
+              />
+            </IconButton>
           </Tooltip>
-        </IconButton>
+        </Popconfirm>
       </div>
     );
   }
@@ -445,7 +458,6 @@ let MissionAssign = (props: any) => {
           item.order == 'descend' ? false : item.order == 'ascend' ? true : '',
       };
     });
-
     cpost(() => {
       return {
         ...post,
@@ -475,6 +487,15 @@ let MissionAssign = (props: any) => {
       };
     });
   };
+  function hides(key: any) {
+    ciftype(() => {
+      return {
+        ...iftype,
+        visible: key,
+        fullScreen: false,
+      };
+    });
+  }
 
   return (
     <Container maxWidth="xl">
@@ -482,13 +503,7 @@ let MissionAssign = (props: any) => {
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
         cshow={(key: React.SetStateAction<boolean>) => {
-          ciftype(() => {
-            return {
-              ...iftype,
-              visible: key,
-              fullScreen: false,
-            };
-          });
+          hides(key);
         }}
         maxWidth="lg"
         title={iftype.title}
@@ -542,78 +557,79 @@ let MissionAssign = (props: any) => {
             maindata={miss.MisquerytaskDetails.data.data}
           ></Missiondetail>
         ) : (
-          iftype.visible && (
-            <InitForm
-              fields={fields}
-              submitData={() => {
-                let newfields = JSON.parse(JSON.stringify(fields));
-                for (let i in newfields) {
-                  newfields[i] = newfields[i].value;
-                }
-                if (iftype.key == 'edit') {
-                  newfields.id = iftype.curitem.id;
-                }
+          <InitForm
+            fields={fields}
+            submitData={() => {
+              let newfields = JSON.parse(JSON.stringify(fields));
+              for (let i in newfields) {
+                newfields[i] = newfields[i].value;
+              }
+              if (iftype.key == 'edit') {
+                newfields.id = iftype.curitem.id;
+              }
 
-                let newlist = newfields.attachmentList.fileList
-                  ? newfields.attachmentList.fileList.map(
-                      (items: any, i: number) => {
-                        return {
-                          attachmentName: items.response
-                            ? items.response.data.dataList[0].name
-                            : items.name,
-                          attachUrl: items.response
-                            ? items.response.data.dataList[0].url
-                            : items.url,
-                        };
-                      },
-                    )
-                  : [];
-                newfields.attachmentList = newlist;
-                newfields.devStageStartDate = newfields.devStageStartDate
-                  ? moment(newfields.devStageStartDate)
-                      .startOf('day')
-                      .valueOf()
-                  : '';
-                newfields.devStageEndDate = newfields.devStageEndDate
-                  ? moment(newfields.devStageEndDate)
-                      .startOf('day')
-                      .valueOf()
-                  : '';
-
-                setNewState(dispatch, 'miss/Misassign', newfields, () => {
-                  setNewState(dispatch, post.posturl, post.postdata, () => {
-                    message.success('分配成功');
-                    ciftype(() => {
+              let newlist = newfields.attachmentList.fileList
+                ? newfields.attachmentList.fileList.map(
+                    (items: any, i: number) => {
                       return {
-                        ...iftype,
-                        visible: false,
+                        attachmentName: items.response
+                          ? items.response.data.dataList[0].name
+                          : items.name,
+                        attachUrl: items.response
+                          ? items.response.data.dataList[0].url
+                          : items.url,
                       };
-                    });
+                    },
+                  )
+                : [];
+              newfields.attachmentList = newlist;
+
+              setNewState(dispatch, 'miss/Mischeck', newfields, () => {
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  message.success('操作成功');
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: false,
+                    };
                   });
                 });
-              }}
-              onChange={(newFields: any) => {
-                if (!newFields) {
-                  return;
-                }
-                let name = newFields ? newFields.name : '',
-                  value = newFields.value;
-                let key = name ? name[0] : '';
+              });
+            }}
+            onChange={(newFields: any) => {
+              if (!newFields) {
+                return;
+              }
+              let name = newFields ? newFields.name : '',
+                value = newFields.value;
+              let key = name ? name[0] : '';
+              if (key == 'acceptStageResult') {
+                cf(() => {
+                  fields[key].value = value;
+                  return {
+                    ...fields,
+                    currentUserId: {
+                      ...fields.currentUserId,
+                      hides: value != 2,
+                    },
+                  };
+                });
+              } else {
                 cf(() => {
                   fields[key].value = value;
                   return {
                     ...fields,
                   };
                 });
-              }}
-              submitting={props.loading.effects['miss/Misassign']}
-            ></InitForm>
-          )
+              }
+            }}
+            submitting={props.loading.effects['model/Mischeck']}
+          ></InitForm>
         )}
       </Dia>
       <Card title={props.route.name}>
         <AutoTable
-          data={miss.MisquerytaskAssign}
+          data={miss.MisquerytaskOverview}
           columns={columns}
           loading={loading.effects[post.posturl]}
           pageChange={pageChange}
@@ -629,4 +645,4 @@ export default connect(({ miss, model, loading }: any) => ({
   miss,
   model,
   loading,
-}))(MissionAssign);
+}))(MissionCheck);

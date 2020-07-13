@@ -3,6 +3,7 @@ import { message, Table } from 'antd';
 
 let AutoTable = ({
   data,
+  bordered,
   columns,
   loading,
   rowKey,
@@ -26,6 +27,7 @@ let AutoTable = ({
       scroll={
         scroll ? (scroll == 'false' ? '' : scroll) : { x: 1660, y: '60vh' }
       }
+      bordered={bordered}
       loading={loading}
       columns={columns}
       pagination={

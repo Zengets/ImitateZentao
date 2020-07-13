@@ -36,13 +36,22 @@ let First = ({ dispatch, home, model, proj }: any) => {
     setNewState(dispatch, 'model/ProjquerySelectList', {}, (res: any) => {
       cdata(res.data.dataList);
       if (!projectId) {
-        setpro(
+        let defaultid =
           res.data.dataList && res.data.dataList.length > 0
             ? res.data.dataList[0].dicKey
-            : '',
-        );
+            : '';
+
+        setpro(defaultid);
+        cpostdata({
+          ...model.postdata,
+          projectId: defaultid,
+        });
       } else {
         setpro(projectId);
+        cpostdata({
+          ...model.postdata,
+          projectId: projectId,
+        });
       }
     });
   }, []);
@@ -107,6 +116,10 @@ let First = ({ dispatch, home, model, proj }: any) => {
     };
   };
 
+  let cpostdata = (val: any) => {
+    setNewState(dispatch, 'model/postdata', val, () => {});
+  };
+
   return (
     <Card title={'选择项目'}>
       <Dia
@@ -168,6 +181,10 @@ let First = ({ dispatch, home, model, proj }: any) => {
                     onClick={() => {
                       setpro(item.dicKey);
                       localStorage.setItem('val', item.dicKey);
+                      cpostdata({
+                        ...model.postdata,
+                        projectId: item.dicKey,
+                      });
                     }}
                   >
                     {item.dicName}

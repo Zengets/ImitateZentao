@@ -15,11 +15,15 @@ import {
   MisquerytaskCheck,
   Mischeck,
   MisquerytaskOverview,
+  querytaskAll,
   Misclose,
   queryTaskStatusSelectList,
   MisquerytaskDetails,
   ProjqueryById,
   ProdqueryInfo,
+  breakDown,
+  add,
+  querytaskMy,
 } from '@/services/api.ts';
 
 import { message } from 'antd';
@@ -67,6 +71,16 @@ export default {
       },
     },
     MisquerytaskOverview: {
+      data: {
+        page: {},
+      },
+    },
+    querytaskAll: {
+      data: {
+        page: {},
+      },
+    },
+    querytaskMy: {
       data: {
         page: {},
       },
@@ -146,6 +160,38 @@ export default {
       yield put({
         type: 'updateState',
         payload: { MisquerytaskOverview: responese },
+      });
+      return responese;
+    },
+    *querytaskAll({ payload }: any, { call, put }: any) {
+      const responese = yield call(querytaskAll, payload);
+      yield put({
+        type: 'updateState',
+        payload: { querytaskAll: responese },
+      });
+      return responese;
+    },
+    *querytaskMy({ payload }: any, { call, put }: any) {
+      const responese = yield call(querytaskMy, payload);
+      yield put({
+        type: 'updateState',
+        payload: { querytaskMy: responese },
+      });
+      return responese;
+    },
+    *breakDown({ payload }: any, { call, put }: any) {
+      const responese = yield call(breakDown, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *add({ payload }: any, { call, put }: any) {
+      const responese = yield call(add, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
       });
       return responese;
     },

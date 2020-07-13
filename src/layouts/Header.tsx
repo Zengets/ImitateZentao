@@ -41,7 +41,7 @@ function Header(props: any) {
   //二级导航逻辑, Menudata
   let curindex = 0,
     curindexs = 0,
-    mainroutes = routes.filter((item: any) => {
+    mainroutes = Menudata.filter((item: any) => {
       return item.name;
     }),
     childroute: any[] = [];

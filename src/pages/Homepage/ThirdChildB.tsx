@@ -47,8 +47,8 @@ let ThirdChildB = (props: any) => {
       postdata: {
         projectId: '', //所属项目id
         bugNo: '', //bug编号
-        severity: '', //严重程度
-        priority: '', //优先级
+        severityType: '', //严重程度
+        priorityType: '', //优先级
         bugName: '', //bug标题
         openUserId: '', //创建人id
         solveUserId: '', //处理人id
@@ -61,11 +61,11 @@ let ThirdChildB = (props: any) => {
             sort: '',
           },
           {
-            fieldName: 'severity', //严重程度
+            fieldName: 'severityName', //严重程度
             sort: '',
           },
           {
-            fieldName: 'priority', //优先级
+            fieldName: 'priorityName', //优先级
             sort: '',
           },
           {
@@ -136,21 +136,21 @@ let ThirdChildB = (props: any) => {
         required: true, //必填？
         options: bug.Bugtype && bug.Bugtype,
       },
-      severity: {
+      severityType: {
         value: '', //初始化值
         type: 'select', //类型
         title: 'Bug严重程度', //placeholder
-        name: ['severity'], //唯一标识
+        name: ['severityType'], //唯一标识
         required: true, //必填？
         options: bug.Bugseverity && bug.Bugseverity,
       },
-      priority: {
+      priorityType: {
         value: '', //初始化值
         type: 'select', //类型
         title: 'Bug优先级', //placeholder
-        name: ['priority'], //唯一标识
+        name: ['priorityType'], //唯一标识
         required: true, //必填？
-        options: bug.Bugpriority && bug.Bugpriority,
+        options: model.Bugpriority && model.Bugpriority,
       },
       steps: {
         value: '', //初始化值
@@ -189,13 +189,7 @@ let ThirdChildB = (props: any) => {
 
   useEffect(() => {
     if (bug.done) {
-      let arr = [
-        'Bugtype',
-        'Bugstage',
-        'Bugseverity',
-        'Bugpriority',
-        'Bugsolution',
-      ]; //下拉框汇总
+      let arr = ['Bugtype', 'Bugstage', 'Bugseverity', 'Bugsolution']; //下拉框汇总
       arr.map((item: any) => {
         setNewState(dispatch, `bug/${item}`, {}, () => {});
       });
@@ -218,14 +212,14 @@ let ThirdChildB = (props: any) => {
     },
     {
       title: '严重程度',
-      dataIndex: 'severity',
-      key: 'severity',
+      dataIndex: 'severityName',
+      key: 'severityName',
       sorter: {
         multiple: 111,
       },
       width: 120,
       ...getColumnSelectProps(
-        'severity',
+        'severityType',
         bug.Bugseverity,
         post.postdata,
         handleSearch,
@@ -236,15 +230,15 @@ let ThirdChildB = (props: any) => {
     },
     {
       title: '优先级',
-      dataIndex: 'priority',
-      key: 'priority',
+      dataIndex: 'priorityName',
+      key: 'priorityName',
       sorter: {
         multiple: 111,
       },
       width: 120,
       ...getColumnSelectProps(
-        'priority',
-        bug.Bugpriority,
+        'priorityType',
+        model.Bugpriority,
         post.postdata,
         handleSearch,
       ),
@@ -573,13 +567,13 @@ let ThirdChildB = (props: any) => {
                     ...fields.bugType,
                     value: record.bugType, //初始化值
                   },
-                  severity: {
-                    ...fields.severity,
-                    value: record.severity, //初始化值
+                  severityType: {
+                    ...fields.severityType,
+                    value: record.severityType, //初始化值
                   },
-                  priority: {
-                    ...fields.priority,
-                    value: record.priority, //初始化值
+                  priorityType: {
+                    ...fields.priorityType,
+                    value: record.priorityType, //初始化值
                   },
                   steps: {
                     ...fields.steps,
@@ -786,11 +780,8 @@ let ThirdChildB = (props: any) => {
           iftype.visible && (
             <InitForm
               fields={fields}
-              submitData={() => {
-                let newfields = JSON.parse(JSON.stringify(fields));
-                for (let i in newfields) {
-                  newfields[i] = newfields[i].value;
-                }
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
                 //文件处理
                 let newlist = newfields.attachmentList.fileList
                   ? newfields.attachmentList.fileList.map(
@@ -936,7 +927,6 @@ let ThirdChildB = (props: any) => {
                 } else if (key == 'acceptResult') {
                   cf(() => {
                     fields[key].value = value;
-
                     return {
                       ...fields,
                       solveUserId: {
@@ -947,12 +937,6 @@ let ThirdChildB = (props: any) => {
                     };
                   });
                 } else {
-                  cf(() => {
-                    fields[key].value = value;
-                    return {
-                      ...fields,
-                    };
-                  });
                 }
               }}
               submitting={

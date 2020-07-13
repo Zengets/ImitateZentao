@@ -105,9 +105,10 @@ let BasicLayout = (props: any) => {
   };
 
   useEffect(() => {
-    setNewState(dispatch, 'model/UserqueryAll', {}, () => {}); //全局下拉框
-    setNewState(dispatch, 'model/ProjquerySelectList', {}, () => {});
-    setNewState(dispatch, 'model/queryMenu', {}, () => {});
+    setNewState(dispatch, 'model/UserqueryAll', {}, () => {}); //人员 全局下拉框
+    setNewState(dispatch, 'model/ProjquerySelectList', {}, () => {}); //项目
+    setNewState(dispatch, 'model/queryMenu', {}, () => {}); //菜单
+    setNewState(dispatch, 'model/Bugpriority', {}, () => {}); //优先级
   }, []);
 
   return (

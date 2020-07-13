@@ -25,7 +25,7 @@ import EditTable from '../EditTable';
 const { TreeNode } = TreeSelect;
 let { Option } = Select;
 
-let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
+let InitForm = ({ fields, onChange, submitting, submitData, actions }: any) => {
   let [Dom, cDom] = useState([]),
     [loading, sload] = useState(false);
   const [form] = Form.useForm();
@@ -232,16 +232,16 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
               action: '/zentao/common/uploadFile',
               listType: 'picture',
               multiple: true,
-              fileList: item.value
+              defaultFileList: item.value
                 ? item.value.fileList
                   ? item.value.fileList
                   : []
                 : [],
-              onChange(info: {
-                file: { name?: any; status?: any; response?: any };
-                fileList: any;
-              }) {
-                const { status } = info.file;
+              onChange(info: any) {
+                let {
+                  file: { name, status, response },
+                  fileList,
+                } = info;
                 if (status == 'done') {
                 } else if (status == 'error') {
                   message.error(`${info.file.name} 上传失败`);
@@ -308,7 +308,11 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
                     { required: item.required, message: `请输入${item.title}` },
                   ]}
                 >
-                  <Editor value={item.value} height={item.height}></Editor>
+                  <Editor
+                    value={item.value}
+                    height={item.height}
+                    rerender={item.rerender}
+                  ></Editor>
                 </Form.Item>
               </Col>
             ) : null;
@@ -330,31 +334,38 @@ let InitForm = ({ fields, onChange, submitting, submitData }: any) => {
           }
         })}
         <Col span={24} style={{ padding: 12 }}>
-          <Button
-            style={{ width: '100%', marginTop: 12 }}
-            type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
-            disableElevation
-            disabled={submitting || loading}
-            onClick={() => {
-              sload(true);
-              form
-                .validateFields()
-                .then(values => {
-                  submitData(values);
-                  setTimeout(() => {
-                    sload(false);
-                  }, 1000);
-                })
-                .catch(error => {});
-            }}
-          >
-            {submitting ? <LoadingOutlined /> : null}
+          {actions ? (
+            actions()
+          ) : (
+            <Button
+              style={{ width: '100%', marginTop: 12 }}
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+              disableElevation
+              disabled={submitting || loading}
+              onClick={() => {
+                form
+                  .validateFields()
+                  .then(values => {
+                    sload(true);
+                    submitData(values);
+                    setTimeout(() => {
+                      sload(false);
+                    }, 1000);
+                  })
+                  .catch(error => {});
+              }}
+            >
+              {submitting || loading ? <LoadingOutlined /> : null}
 
-            <span style={{ marginLeft: 12, fontSize: 16 }}>提交</span>
-          </Button>
+              <span style={{ marginLeft: 12, fontSize: 16 }}>
+                {' '}
+                {submitting || loading ? '提交中...' : '提交'}
+              </span>
+            </Button>
+          )}
         </Col>
       </Row>
     </Form>

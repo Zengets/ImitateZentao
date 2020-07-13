@@ -516,17 +516,8 @@ let SetUser = (props: any) => {
       >
         <InitForm
           fields={fields}
-          submitData={() => {
-            let isthen = false;
-            let newfields = JSON.parse(JSON.stringify(fields));
-
-            for (let i in newfields) {
-              newfields[i] = newfields[i].value;
-            }
-            if (isthen) {
-              return;
-            }
-
+          submitData={(values: any) => {
+            let newfields = JSON.parse(JSON.stringify(values));
             newfields.entryDate = newfields.entryDate
               ? moment(newfields.entryDate)
                   .startOf('day')
@@ -538,33 +529,19 @@ let SetUser = (props: any) => {
             console.log(newfields);
             delete newfields.password;
             setNewState(dispatch, 'set/Usersave', newfields, () => {
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: false,
+                };
+              });
               setNewState(dispatch, post.posturl, post.postdata, () => {
                 message.success('操作成功');
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: false,
-                  };
-                });
               });
             });
           }}
-          onChange={(newFields: any) => {
-            if (!newFields) {
-              return;
-            }
-            let name = newFields ? newFields.name : '',
-              value = newFields.value;
-            let key = name ? name[0] : '';
-            cf(() => {
-              fields[key].value = value;
-
-              return {
-                ...fields,
-              };
-            });
-          }}
-          submitting={props.loading.effects['set/Usersave']}
+          onChange={(newFields: any) => {}}
+          submitting={props.loading.effects['set/Usersave'] || !iftype.visible}
         ></InitForm>
       </Dia>
       <Card

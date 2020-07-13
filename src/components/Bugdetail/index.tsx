@@ -287,7 +287,7 @@ let Bugdetail = (props: any) => {
                 size="small"
                 style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info1}
-                renderItem={(item: any) =>
+                renderItem={(item: any, i: any) =>
                   item.value && (
                     <List.Item>
                       <DetailItem

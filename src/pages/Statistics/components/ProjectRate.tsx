@@ -11,14 +11,13 @@ import Button from '@material-ui/core/Button';
 
 let { Option } = Select,
   { RangePicker } = DatePicker;
-let ProjectRate = ({ dispatch, statics }: any) => {
+let ProjectRate = ({ dispatch, statics, loading }: any) => {
   let [curindex, changecur] = useState(0),
     start = moment()
       .startOf('month')
       .valueOf(),
     end = moment().valueOf(),
     [postdata, cpost] = useState({
-      status: '1', //项目状态 1全部 2进行中 3已完成
       startMinDate: start, //项目开始时间起，必填
       startMaxDate: end, //项目开始时间止，必填
     });
@@ -26,56 +25,114 @@ let ProjectRate = ({ dispatch, statics }: any) => {
   let columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
-      key: 'name',
-      ellipsis: true,
-    },
-    {
-      title: '待开发',
-      dataIndex: 'beDevelop',
-      key: 'beDevelop',
+      dataIndex: 'projectName',
+      key: 'projectName',
       ellipsis: true,
       width: 120,
     },
     {
-      title: '开发中',
-      dataIndex: 'developing',
-      key: 'developing',
+      title: '需求数量',
+      dataIndex: 'requireCount',
+      key: 'requireCount',
       ellipsis: true,
       width: 120,
     },
     {
-      title: '待测试',
-      dataIndex: 'beTest',
-      key: 'beTest',
+      title: '剩余需求数量',
+      dataIndex: 'leftRequireCount',
+      key: 'leftRequireCount',
       ellipsis: true,
       width: 120,
     },
     {
-      title: '已完成',
-      dataIndex: 'completed',
-      key: 'completed',
+      title: '任务总数',
+      dataIndex: 'taskCount',
+      key: 'taskCount',
       ellipsis: true,
       width: 120,
     },
     {
-      title: '已关闭',
-      dataIndex: 'closed',
-      key: 'closed',
+      title: '剩余任务数',
+      dataIndex: 'leftTaskCount',
+      key: 'leftTaskCount',
       ellipsis: true,
       width: 120,
     },
     {
-      title: '总计',
-      dataIndex: 'total',
-      key: 'total',
+      title: '剩余工时',
+      dataIndex: 'leftWorkHours',
+      key: 'leftWorkHours',
       ellipsis: true,
       width: 120,
+    },
+    {
+      title: '已消耗工时',
+      dataIndex: 'expendWorkHours',
+      key: 'expendWorkHours',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '进度',
+      dataIndex: 'rate',
+      key: 'rate',
+      ellipsis: true,
+      width: 120,
+      render: (text: any) => <span>{text ? text + '%' : ''}</span>,
+    },
+    {
+      title: '项目预计完成日期',
+      dataIndex: 'planFinishDate',
+      key: 'planFinishDate',
+      ellipsis: true,
+      width: 120,
+      render: (text: any) => (
+        <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
+      ),
+    },
+    {
+      title: '项目实际完成时间',
+      dataIndex: 'actualFinishDate',
+      key: 'actualFinishDate',
+      ellipsis: true,
+      width: 120,
+      render: (text: any) => (
+        <span>{text && moment(parseInt(text)).format('YYYY-MM-DD')}</span>
+      ),
+    },
+    {
+      title: 'bug数',
+      dataIndex: 'bugCount',
+      key: 'bugCount',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '解决bug数',
+      dataIndex: 'solvedBugCount',
+      key: 'solvedBugCount',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '严重bug数',
+      dataIndex: 'seriousBugCount',
+      key: 'seriousBugCount',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '严重bug比率',
+      dataIndex: 'seriousBugRate',
+      key: 'seriousBugRate',
+      ellipsis: true,
+      width: 120,
+      render: (text: any) => <span>{text ? text + '%' : ''}</span>,
     },
   ];
 
   useEffect(() => {
-    setNewState(dispatch, 'statics/queryProjectTaskStatus', postdata, () => {});
+    setNewState(dispatch, 'statics/queryProjectRate', postdata, () => {});
   }, []);
 
   return (
@@ -108,7 +165,7 @@ let ProjectRate = ({ dispatch, statics }: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'statics/queryProjectTaskStatus',
+                'statics/queryProjectRate',
                 postdata,
                 () => {},
               );
@@ -120,10 +177,11 @@ let ProjectRate = ({ dispatch, statics }: any) => {
       </div>
 
       <AutoTable
-        data={{ list: statics.queryProjectTaskStatus }}
+        data={{ list: statics.queryProjectRate }}
         columns={columns}
         pagination="false"
-        scroll={{ x: 720 }}
+        scroll={{ x: 900 }}
+        loading={loading.effects['statics/queryProjectRate']}
       ></AutoTable>
     </div>
   );

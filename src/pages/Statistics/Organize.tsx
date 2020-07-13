@@ -5,15 +5,15 @@ import { Card, Row, Col } from 'antd';
 import IconButton from '@material-ui/core/IconButton';
 import styles from './style.less';
 import AutoTable from '@/components/AutoTable';
-import ProjectTaskStatus from './components/ProjectTaskStatus';
-import ProjectRate from './components/ProjectRate';
+import TaskFinish from './components/TaskFinish';
+import Bug from './components/Bug';
 
 let Organize = (props: any) => {
   let [curindex, changecur] = useState(0);
 
   let col = { xs: 24, sm: 24, md: 6, lg: 5, xl: 4, xxl: 4 },
     cols = { xs: 24, sm: 24, md: 18, lg: 19, xl: 20, xxl: 20 },
-    menu = ['项目任务状态统计表', '项目进展表'];
+    menu = ['任务完成汇总表', 'Bug统计表'];
 
   return (
     <Container maxWidth="xl">
@@ -44,9 +44,9 @@ let Organize = (props: any) => {
         <Col {...cols}>
           <Card>
             {curindex == 0 ? (
-              <ProjectTaskStatus></ProjectTaskStatus>
+              <TaskFinish></TaskFinish>
             ) : curindex == 1 ? (
-              <ProjectRate></ProjectRate>
+              <Bug></Bug>
             ) : null}
           </Card>
         </Col>

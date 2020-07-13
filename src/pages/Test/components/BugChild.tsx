@@ -140,7 +140,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
         name: ['solveUserId'], //唯一标识
         required: true, //必填？
         options:
-          bug.querySelectListByProjectId && bug.querySelectListByProjectId,
+          model.querySelectListByProjectId && model.querySelectListByProjectId,
       },
       bugType: {
         value: '', //初始化值
@@ -164,7 +164,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
         title: 'Bug优先级', //placeholder
         name: ['priorityType'], //唯一标识
         required: false, //必填？
-        options: bug.Bugpriority && bug.Bugpriority,
+        options: model.Bugpriority && model.Bugpriority,
       },
       steps: {
         value: '', //初始化值
@@ -208,7 +208,6 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
         'Bugtype',
         'Bugstage',
         'Bugseverity',
-        'Bugpriority',
         'Bugsolution',
       ]; //下拉框汇总
       arr.map((item: any) => {
@@ -253,7 +252,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
     if (projectId) {
       setNewState(
         dispatch,
-        'bug/querySelectListByProjectId',
+        'model/querySelectListByProjectId',
         { projectId: projectId },
         () => {},
       );
@@ -310,7 +309,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       width: 120,
       ...getColumnSelectProps(
         'priorityType',
-        bug.Bugpriority,
+        model.Bugpriority,
         post.postdata,
         handleSearch,
       ),
@@ -402,7 +401,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       width: 120,
       ...getColumnSelectProps(
         'solveUserId',
-        bug.querySelectListByProjectId && bug.querySelectListByProjectId,
+        model.querySelectListByProjectId && model.querySelectListByProjectId,
         post.postdata,
         handleSearch,
       ),
@@ -439,7 +438,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       width: 120,
       ...getColumnSelectProps(
         'currentUserId',
-        bug.querySelectListByProjectId && bug.querySelectListByProjectId,
+        model.querySelectListByProjectId && model.querySelectListByProjectId,
         post.postdata,
         handleSearch,
       ),
@@ -487,8 +486,8 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                     name: ['solveUserId'], //唯一标识
                     required: true, //必填？
                     options:
-                      bug.querySelectListByProjectId &&
-                      bug.querySelectListByProjectId,
+                      model.querySelectListByProjectId &&
+                      model.querySelectListByProjectId,
                   },
                   activateDescription: {
                     value: '<p></p>', //初始化值
@@ -540,8 +539,8 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 name: ['acceptUserId'], //唯一标识
                 required: true, //必填？
                 options:
-                  bug.querySelectListByProjectId &&
-                  bug.querySelectListByProjectId,
+                  model.querySelectListByProjectId &&
+                  model.querySelectListByProjectId,
               },
               solution: {
                 value: null, //初始化值
@@ -619,8 +618,8 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 required: true, //必填？
                 hides: true,
                 options:
-                  bug.querySelectListByProjectId &&
-                  bug.querySelectListByProjectId,
+                  model.querySelectListByProjectId &&
+                  model.querySelectListByProjectId,
               },
               acceptDescription: {
                 value: '<p></p>', //初始化值
@@ -665,7 +664,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
           onClick={() => {
             setNewState(
               dispatch,
-              'bug/querySelectListByProjectId',
+              'model/querySelectListByProjectId',
               { projectId: record.projectId },
               (res: any) => {
                 cf({
@@ -945,11 +944,8 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
           iftype.visible && (
             <InitForm
               fields={fields}
-              submitData={() => {
-                let newfields = JSON.parse(JSON.stringify(fields));
-                for (let i in newfields) {
-                  newfields[i] = newfields[i].value;
-                }
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
                 //文件处理
                 let newlist = newfields.attachmentList.fileList
                   ? newfields.attachmentList.fileList.map(
@@ -1054,14 +1050,14 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
 
                 newfields.endDate = moment(newfields.endDate).valueOf();
                 setNewState(dispatch, 'bug/Bugsave', newfields, () => {
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: false,
+                    };
+                  });
                   setNewState(dispatch, post.posturl, post.postdata, () => {
                     message.success('操作成功');
-                    ciftype(() => {
-                      return {
-                        ...iftype,
-                        visible: false,
-                      };
-                    });
                   });
                 });
               }}
@@ -1075,7 +1071,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 if (key == 'projectId') {
                   setNewState(
                     dispatch,
-                    'bug/querySelectListByProjectId',
+                    'model/querySelectListByProjectId',
                     { projectId: value },
                     (res: any) => {
                       cf(() => {
@@ -1091,7 +1087,6 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 } else if (key == 'acceptResult') {
                   cf(() => {
                     fields[key].value = value;
-
                     return {
                       ...fields,
                       solveUserId: {
@@ -1102,19 +1097,14 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                     };
                   });
                 } else {
-                  cf(() => {
-                    fields[key].value = value;
-                    return {
-                      ...fields,
-                    };
-                  });
                 }
               }}
               submitting={
                 props.loading.effects['bug/Bugsave'] ||
                 props.loading.effects['bug/Bugsolve'] ||
                 props.loading.effects['bug/Bugconfirm'] ||
-                props.loading.effects['bug/Bugactivate']
+                props.loading.effects['bug/Bugactivate'] ||
+                !iftype.visible
               }
             ></InitForm>
           )

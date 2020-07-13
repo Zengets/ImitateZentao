@@ -4,8 +4,11 @@ import {
   ProjquerySelectList,
   ProjqueryByProjectId,
   UserqueryAll,
+  Bugpriority,
   queryMenu,
   ProdqueryAllSelectAll,
+  querySelectListByProjectId,
+  breakDown,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -13,6 +16,7 @@ export default {
   namespace: 'model',
   state: {
     res: {},
+    Bugpriority: [],
     ProjquerySelectList: [],
     ProjqueryByProjectId: {
       data: {
@@ -23,7 +27,7 @@ export default {
     },
     UserqueryAll: [],
     postdata: {
-      projectId: '', //项目id，必填
+      projectId: undefined, //项目id，必填
       realName: '', //用户名称，筛选条件
       jobTitle: '', //团队角色，筛选条件
       joinMinDate: '', //入团日起，筛选条件
@@ -46,9 +50,28 @@ export default {
     },
     prod: '',
     queryMenu: [],
+    querySelectListByProjectId: [],
     ProdqueryAllSelectAll: [],
   },
   effects: {
+    *querySelectListByProjectId({ payload }: any, { call, put }: any) {
+      const responese = yield call(querySelectListByProjectId, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          querySelectListByProjectId: responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *Bugpriority({ payload }: any, { call, put }: any) {
+      const responese = yield call(Bugpriority, payload);
+      yield put({
+        type: 'updateState',
+        payload: { Bugpriority: responese.data && responese.data.dataList },
+      });
+      return responese;
+    },
     *ProdqueryAllSelectAll({ payload }: any, { call, put }: any) {
       const responese = yield call(ProdqueryAllSelectAll, payload);
       yield put({
@@ -109,6 +132,14 @@ export default {
     },
     *Logout({ payload }: any, { call, put }: any) {
       const responese = yield call(Logout, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *breakDown({ payload }: any, { call, put }: any) {
+      const responese = yield call(breakDown, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },

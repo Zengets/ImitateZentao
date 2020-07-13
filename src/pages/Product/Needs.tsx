@@ -88,7 +88,7 @@ let Needs = (props: any) => {
         title: '优先级', //placeholder
         name: ['priorityType'], //唯一标识
         required: true, //必填？
-        options: prod.Bugpriority && prod.Bugpriority,
+        options: model.Bugpriority && model.Bugpriority,
       },
       requireName: {
         value: '', //初始化值
@@ -127,7 +127,6 @@ let Needs = (props: any) => {
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    setNewState(dispatch, 'prod/Bugpriority', {}, () => {});
     setNewState(dispatch, 'prod/UserqueryAll', {}, () => {});
     setNewState(dispatch, 'prod/queryRequireStatusSelectList', {}, () => {});
     setNewState(dispatch, 'prod/queryRequireStageSelectList', {}, () => {});
@@ -156,7 +155,7 @@ let Needs = (props: any) => {
       width: 90,
       ...getColumnSelectProps(
         'priorityType',
-        prod.Bugpriority,
+        model.Bugpriority,
         post.postdata,
         handleSearch,
       ),
@@ -386,7 +385,7 @@ let Needs = (props: any) => {
               priorityType: {
                 ...fields.priorityType,
                 value: record.priorityType, //初始化值
-                options: prod.Bugpriority && prod.Bugpriority,
+                options: model.Bugpriority && model.Bugpriority,
               },
               requireName: {
                 ...fields.requireName,

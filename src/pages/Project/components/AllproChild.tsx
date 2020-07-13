@@ -102,7 +102,7 @@ let AllproChild = React.forwardRef((props: any, ref: any) => {
         type: 'select', //类型
         title: '产品', //placeholder
         name: ['productId'], //唯一标识
-        required: false, //必填？
+        required: true, //必填？
         options: proj.ProdqueryAllSelect && proj.ProdqueryAllSelect,
       },
       projectNo: {
@@ -127,8 +127,8 @@ let AllproChild = React.forwardRef((props: any, ref: any) => {
         required: true,
       },
       description: {
-        value: '', //初始化值
-        type: 'textarea',
+        value: '<p></p>', //初始化值
+        type: 'editor',
         title: '项目描述',
         name: ['description'],
         required: false,
@@ -408,7 +408,8 @@ let AllproChild = React.forwardRef((props: any, ref: any) => {
               },
               description: {
                 ...fields.description,
-                value: record.description, //初始化值
+                value: record.description ? record.description : '<p></p>', //初始化值
+                rerender: true,
               },
               startDate: {
                 ...fields.startDate,
@@ -636,72 +637,59 @@ let AllproChild = React.forwardRef((props: any, ref: any) => {
             maindata={proj.ProjqueryById.data.data}
           ></Projectdetail>
         ) : (
-          <InitForm
-            fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
-              if (iftype.key == 'edit') {
-                newfields.id = iftype.curitem.id;
-              }
+          iftype.visible && (
+            <InitForm
+              fields={fields}
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
+                if (iftype.key == 'edit') {
+                  newfields.id = iftype.curitem.id;
+                }
 
-              let newlist = newfields.attachmentList.fileList
-                ? newfields.attachmentList.fileList.map(
-                    (items: any, i: number) => {
-                      return {
-                        attachmentName: items.response
-                          ? items.response.data.dataList[0].name
-                          : items.name,
-                        attachUrl: items.response
-                          ? items.response.data.dataList[0].url
-                          : items.url,
-                      };
-                    },
-                  )
-                : [];
-              newfields.attachmentList = newlist;
-              newfields.startDate = newfields.startDate
-                ? moment(newfields.startDate)
-                    .startOf('day')
-                    .valueOf()
-                : '';
-              newfields.endDate = newfields.endDate
-                ? moment(newfields.endDate)
-                    .startOf('day')
-                    .valueOf()
-                : '';
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
+                newfields.attachmentList = newlist;
+                newfields.startDate = newfields.startDate
+                  ? moment(newfields.startDate)
+                      .startOf('day')
+                      .valueOf()
+                  : '';
+                newfields.endDate = newfields.endDate
+                  ? moment(newfields.endDate)
+                      .startOf('day')
+                      .valueOf()
+                  : '';
 
-              setNewState(dispatch, 'proj/Projsave', newfields, () => {
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
+                setNewState(dispatch, 'proj/Projsave', newfields, () => {
                   ciftype(() => {
                     return {
                       ...iftype,
                       visible: false,
                     };
                   });
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    message.success('操作成功');
+                  });
                 });
-              });
-            }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
+              }}
+              onChange={(newFields: any) => {}}
+              submitting={
+                props.loading.effects['proj/Projsave'] || !iftype.visible
               }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value;
-              let key = name ? name[0] : '';
-              cf(() => {
-                fields[key].value = value;
-
-                return {
-                  ...fields,
-                };
-              });
-            }}
-            submitting={props.loading.effects['proj/Projsave']}
-          ></InitForm>
+            ></InitForm>
+          )
         )}
       </Dia>
       <AutoTable

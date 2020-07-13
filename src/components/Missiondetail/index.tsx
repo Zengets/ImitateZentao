@@ -1,51 +1,43 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
-import { List, Card, Row, Col } from 'antd';
+import { List, Card, Row, Col, Tabs, Divider } from 'antd';
 import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
-
+import styles from './style.less';
+const { TabPane } = Tabs;
 let Missiondetail = (props: any) => {
   let { renderAction, maindata, showOther } = props;
 
   let columns = [
     {
-      title: '需求描述',
-      dataIndex: 'requireDesctription',
-      key: 'requireDesctription',
-      section: true,
-    },
-    {
       title: '任务描述',
       dataIndex: 'taskDesctription',
       key: 'taskDesctription',
       section: true,
-    },
-    {
-      title: '技术描述',
-      dataIndex: 'techDesctription',
-      key: 'techDesctription',
-      section: true,
+      type: 'start',
     },
     {
       title: '开发描述',
       dataIndex: 'devDesctription',
       key: 'devDesctription',
       section: true,
+      type: 'start',
     },
     {
       title: '测试描述',
       dataIndex: 'testDesctription',
       key: 'testDesctription',
       section: true,
+      type: 'start',
     },
     {
       title: '验收描述',
       dataIndex: 'acceptDesctription',
       key: 'acceptDesctription',
       section: true,
+      type: 'start',
     },
-
     {
       title: '所属项目',
       dataIndex: 'projectName',
@@ -139,26 +131,36 @@ let Missiondetail = (props: any) => {
       format: 'YYYY-MM-DD',
     },
     {
-      title: '预计起止日期(开发)',
+      title: '预计起止日期',
       dataIndex: 'devStageStartDate',
       key: 'devStageStartDate',
       endIndex: 'devStageEndDate',
       format: 'YYYY-MM-DD',
     },
     {
-      title: '预计时长(开发)',
+      title: '预计时长',
       dataIndex: 'devStagePlanHours',
       key: 'devStagePlanHours',
     },
     {
-      title: '消耗时长(开发)',
+      title: '消耗时长',
       dataIndex: 'devStageExpendHours',
       key: 'devStageExpendHours',
     },
     {
-      title: '累计消耗时长(开发)',
+      title: '累计消耗时长',
       dataIndex: 'totalDevStageExpendHours',
       key: 'totalDevStageExpendHours',
+    },
+    {
+      title: '相关需求',
+      dataIndex: 'requireName',
+      key: 'requireName',
+    },
+    {
+      title: '优先级',
+      dataIndex: 'priorityName',
+      key: 'priorityName',
     },
   ];
 
@@ -186,7 +188,13 @@ let Missiondetail = (props: any) => {
       dataSource: any[] = [];
 
     if (maindata) {
-      listdata = maindata.info; //info对象
+      listdata = {
+        ...maindata.info,
+        taskDesctription: maindata.taskDesctription,
+        acceptDesctription: maindata.acceptDesctription,
+        devDesctription: maindata.devDesctription,
+        testDesctription: maindata.testDesctription,
+      }; //info对象
     }
 
     if (listdata) {
@@ -218,8 +226,17 @@ let Missiondetail = (props: any) => {
             return null;
           } else {
             return (
-              <div>
-                <p>{maindata[item.dataIndex].description}</p>
+              <div className={styles.boxes}>
+                <p
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    wordBreak: 'break-all',
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: maindata[item.dataIndex].description,
+                  }}
+                ></p>
                 <div>{renderList(maindata[item.dataIndex].annex)}</div>
               </div>
             );
@@ -230,6 +247,47 @@ let Missiondetail = (props: any) => {
           title: item.title,
           dataIndex: item.dataIndex,
           type: item.type,
+          tooltip:
+            item.dataIndex == 'requireName' && maindata.require ? (
+              <div
+                className={styles.boxes}
+                style={{
+                  backgroundColor: '#fff',
+                  border: '#ddd solid 1px',
+                  padding: 12,
+                  borderRadius: 2,
+                  minWidth: 400,
+                }}
+              >
+                <div>
+                  <p style={{ color: '#333', marginBottom: 12 }}>验收标准</p>
+                  <p
+                    style={{
+                      width: '100%',
+                      overflow: 'hidden',
+                      wordBreak: 'break-all',
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: maindata.require.standard,
+                    }}
+                  ></p>
+                </div>
+                <Divider style={{ margin: '10px 0px' }}></Divider>
+                <div>
+                  <p style={{ color: '#333', marginBottom: 12 }}>验收标准</p>
+                  <p
+                    style={{
+                      width: '100%',
+                      overflow: 'hidden',
+                      wordBreak: 'break-all',
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: maindata.require.description,
+                    }}
+                  ></p>
+                </div>
+              </div>
+            ) : null,
           value: item.section ? (
             rendersection()
           ) : item.dataIndex == 'statusName' ? (
@@ -258,22 +316,36 @@ let Missiondetail = (props: any) => {
       });
     }
 
-    let info1 = [
-      'requireDesctription',
-      'taskDesctription',
-      'techDesctription',
-      'devDesctription',
-      'testDesctription',
-      'acceptDesctription',
-    ].map((item: any) => {
+    let info11 = ['taskDesctription'].map((item: any) => {
       return dataSource.filter((it: any) => {
         return it.dataIndex == item;
       })[0];
     });
+
+    let info12 = ['devDesctription'].map((item: any) => {
+      return dataSource.filter((it: any) => {
+        return it.dataIndex == item;
+      })[0];
+    });
+
+    let info13 = ['testDesctription'].map((item: any) => {
+      return dataSource.filter((it: any) => {
+        return it.dataIndex == item;
+      })[0];
+    });
+
+    let info14 = ['acceptDesctription'].map((item: any) => {
+      return dataSource.filter((it: any) => {
+        return it.dataIndex == item;
+      })[0];
+    });
+
     let info2 = [
       'projectName',
       'taskNo',
       'taskName',
+      'requireName',
+      'priorityName',
       'statusName',
       'testStageResultName',
       'acceptStageResultName',
@@ -285,8 +357,6 @@ let Missiondetail = (props: any) => {
     });
     let info3 = [
       'openDate',
-      'activateDate',
-      'assignTime',
       'devStageRealStartTime',
       'testStageTime',
       'acceptStageTime',
@@ -302,58 +372,177 @@ let Missiondetail = (props: any) => {
       })[0];
     });
 
+    let col = {
+        xs: 24,
+        sm: 24,
+        md: 16,
+        lg: 16,
+        xl: 16,
+        xxl: 16,
+      },
+      cols = {
+        xs: 24,
+        sm: 24,
+        md: 8,
+        lg: 8,
+        xl: 8,
+        xxl: 8,
+      };
+
     return (
       <div>
-        <List
-          dataSource={info1}
-          bordered
-          style={{ marginBottom: 24 }}
-          renderItem={(item: any) => (
-            <List.Item>
-              <DetailItem
-                key={item.dataIndex}
-                width={70}
-                title={item.title}
-                value={item.value}
-                item={item}
-                hdClick={() => {
-                  if (item.dataIndex == 'projectName') {
-                    showOther();
-                  }
-                }}
-                contentstyle={{
-                  color:
-                    item.dataIndex == 'projectName'
-                      ? '#1183fb'
-                      : rendercolor('任务level', item.value),
-                  cursor:
-                    item.dataIndex == 'projectName' ? 'pointer' : 'default',
-                }}
-              />
-            </List.Item>
-          )}
-          footer={
-            renderAction ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {renderAction()}
-              </div>
-            ) : (
-              false
-            )
-          }
-        />
         <Row gutter={24}>
-          <Col span={12}>
-            <Card title="基本信息" style={{ borderColor: '#d9d9d9' }}>
+          <Col {...col}>
+            <Card title="任务信息" style={{ marginBottom: 24 }}>
+              <Tabs defaultActiveKey="1" style={{ marginTop: -12 }}>
+                <TabPane tab="任务描述" key="1">
+                  <List
+                    dataSource={info11}
+                    split={false}
+                    size="small"
+                    style={{ marginTop: -12, marginBottom: -12 }}
+                    renderItem={(item: any) => (
+                      <List.Item>
+                        <DetailItem
+                          key={item.dataIndex}
+                          width={70}
+                          title={item.title}
+                          value={item.value}
+                          item={item}
+                          hdClick={() => {
+                            if (item.dataIndex == 'projectName') {
+                              showOther();
+                            }
+                          }}
+                          contentstyle={{
+                            color:
+                              item.dataIndex == 'projectName'
+                                ? '#1183fb'
+                                : rendercolor('任务level', item.value),
+                            cursor:
+                              item.dataIndex == 'projectName'
+                                ? 'pointer'
+                                : 'default',
+                          }}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </TabPane>
+                <TabPane tab="开发描述" key="2">
+                  <List
+                    dataSource={info12}
+                    split={false}
+                    size="small"
+                    style={{ marginTop: -12, marginBottom: -12 }}
+                    renderItem={(item: any) => (
+                      <List.Item>
+                        <DetailItem
+                          key={item.dataIndex}
+                          width={70}
+                          title={item.title}
+                          value={item.value}
+                          item={item}
+                          hdClick={() => {
+                            if (item.dataIndex == 'projectName') {
+                              showOther();
+                            }
+                          }}
+                          contentstyle={{
+                            color:
+                              item.dataIndex == 'projectName'
+                                ? '#1183fb'
+                                : rendercolor('任务level', item.value),
+                            cursor:
+                              item.dataIndex == 'projectName'
+                                ? 'pointer'
+                                : 'default',
+                          }}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </TabPane>
+                <TabPane tab="测试描述" key="3">
+                  <List
+                    dataSource={info13}
+                    split={false}
+                    size="small"
+                    style={{ marginTop: -12, marginBottom: -12 }}
+                    renderItem={(item: any) => (
+                      <List.Item>
+                        <DetailItem
+                          key={item.dataIndex}
+                          width={70}
+                          title={item.title}
+                          value={item.value}
+                          item={item}
+                          hdClick={() => {
+                            if (item.dataIndex == 'projectName') {
+                              showOther();
+                            }
+                          }}
+                          contentstyle={{
+                            color:
+                              item.dataIndex == 'projectName'
+                                ? '#1183fb'
+                                : rendercolor('任务level', item.value),
+                            cursor:
+                              item.dataIndex == 'projectName'
+                                ? 'pointer'
+                                : 'default',
+                          }}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </TabPane>
+                <TabPane tab="验收描述" key="4">
+                  <List
+                    dataSource={info14}
+                    split={false}
+                    size="small"
+                    style={{ marginTop: -12, marginBottom: -12 }}
+                    renderItem={(item: any) => (
+                      <List.Item>
+                        <DetailItem
+                          key={item.dataIndex}
+                          width={70}
+                          title={item.title}
+                          value={item.value}
+                          item={item}
+                          hdClick={() => {
+                            if (item.dataIndex == 'projectName') {
+                              showOther();
+                            }
+                          }}
+                          contentstyle={{
+                            color:
+                              item.dataIndex == 'projectName'
+                                ? '#1183fb'
+                                : rendercolor('任务level', item.value),
+                            cursor:
+                              item.dataIndex == 'projectName'
+                                ? 'pointer'
+                                : 'default',
+                          }}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </TabPane>
+              </Tabs>
+            </Card>
+            <Card title="历史记录" style={{ marginBottom: 24 }}></Card>
+          </Col>
+          <Col {...cols}>
+            <Card title="基本信息" style={{ marginBottom: 24 }}>
               <List
                 bordered={false}
                 dataSource={info2}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 renderItem={(item: any) => (
                   <List.Item>
                     <DetailItem
@@ -384,11 +573,13 @@ let Missiondetail = (props: any) => {
                 )}
               />
             </Card>
-          </Col>
-          <Col span={12}>
-            <Card title="工时信息" style={{ borderColor: '#d9d9d9' }}>
+
+            <Card title="工时信息" style={{ marginBottom: 24 }}>
               <List
                 bordered={false}
+                split={false}
+                size="small"
+                style={{ marginTop: -12, marginBottom: -12 }}
                 dataSource={info3}
                 renderItem={(item: any) => (
                   <List.Item>
@@ -406,6 +597,20 @@ let Missiondetail = (props: any) => {
             </Card>
           </Col>
         </Row>
+        {renderAction && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 36,
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {renderAction()}
+          </div>
+        )}
       </div>
     );
   };

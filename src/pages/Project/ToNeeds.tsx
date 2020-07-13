@@ -32,14 +32,14 @@ import {
 } from '@/components/TbSearch';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-0;
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import rendercolor from '@/utils/rendercor';
 import LinkIcon from '@material-ui/icons/Link';
 import Button from '@material-ui/core/Button';
-import { type } from './../../.umi/plugin-initial-state/exports';
-import { check } from 'prettier';
+import Needsdetail from '@/components/Needsdetail';
+import Dia from '@/components/Dia';
+import AddMission from '@/components/AddMission';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import GetTaskList from './components/getTaskList';
 
 const { TabPane } = Tabs;
 
@@ -85,6 +85,8 @@ let ToNeeds = (props: any, ref: any) => {
       curitem: {},
       fullScreen: false,
       visible: false,
+      visibles: false,
+      fv: false,
       title: '',
       key: '',
     }),
@@ -96,7 +98,6 @@ let ToNeeds = (props: any, ref: any) => {
   useEffect(() => {
     setNewState(dispatch, 'proj/queryRequireStatusSelectList', {}, () => {});
     setNewState(dispatch, 'proj/queryRequireStageSelectList', {}, () => {});
-    setNewState(dispatch, 'proj/Bugpriority', {}, () => {});
   }, []);
 
   let columns = [
@@ -127,7 +128,7 @@ let ToNeeds = (props: any, ref: any) => {
       width: 90,
       ...getColumnSelectProps(
         'priorityType',
-        proj.Bugpriority,
+        model.Bugpriority,
         post.postdata,
         (value: any, dataIndex: any, dataIndexs: any) =>
           handleSearch(value, dataIndex, dataIndexs, 'postdata'),
@@ -165,7 +166,7 @@ let ToNeeds = (props: any, ref: any) => {
                   ciftype({
                     ...iftype,
                     curitem: record,
-                    visible: true,
+                    visibles: true,
                     title: `[${record.requireNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
@@ -238,6 +239,25 @@ let ToNeeds = (props: any, ref: any) => {
       dataIndex: 'taskNum',
       key: 'taskNum',
       width: 120,
+      render: (text: any, record: any) => {
+        return (
+          <IconButton
+            style={{ borderRadius: 0 }}
+            onClick={() => {
+              ciftype({
+                ...iftype,
+                curitem: record,
+                visibles: true,
+                title: '相关任务',
+                key: 'mission',
+                fullScreen: false,
+              });
+            }}
+          >
+            <a style={{ fontSize: 12, margin: '0px 8px' }}>{text}</a>
+          </IconButton>
+        );
+      },
     },
     {
       title: '操作',
@@ -269,7 +289,7 @@ let ToNeeds = (props: any, ref: any) => {
       width: 90,
       ...getColumnSelectProps(
         'priorityType',
-        proj.Bugpriority,
+        model.Bugpriority,
         post.postdatas,
         (value: any, dataIndex: any, dataIndexs: any) =>
           handleSearch(value, dataIndex, dataIndexs, 'postdatas'),
@@ -304,7 +324,7 @@ let ToNeeds = (props: any, ref: any) => {
                   ciftype({
                     ...iftype,
                     curitem: record,
-                    visible: true,
+                    visibles: true,
                     title: `[${record.requireNo}]` + text,
                     key: 'detail',
                     fullScreen: true,
@@ -319,8 +339,27 @@ let ToNeeds = (props: any, ref: any) => {
       },
     },
   ];
+
   //action
-  function renderAction(record: any) {}
+  function renderAction(record: any) {
+    return (
+      <IconButton
+        onClick={() => {
+          ciftype({
+            ...iftype,
+            fv: true,
+            curitem: record,
+            title: '分配任务',
+          });
+        }}
+      >
+        <Tooltip title="分解任务">
+          <AccountTreeIcon color="primary"></AccountTreeIcon>
+        </Tooltip>
+      </IconButton>
+    );
+  }
+
   //search
   function handleSearch(
     value: any,
@@ -463,6 +502,46 @@ let ToNeeds = (props: any, ref: any) => {
 
   return (
     <Container maxWidth="xl">
+      <Dia
+        fullScreen={iftype.fullScreen}
+        show={iftype.visibles}
+        cshow={(key: React.SetStateAction<boolean>) => {
+          ciftype(() => {
+            return {
+              ...iftype,
+              visibles: key,
+              fullScreen: false,
+            };
+          });
+        }}
+        maxWidth="lg"
+        title={iftype.title}
+        footer={<div style={{ height: 24 }}></div>}
+      >
+        {iftype.key == 'mission' ? (
+          <GetTaskList requireId={iftype.curitem.id}></GetTaskList>
+        ) : (
+          <Needsdetail maindata={proj.queryDetailInfo.data.data}></Needsdetail>
+        )}
+      </Dia>
+      <AddMission
+        address="model/breakDown"
+        dicKey={iftype.curitem.id}
+        dicName={iftype.curitem.requireName}
+        iftype={iftype}
+        cancel={val => {
+          ciftype({
+            ...iftype,
+            fv: false,
+            visible: false,
+            visibles: false,
+          });
+          if (val) {
+            setNewState(dispatch, post.posturl, post.postdata, () => {});
+            setNewState(dispatch, post.posturls, post.postdatas, () => {});
+          }
+        }}
+      ></AddMission>
       <Card
         title={props.route.name}
         extra={

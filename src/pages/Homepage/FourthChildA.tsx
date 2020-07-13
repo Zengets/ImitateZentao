@@ -40,6 +40,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import TouchAppIcon from '@material-ui/icons/TouchApp';
 
 let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
   let [dataList, cdata] = useState([]),
@@ -49,8 +50,8 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
         taskNo: '', //任务编号
         taskName: '', //任务名
         currentUserId: '', //当前负责人id
-        deadDateStart: '', //截止起日期
-        deadDateEnd: '', //截止止日期
+        devStageEndDateStart: '', //-----------------截止日期搜索  (到日)
+        devStageEndDateEnd: '', //-----------------截止日期搜索  (到日)
         projectId: '', //所属项目id
         sortList: [
           //排序字段
@@ -67,7 +68,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
             sort: '',
           },
           {
-            fieldName: 'deadDate', //截止日期
+            fieldName: 'devStageEndDate', //截止日期
             sort: '',
           },
           {
@@ -85,123 +86,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       title: '',
       key: '',
     }),
-    defaultfields: any = {
-      taskName: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '任务名称', //placeholder
-        name: ['taskName'], //唯一标识
-        required: true, //必填？
-      },
-      projectId: {
-        value: null, //初始化值
-        type: 'select', //类型
-        title: '所属项目', //placeholder
-        name: ['projectId'], //唯一标识
-        required: true, //必填？
-        disabled: true,
-        options: model.ProjquerySelectList && model.ProjquerySelectList,
-      },
-      taskDescription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '任务描述',
-        name: ['taskDescription'],
-        required: false,
-        rows: 6,
-        col: { span: 24 },
-      },
-      requireDesctription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '需求描述',
-        name: ['requireDesctription'],
-        required: true,
-        rows: 6,
-        col: { span: 24 },
-      },
-      currentUserId: {
-        value: '', //初始化值
-        type: 'select', //类型
-        title: '指派给', //placeholder
-        name: ['currentUserId'], //唯一标识
-        required: true, //必填？
-        options:
-          miss.querySelectListByProjectId && miss.querySelectListByProjectId,
-      },
-      deadDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['deadDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      devStagePlanHours: {
-        value: '', //初始化值
-        type: 'inputnumber',
-        title: '预计时长(开发)',
-        name: ['devStagePlanHours'],
-        required: true,
-      },
-      devStageStartDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '开始日期',
-        name: ['devStageStartDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      devStageEndDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['devStageEndDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      techDesctription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '技术描述',
-        name: ['techDesctription'],
-        required: false,
-        rows: 6,
-        col: { span: 24 },
-      },
-      attachmentList: {
-        value: [], //初始化值
-        type: 'upload',
-        title: '附件',
-        name: ['attachmentList'],
-        required: false,
-        col: { span: 24 },
-      },
-    },
+    defaultfields: any = {},
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
@@ -237,7 +122,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
             onClick={() => {
               setNewState(
                 dispatch,
-                'home/MisquerytaskDetails',
+                'miss/MisquerytaskDetails',
                 { id: record.id },
                 (res: any) => {
                   ciftype({
@@ -275,31 +160,89 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       ),
     },
     {
-      title: '当前负责人',
+      title: '负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
       sorter: {
         multiple: 102,
       },
       width: 120,
-      ...getColumnSelectProps(
-        'currentUserId',
-        model.UserqueryAll,
-        post.postdata,
-        handleSearch,
-      ),
+      ...getColumnSearchProps('currentUserName', post.postdata, handleSearch),
+      render: (text: any, record: any) =>
+        record.status == 7 || record.status == 8 ? (
+          <span>{text}</span>
+        ) : (
+          <IconButton
+            onClick={() => {
+              setNewState(
+                dispatch,
+                'miss/querySelectListByProjectId',
+                { projectId: record.projectId },
+                (res: any) => {
+                  cf({
+                    currentUserId: {
+                      value: record.currentUserId, //初始化值
+                      type: 'select', //类型
+                      title: '指派给', //placeholder
+                      name: ['currentUserId'], //唯一标识
+                      required: true, //必填？
+                      options: res.data.dataList,
+                    },
+                    devStagePlanHours: {
+                      value: record.devStagePlanHours, //初始化值
+                      type: 'inputnumber',
+                      title: '预计时长',
+                      min: 1,
+                      name: ['devStagePlanHours'],
+                      required: true,
+                      hides: !(record.status == 3 || record.status == 4),
+                    },
+                    remark: {
+                      value: '', //初始化值
+                      type: 'textarea',
+                      title: '备注',
+                      name: ['remark'],
+                      required: false,
+                      rows: 6,
+                      col: { span: 24 },
+                    },
+                  });
+                  ciftype(() => {
+                    return {
+                      ...iftype,
+                      visible: true,
+                      title: `[${record.taskNo}]${record.taskName}`,
+                      curitem: record,
+                      fullScreen: false,
+                      key: 'changecharge',
+                    };
+                  });
+                },
+              );
+            }}
+            className={styles.did}
+          >
+            <a style={{ marginLeft: 4 }}>{text}</a>
+            <div className="hides">
+              <TouchAppIcon
+                color="primary"
+                style={{ fontSize: 20 }}
+              ></TouchAppIcon>
+            </div>
+          </IconButton>
+        ),
     },
     {
       title: '截止日期',
-      dataIndex: 'deadDate',
-      key: 'deadDate',
+      dataIndex: 'devStageEndDate',
+      key: 'devStageEndDate',
+      width: 120,
       sorter: {
         multiple: 95,
       },
-      width: 120,
       ...getColumnRangeProps(
-        'deadDateStart',
-        'deadDateEnd',
+        'devStageEndDateStart',
+        'devStageEndDateEnd',
         post.postdata,
         handleSearch,
       ),
@@ -307,34 +250,8 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
         return (
           <span
             style={{
-              color:
-                record.status == 8
-                  ? '#666'
-                  : record.status == 7
-                  ? moment(parseInt(record.acceptStageTime))
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                    ? '#fff'
-                    : '#666'
-                  : moment()
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                  ? '#fff'
-                  : '#666',
-              backgroundColor:
-                record.status == 8
-                  ? 'transparent'
-                  : record.status == 7
-                  ? moment(parseInt(record.acceptStageTime))
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                    ? '#e84e0f'
-                    : 'transparent'
-                  : moment()
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                  ? '#e84e0f'
-                  : 'transparent',
+              color: record.ifDelay == 1 ? '#666' : '#fff',
+              backgroundColor: record.ifDelay == 1 ? 'transparent' : '#e84e0f',
               padding: '0 8px',
             }}
           >
@@ -368,105 +285,6 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
   function renderAction(record: any) {
     return (
       <div>
-        <Tooltip title="激活">
-          <IconButton
-            disabled={record.status != 1}
-            onClick={() => {
-              setNewState(
-                dispatch,
-                'miss/querySelectListByProjectId',
-                { projectId: record.projectId },
-                (res: any) => {
-                  cf({
-                    currentUserId: {
-                      value: record.currentUserId, //初始化值
-                      type: 'select', //类型
-                      title: '指派给', //placeholder
-                      name: ['currentUserId'], //唯一标识
-                      required: true, //必填？
-                      col: { span: 24 },
-                      options: res.data.dataList && res.data.dataList,
-                    },
-                  });
-                  ciftype(() => {
-                    return {
-                      ...iftype,
-                      visible: true,
-                      title: '激活任务:' + record.taskName + ',并选择指派人',
-                      key: 'jihuo',
-                      curitem: record,
-                      fullScreen: false,
-                    };
-                  });
-                },
-              );
-            }}
-          >
-            <PlayCircleOutlineIcon
-              color={record.status != 1 ? 'action' : 'primary'}
-            />
-          </IconButton>
-        </Tooltip>
-
-        <Divider type="vertical"></Divider>
-
-        <IconButton
-          disabled={record.status != 2}
-          onClick={() => {
-            setNewState(
-              dispatch,
-              'miss/querySelectListByProjectId',
-              { projectId: record.projectId },
-              (res: any) => {
-                cf({
-                  currentUserId: {
-                    ...fields.currentUserId,
-                    options: res.data.dataList,
-                  },
-                  devStagePlanHours: {
-                    ...fields.devStagePlanHours,
-                    value: null, //初始化值
-                  },
-                  devStageStartDate: {
-                    ...fields.devStageStartDate,
-                    value: undefined, //初始化值
-                  },
-                  devStageEndDate: {
-                    ...fields.devStageEndDate,
-                    value: undefined, //初始化值
-                  },
-                  techDesctription: {
-                    ...fields.techDesctription,
-                    value: null, //初始化值
-                  },
-                  attachmentList: {
-                    ...fields.attachmentList,
-                    value: [], //初始化值
-                  },
-                });
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: true,
-                    title: '分配任务:' + record.taskName,
-                    key: 'assgin',
-                    curitem: record,
-                    fullScreen: false,
-                  };
-                });
-              },
-            );
-          }}
-        >
-          <Tooltip title="分配">
-            <GroupIcon
-              color={record.status != 2 ? 'action' : 'primary'}
-              style={{ fontSize: 26 }}
-            />
-          </Tooltip>
-        </IconButton>
-        <Divider type="vertical"></Divider>
-
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -486,7 +304,21 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   post.postdata,
                   (res: any) => {
                     cdata(res.data.dataList);
-                    hides(false);
+                    let result = res.data.dataList;
+                    setNewState(
+                      dispatch,
+                      'miss/MisquerytaskDetails',
+                      { id: record.id },
+                      (resr: any) => {
+                        ciftype({
+                          ...iftype,
+                          resdata: resr.data.data,
+                          curitem: result.filter((items: any) => {
+                            return items.id == record.id;
+                          })[0],
+                        });
+                      },
+                    );
                   },
                 );
               },
@@ -740,102 +572,6 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
         </IconButton>
 
         <Divider type="vertical"></Divider>
-        <IconButton
-          disabled={record.status != 1}
-          onClick={() => {
-            setNewState(
-              dispatch,
-              'miss/querySelectListByProjectId',
-              { projectId: record.projectId },
-              (res: any) => {
-                cf({
-                  taskName: {
-                    ...fields.taskName,
-                    value: record.taskName, //初始化值
-                  },
-                  projectId: {
-                    ...fields.projectId,
-                    value: record.projectId, //初始化值
-                  },
-                  taskDescription: {
-                    ...fields.taskDescription,
-                    value: record.taskDescription, //初始化值
-                  },
-                  requireDesctription: {
-                    ...fields.requireDesctription,
-                    value: record.requireDesctription, //初始化值
-                  },
-                  currentUserId: {
-                    ...fields.currentUserId,
-                    value: record.currentUserId, //初始化值
-                    options: res.data.dataList,
-                  },
-                  deadDate: {
-                    ...fields.deadDate,
-                    value: record.deadDate
-                      ? moment(parseInt(record.deadDate))
-                      : undefined, //初始化值
-                  },
-                  attachmentList: {
-                    ...fields.attachmentList,
-                    value: record.attachmentList
-                      ? mockfile(record.attachmentList)
-                      : [], //初始化值
-                  },
-                });
-                ciftype(() => {
-                  return {
-                    ...iftype,
-                    visible: true,
-                    title: '修改' + record.taskName,
-                    key: 'edit',
-                    curitem: record,
-                    fullScreen: false,
-                  };
-                });
-              },
-            );
-          }}
-        >
-          <Tooltip title="编辑">
-            <EditIcon color={record.status != 1 ? 'action' : 'primary'} />
-          </Tooltip>
-        </IconButton>
-        <Divider type="vertical"></Divider>
-
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认删除' + record.taskName + '？'}
-          onConfirm={() => {
-            setNewState(
-              dispatch,
-              'miss/MisdeleteById',
-              { id: record.id },
-              () => {
-                message.success('删除' + record.taskName + '成功！');
-                setNewState(
-                  dispatch,
-                  post.posturl,
-                  post.postdata,
-                  (res: any) => {
-                    cdata(res.data.dataList);
-                    hides(false);
-                  },
-                );
-              },
-            );
-          }}
-        >
-          <Tooltip title="删除">
-            <IconButton disabled={record.status != 1} aria-label="delete">
-              <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
-            </IconButton>
-          </Tooltip>
-        </Popconfirm>
-        <Divider type="vertical"></Divider>
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -847,7 +583,21 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
               message.success('关闭任务：' + record.taskName + '成功！');
               setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
                 cdata(res.data.dataList);
-                hides(false);
+                let result = res.data.dataList;
+                setNewState(
+                  dispatch,
+                  'miss/MisquerytaskDetails',
+                  { id: record.id },
+                  (resr: any) => {
+                    ciftype({
+                      ...iftype,
+                      resdata: resr.data.data,
+                      curitem: result.filter((items: any) => {
+                        return items.id == record.id;
+                      })[0],
+                    });
+                  },
+                );
               });
             });
           }}
@@ -997,198 +747,138 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
             renderAction={() => renderAction(iftype.curitem)}
           ></Missiondetail>
         ) : (
-          <InitForm
-            fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
-
-              newfields.id = iftype.curitem.id;
-
-              if (iftype.key == 'jihuo') {
-                setNewState(
-                  dispatch,
-                  'miss/Misactivation',
-                  {
-                    id: iftype.curitem.id,
-                    currentUserId: newfields.currentUserId,
-                  },
-                  () => {
-                    hides(false);
+          iftype.visible && (
+            <InitForm
+              fields={fields}
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
+                newfields.id = iftype.curitem.id;
+                if (iftype.key == 'changecharge') {
+                  setNewState(dispatch, 'miss/Misassign', newfields, () => {
                     setNewState(
                       dispatch,
                       post.posturl,
                       post.postdata,
                       (res: any) => {
                         cdata(res.data.dataList);
-                        message.success('激活成功！');
+                        message.success('修改成功');
+                        hides(false);
                       },
                     );
-                  },
-                );
-                return;
-              }
+                  });
+                  return;
+                }
 
-              let newlist = newfields.attachmentList.fileList
-                ? newfields.attachmentList.fileList.map(
-                    (items: any, i: number) => {
-                      return {
-                        attachmentName: items.response
-                          ? items.response.data.dataList[0].name
-                          : items.name,
-                        attachUrl: items.response
-                          ? items.response.data.dataList[0].url
-                          : items.url,
-                      };
-                    },
-                  )
-                : [];
-
-              newfields.attachmentList = newlist;
-
-              if (iftype.key == 'assgin') {
-                newfields.devStageStartDate = newfields.devStageStartDate
-                  ? moment(newfields.devStageStartDate)
-                      .startOf('day')
-                      .valueOf()
-                  : '';
-                newfields.devStageEndDate = newfields.devStageEndDate
-                  ? moment(newfields.devStageEndDate)
-                      .startOf('day')
-                      .valueOf()
-                  : '';
-                setNewState(dispatch, 'miss/Misassign', newfields, () => {
-                  setNewState(
-                    dispatch,
-                    post.posturl,
-                    post.postdata,
-                    (res: any) => {
-                      cdata(res.data.dataList);
-                      message.success('分配成功');
-                      hides(false);
-                    },
-                  );
-                });
-                return;
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
+                newfields.attachmentList = newlist;
+                if (iftype.key == 'finishdev') {
+                  let res = moment(newfields.realFinishTime)
+                    .startOf('minute')
+                    .valueOf();
+                  newfields.realFinishTime = newfields.realFinishTime
+                    ? res
+                    : '';
+                  setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
+                    setNewState(
+                      dispatch,
+                      post.posturl,
+                      post.postdata,
+                      (res: any) => {
+                        cdata(res.data.dataList);
+                        message.success('已经完成开发');
+                        hides(false);
+                      },
+                    );
+                  });
+                  return;
+                }
+                if (iftype.key == 'test') {
+                  setNewState(dispatch, 'miss/Mistest', newfields, () => {
+                    setNewState(
+                      dispatch,
+                      post.posturl,
+                      post.postdata,
+                      (res: any) => {
+                        cdata(res.data.dataList);
+                        message.success('操作成功');
+                        hides(false);
+                      },
+                    );
+                  });
+                  return;
+                }
+                if (iftype.key == 'check') {
+                  setNewState(dispatch, 'miss/Mischeck', newfields, () => {
+                    setNewState(
+                      dispatch,
+                      post.posturl,
+                      post.postdata,
+                      (res: any) => {
+                        cdata(res.data.dataList);
+                        message.success('操作成功');
+                        hides(false);
+                      },
+                    );
+                  });
+                  return;
+                }
+              }}
+              onChange={(newFields: any) => {
+                if (!newFields) {
+                  return;
+                }
+                let name = newFields ? newFields.name : '',
+                  value = newFields.value;
+                let key = name ? name[0] : '';
+                if (key == 'testStageResult') {
+                  cf(() => {
+                    fields[key].value = value;
+                    return {
+                      ...fields,
+                      currentUserId: {
+                        ...fields.currentUserId,
+                        value: value == 2 ? iftype.curitem.devUserId : '',
+                        disabled: value == 2,
+                      },
+                    };
+                  });
+                } else if (key == 'acceptStageResult') {
+                  cf(() => {
+                    fields[key].value = value;
+                    return {
+                      ...fields,
+                      currentUserId: {
+                        ...fields.currentUserId,
+                        hides: value != 2,
+                      },
+                    };
+                  });
+                } else {
+                }
+              }}
+              submitting={
+                loading.effects['miss/Misactivation'] ||
+                loading.effects['miss/Misassign'] ||
+                loading.effects['miss/MisdevelopEnd'] ||
+                loading.effects['miss/Mistest'] ||
+                loading.effects['miss/Mischeck'] ||
+                loading.effects['miss/Missave']
               }
-              if (iftype.key == 'finishdev') {
-                let res = moment(newfields.realFinishTime)
-                  .startOf('minute')
-                  .valueOf();
-                newfields.realFinishTime = newfields.realFinishTime ? res : '';
-                setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
-                  setNewState(
-                    dispatch,
-                    post.posturl,
-                    post.postdata,
-                    (res: any) => {
-                      cdata(res.data.dataList);
-                      message.success('已经完成开发');
-                      hides(false);
-                    },
-                  );
-                });
-                return;
-              }
-              if (iftype.key == 'test') {
-                setNewState(dispatch, 'miss/Mistest', newfields, () => {
-                  setNewState(
-                    dispatch,
-                    post.posturl,
-                    post.postdata,
-                    (res: any) => {
-                      cdata(res.data.dataList);
-                      message.success('操作成功');
-                      hides(false);
-                    },
-                  );
-                });
-                return;
-              }
-              if (iftype.key == 'check') {
-                setNewState(dispatch, 'miss/Mischeck', newfields, () => {
-                  setNewState(
-                    dispatch,
-                    post.posturl,
-                    post.postdata,
-                    (res: any) => {
-                      cdata(res.data.dataList);
-                      message.success('操作成功');
-                      hides(false);
-                    },
-                  );
-                });
-                return;
-              }
-
-              newfields.deadDate = moment(newfields.deadDate)
-                .startOf('day')
-                .valueOf();
-
-              setNewState(dispatch, 'miss/Missave', newfields, () => {
-                setNewState(
-                  dispatch,
-                  post.posturl,
-                  post.postdata,
-                  (res: any) => {
-                    cdata(res.data.dataList);
-                    message.success('修改成功');
-                    hides(false);
-                  },
-                );
-              });
-            }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
-              }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value;
-              let key = name ? name[0] : '';
-
-              if (key == 'testStageResult') {
-                cf(() => {
-                  fields[key].value = value;
-                  return {
-                    ...fields,
-                    currentUserId: {
-                      ...fields.currentUserId,
-                      value: value == 2 ? iftype.curitem.devUserId : '',
-                      disabled: value == 2,
-                    },
-                  };
-                });
-              } else if (key == 'acceptStageResult') {
-                cf(() => {
-                  fields[key].value = value;
-                  return {
-                    ...fields,
-                    currentUserId: {
-                      ...fields.currentUserId,
-                      hides: value != 2,
-                    },
-                  };
-                });
-              } else {
-                cf(() => {
-                  fields[key].value = value;
-                  return {
-                    ...fields,
-                  };
-                });
-              }
-            }}
-            submitting={
-              loading.effects['miss/Misactivation'] ||
-              loading.effects['miss/Misassign'] ||
-              loading.effects['miss/MisdevelopEnd'] ||
-              loading.effects['miss/Mistest'] ||
-              loading.effects['miss/Mischeck'] ||
-              loading.effects['miss/Missave']
-            }
-          ></InitForm>
+            ></InitForm>
+          )
         )}
       </Dia>
 

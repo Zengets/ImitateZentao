@@ -121,8 +121,8 @@ let Product = (props: any) => {
         options: prod.UserqueryAll && prod.UserqueryAll,
       },
       description: {
-        value: '', //初始化值
-        type: 'textarea',
+        value: '<p></p>', //初始化值
+        type: 'editor',
         title: '产品描述',
         name: ['description'],
         required: false,
@@ -388,7 +388,7 @@ let Product = (props: any) => {
               },
               description: {
                 ...fields.description,
-                value: record.description, //初始化值
+                value: record.description ? record.description : '<p></p>', //初始化值
               },
               attachmentList: {
                 ...fields.attachmentList,
@@ -530,63 +530,50 @@ let Product = (props: any) => {
             maindata={prod.ProdqueryInfo.data.data}
           ></Productdetail>
         ) : (
-          <InitForm
-            fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
-              if (iftype.key == 'edit') {
-                newfields.id = iftype.curitem.id;
-              }
+          iftype.visible && (
+            <InitForm
+              fields={fields}
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
+                if (iftype.key == 'edit') {
+                  newfields.id = iftype.curitem.id;
+                }
 
-              let newlist = newfields.attachmentList.fileList
-                ? newfields.attachmentList.fileList.map(
-                    (items: any, i: number) => {
-                      return {
-                        attachmentName: items.response
-                          ? items.response.data.dataList[0].name
-                          : items.name,
-                        attachUrl: items.response
-                          ? items.response.data.dataList[0].url
-                          : items.url,
-                      };
-                    },
-                  )
-                : [];
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
 
-              newfields.attachmentList = newlist;
+                newfields.attachmentList = newlist;
 
-              setNewState(dispatch, 'prod/Prodsave', newfields, () => {
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('操作成功');
+                setNewState(dispatch, 'prod/Prodsave', newfields, () => {
                   ciftype(() => {
                     return {
                       ...iftype,
                       visible: false,
                     };
                   });
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    message.success('操作成功');
+                  });
                 });
-              });
-            }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
+              }}
+              onChange={(newFields: any) => {}}
+              submitting={
+                props.loading.effects['prod/Prodsave'] || !iftype.visible
               }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value;
-              let key = name ? name[0] : '';
-              cf(() => {
-                fields[key].value = value;
-
-                return {
-                  ...fields,
-                };
-              });
-            }}
-            submitting={props.loading.effects['prod/Prodsave']}
-          ></InitForm>
+            ></InitForm>
+          )
         )}
       </Dia>
       <Card

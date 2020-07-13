@@ -3,8 +3,7 @@ import BraftEditor from 'braft-editor';
 import React, { useState, useMemo, useEffect } from 'react';
 import moment from 'moment';
 
-export default function Editor({ value, onChange, height }: any) {
-  console.log(value);
+export default function Editor({ value, onChange, height, rerender }: any) {
   let [editorState, ceditor] = useState(
       BraftEditor.createEditorState(
         '<p style="text-align:start;" size="0" _root="undefined" __ownerID="undefined" __hash="undefined" __altered="false">[步骤]</p><p></p><p>[结果]</p><p></p><p>[期望]</p>',
@@ -57,6 +56,12 @@ export default function Editor({ value, onChange, height }: any) {
     xhr.open('POST', serverURL, true);
     xhr.send(fd);
   };
+
+  useEffect(() => {
+    if (rerender) {
+      cd(rerender);
+    }
+  }, [rerender]);
 
   useEffect(() => {
     if (value && defaultvalue) {

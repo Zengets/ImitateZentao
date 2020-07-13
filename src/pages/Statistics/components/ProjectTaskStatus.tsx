@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 
 let { Option } = Select,
   { RangePicker } = DatePicker;
-let ProjectTaskStatus = ({ dispatch, statics }: any) => {
+let ProjectTaskStatus = ({ dispatch, statics, loading }: any) => {
   let [curindex, changecur] = useState(0),
     start = moment()
       .startOf('month')
@@ -84,6 +84,7 @@ let ProjectTaskStatus = ({ dispatch, statics }: any) => {
         <div className={styles.items}>
           <label className={styles.mys}>项目状态</label>
           <Select
+            allowClear
             style={{ width: 100 }}
             value={postdata.status}
             onChange={(val: any) => {
@@ -142,6 +143,7 @@ let ProjectTaskStatus = ({ dispatch, statics }: any) => {
         columns={columns}
         pagination="false"
         scroll={{ x: 720 }}
+        loading={loading.effects['statics/queryProjectTaskStatus']}
       ></AutoTable>
     </div>
   );

@@ -19,11 +19,19 @@ import {
   umRequirequeryList,
   queryRequireStageSelectList,
   queryRequireStatusSelectList,
+  queryDetailInfo,
+  queryByRequireId,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
 export default {
   state: {
+    queryByRequireId: {
+      data: {
+        data: {},
+        page: {},
+      },
+    },
     umRequirequeryList: {
       data: {
         page: {},
@@ -54,6 +62,11 @@ export default {
         data: {},
       },
     },
+    queryDetailInfo: {
+      data: {
+        data: {},
+      },
+    },
     Bugpriority: [],
     queryRequireStageSelectList: [],
     queryRequireStatusSelectList: [],
@@ -64,6 +77,14 @@ export default {
     res: {},
   },
   effects: {
+    *queryDetailInfo({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryDetailInfo, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryDetailInfo: responese },
+      });
+      return responese;
+    },
     *queryRequireStageSelectList({ payload }: any, { call, put }: any) {
       const responese = yield call(queryRequireStageSelectList, payload);
       yield put({
@@ -83,6 +104,14 @@ export default {
           queryRequireStatusSelectList:
             responese.data && responese.data.dataList,
         },
+      });
+      return responese;
+    },
+    *queryByRequireId({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryByRequireId, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryByRequireId: responese },
       });
       return responese;
     },

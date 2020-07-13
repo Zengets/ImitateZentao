@@ -20,8 +20,9 @@ import BugChild from './components/BugChild';
 const { TabPane } = Tabs;
 
 let Bugs = (props: any) => {
-  let { proj, dispatch, loading, route } = props,
-    [keys, setkey] = useState('1');
+  let { proj, dispatch, loading, location, route } = props,
+    index = location.query && location.query.ifJump,
+    [keys, setkey] = useState(index ? index : '1');
 
   function callback(key: any) {
     setkey(key);
@@ -35,7 +36,7 @@ let Bugs = (props: any) => {
       <Card>
         <Tabs
           animated
-          defaultActiveKey="1"
+          activeKey={keys}
           onChange={callback}
           style={{ marginTop: -18 }}
           tabBarExtraContent={

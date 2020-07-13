@@ -1,5 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import styles from './index.less';
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useImperativeHandle,
+} from 'react';
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
@@ -15,6 +19,7 @@ import {
   Col,
   Modal,
 } from 'antd';
+import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
 import AutoTable from '@/components/AutoTable';
@@ -24,60 +29,86 @@ import {
   getColumnTreeSelectProps,
   getColumnRangeProps,
   getColumnRangeminProps,
+  getColumnDateProps,
 } from '@/components/TbSearch';
 import Dia from '@/components/Dia/index';
-import mockfile from '@/utils/mockfile';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
-import GroupIcon from '@material-ui/icons/Group';
 import rendercolor from '@/utils/rendercor';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Missiondetail from '@/components/Missiondetail';
+import AddMission from '@/components/AddMission';
+import GroupIcon from '@material-ui/icons/Group';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import Missiondetail from '@/components/Missiondetail';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
+import styles from '../style.less';
 
-let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
-  let [dataList, cdata] = useState([]),
+let MissionChilds = React.forwardRef((props: any, ref: any) => {
+  let { miss, dispatch, loading, model, ifJump } = props,
+    projectId = model.postdata.projectId, //props projectid
     [post, cpost] = useState({
-      posturl: 'home/IndexThird',
+      posturl: 'miss/querytaskMy',
       postdata: {
-        taskNo: '', //任务编号
-        taskName: '', //任务名
-        currentUserId: '', //当前负责人id
-        deadDateStart: '', //截止起日期
-        deadDateEnd: '', //截止止日期
-        projectId: '', //所属项目id
-        status: '', //状态
+        pageIndex: '1', //--------------页码 *
+        pageSize: '10', //-------------------条数 *
+        taskNo: '', //-------------------任务编号
+        priorityType: '', //--------------------------优先级
+        taskName: '', //--------------------任务名称
+        beforeUserName: '', //---------------分配人名称
+        projectId: '', //---------------项目id *
+        status: '',
+        ifJump: ifJump, //----------------------------状态        下拉框(所有)
+        devStageRealStartTimeStart: '', //-----------------开始时间搜索  (到分钟)
+        devStageRealStartTimeEnd: '', //-----------------开始时间搜索  (到分钟)
+        devStageEndDateStart: '', //-----------------截止日期搜索  (到日)
+        devStageEndDateEnd: '', //-----------------截止日期搜索  (到日)
         sortList: [
-          //排序字段
+          //-------------------------------------------------------------------------排序字段
           {
-            fieldName: 'taskNo', //任务编号
+            fieldName: 'taskNo', //-------------------任务编号
             sort: '',
           },
           {
-            fieldName: 'taskName', //任务名
+            fieldName: 'priorityType', //----------------------优先级
             sort: '',
           },
           {
-            fieldName: 'currentUserName', //当前负责人名
+            fieldName: 'taskName', //--------------------任务名称
             sort: '',
           },
           {
-            fieldName: 'deadDate', //截止日期
+            fieldName: 'beforeUserId', //---------------分配人人id
             sort: '',
           },
           {
-            fieldName: 'projectName', //所属项目名
+            fieldName: 'currentUserId', //------------------责任人id
             sort: '',
           },
           {
-            fieldName: 'status', //状态
+            fieldName: 'devStagePlanHours', //---------------------预计
+            sort: '',
+          },
+          {
+            fieldName: 'devStageExpendHours', //--------------------------消耗
+            sort: '',
+          },
+          {
+            fieldName: 'devStageRealStartTime', //----------------------------开始时间
+            sort: '',
+          },
+          {
+            fieldName: 'devStageEndDate', //----------------------------截止日期
+            sort: '',
+          },
+          {
+            fieldName: 'status', //----------------------------状态
             sort: '',
           },
         ],
@@ -87,135 +118,36 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       curitem: {},
       fullScreen: false,
       visible: false,
-      resdata: {},
       title: '',
+      fv: false,
       key: '',
     }),
-    defaultfields: any = {
-      taskName: {
-        value: '', //初始化值
-        type: 'input', //类型
-        title: '任务名称', //placeholder
-        name: ['taskName'], //唯一标识
-        required: true, //必填？
-      },
-      projectId: {
-        value: null, //初始化值
-        type: 'select', //类型
-        title: '所属项目', //placeholder
-        name: ['projectId'], //唯一标识
-        required: true, //必填？
-        disabled: true,
-        options: model.ProjquerySelectList && model.ProjquerySelectList,
-      },
-      taskDescription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '任务描述',
-        name: ['taskDescription'],
-        required: false,
-        rows: 6,
-        col: { span: 24 },
-      },
-      requireDesctription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '需求描述',
-        name: ['requireDesctription'],
-        required: true,
-        rows: 6,
-        col: { span: 24 },
-      },
-      currentUserId: {
-        value: '', //初始化值
-        type: 'select', //类型
-        title: '指派给', //placeholder
-        name: ['currentUserId'], //唯一标识
-        required: true, //必填？
-        options:
-          miss.querySelectListByProjectId && miss.querySelectListByProjectId,
-      },
-      deadDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['deadDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      devStagePlanHours: {
-        value: '', //初始化值
-        type: 'inputnumber',
-        title: '预计时长(开发)',
-        name: ['devStagePlanHours'],
-        required: true,
-      },
-      devStageStartDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '开始日期',
-        name: ['devStageStartDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      devStageEndDate: {
-        value: '', //初始化值
-        type: 'datepicker',
-        title: '截止日期',
-        name: ['devStageEndDate'],
-        required: true,
-        disabledDate: (current: any) => {
-          return (
-            current &&
-            current <
-              moment()
-                .add('day', -1)
-                .endOf('day')
-          );
-        },
-      },
-      techDesctription: {
-        value: '', //初始化值
-        type: 'textarea',
-        title: '技术描述',
-        name: ['techDesctription'],
-        required: false,
-        rows: 6,
-        col: { span: 24 },
-      },
-      attachmentList: {
-        value: [], //初始化值
-        type: 'upload',
-        title: '附件',
-        name: ['attachmentList'],
-        required: false,
-        col: { span: 24 },
-      },
-    },
+    defaultfields: any = {},
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
-      cdata(res.data.dataList);
-    });
-    setNewState(dispatch, 'home/queryTaskStatusSelectList', {}, () => {});
+    setNewState(dispatch, 'miss/queryTaskStatusSelectList', {}, () => {});
   }, []);
+
+  //父级组件项目变化调用
+  useMemo(() => {
+    if (model.postdata.projectId) {
+      let projectId = model.postdata.projectId;
+      setNewState(
+        dispatch,
+        'miss/querySelectListByProjectId',
+        { projectId: projectId },
+        () => {},
+      );
+      cpost({
+        ...post,
+        postdata: {
+          ...post.postdata,
+          projectId: projectId,
+        },
+      });
+    }
+  }, [model.postdata.projectId]);
 
   let columns = [
     {
@@ -225,14 +157,32 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       sorter: {
         multiple: 100,
       },
-      width: 110,
+      ellipsis: true,
+      width: 120,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
+    },
+    {
+      title: '优先级',
+      dataIndex: 'priorityName',
+      key: 'priorityName',
+      sorter: {
+        multiple: 21,
+      },
+      ellipsis: true,
+      width: 120,
+      ...getColumnSelectProps(
+        'priorityType',
+        model.Bugpriority,
+        post.postdata,
+        handleSearch,
+      ),
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
       ellipsis: true,
+      width: 200,
       sorter: {
         multiple: 99,
       },
@@ -245,14 +195,13 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 dispatch,
                 'miss/MisquerytaskDetails',
                 { id: record.id },
-                (res: any) => {
+                () => {
                   ciftype({
                     ...iftype,
                     curitem: record,
                     visible: true,
-                    title: text + '详情',
+                    title: `[${record.taskNo}]` + text,
                     key: 'detail',
-                    resdata: res.data.data,
                     fullScreen: true,
                   });
                 },
@@ -265,20 +214,14 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       },
     },
     {
-      title: '所属项目',
-      dataIndex: 'projectName',
-      key: 'projectName',
+      title: '分配人',
+      dataIndex: 'beforeUserName',
+      key: 'beforeUserName',
       sorter: {
-        multiple: 101,
+        multiple: 102,
       },
-      ellipsis: true,
-      width: 240,
-      ...getColumnSelectProps(
-        'projectId',
-        model.ProjquerySelectList && model.ProjquerySelectList,
-        post.postdata,
-        handleSearch,
-      ),
+      width: 120,
+      ...getColumnSearchProps('beforeUserName', post.postdata, handleSearch),
     },
     {
       title: '负责人',
@@ -288,7 +231,6 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         multiple: 102,
       },
       width: 120,
-      ...getColumnSearchProps('currentUserName', post.postdata, handleSearch),
       render: (text: any, record: any) =>
         record.status == 7 || record.status == 8 ? (
           <span>{text}</span>
@@ -354,34 +296,56 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         ),
     },
     {
-      title: '预计时长(开发)',
+      title: '开始时间',
+      width: 160,
+      dataIndex: 'devStageRealStartTime',
+      key: 'devStageRealStartTime',
+      sorter: {
+        multiple: 96,
+      },
+      ...getColumnRangeProps(
+        'devStageRealStartTimeStart',
+        'devStageRealStartTimeEnd',
+        post.postdata,
+        handleSearch,
+      ),
+      render(text: any) {
+        return (
+          <span>
+            {text && moment(parseInt(text)).format('YYYY-MM-DD HH:mm')}
+          </span>
+        );
+      },
+    },
+    {
+      title: '预计时长',
       dataIndex: 'devStagePlanHours',
       key: 'devStagePlanHours',
       width: 120,
       sorter: {
-        multiple: 66,
+        multiple: 98,
       },
     },
     {
-      title: '消耗时长(开发)',
+      title: '消耗时长',
       dataIndex: 'devStageExpendHours',
       key: 'devStageExpendHours',
+      width: 120,
       sorter: {
         multiple: 97,
       },
-      width: 120,
     },
     {
       title: '截止日期',
-      dataIndex: 'deadDate',
-      key: 'deadDate',
+      dataIndex: 'devStageEndDate',
+      key: 'devStageEndDate',
+      width: 120,
       sorter: {
         multiple: 95,
       },
-      width: 120,
       ...getColumnRangeProps(
-        'deadDateStart',
-        'deadDateEnd',
+        'devStageEndDateStart',
+        'devStageEndDateEnd',
         post.postdata,
         handleSearch,
       ),
@@ -389,34 +353,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         return (
           <span
             style={{
-              color:
-                record.status == 8
-                  ? '#666'
-                  : record.status == 7
-                  ? moment(parseInt(record.acceptStageTime))
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                    ? '#fff'
-                    : '#666'
-                  : moment()
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                  ? '#fff'
-                  : '#666',
-              backgroundColor:
-                record.status == 8
-                  ? 'transparent'
-                  : record.status == 7
-                  ? moment(parseInt(record.acceptStageTime))
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                    ? '#e84e0f'
-                    : 'transparent'
-                  : moment()
-                      .startOf('day')
-                      .valueOf() > moment(parseInt(text)).valueOf()
-                  ? '#e84e0f'
-                  : 'transparent',
+              color: record.ifDelay == 1 ? '#666' : '#fff',
+              backgroundColor: record.ifDelay == 1 ? 'transparent' : '#e84e0f',
               padding: '0 8px',
             }}
           >
@@ -435,7 +373,10 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       width: 120,
       ...getColumnSelectProps(
         'status',
-        home.IndexThird.data.statusList && home.IndexThird.data.statusList,
+        miss.queryTaskStatusSelectList &&
+          miss.queryTaskStatusSelectList.filter(item => {
+            return !(item.dicKey == 7 || item.dicKey == 8);
+          }),
         post.postdata,
         handleSearch,
       ),
@@ -445,7 +386,23 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         </span>
       ),
     },
+    {
+      title: '操作',
+      dataIndex: 'action',
+      key: 'action',
+      width: 220,
+      render: (text: any, record: any) => renderAction(record),
+    },
   ];
+
+  function resetdata(fn: any) {
+    if (projectId) {
+      setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
+        cf(defaultfields);
+        fn ? fn(res) : null;
+      });
+    }
+  }
 
   function renderAction(record: any) {
     return (
@@ -463,29 +420,21 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
               { id: record.id },
               () => {
                 message.success('开始开发:' + record.taskName + '成功！');
-                setNewState(
-                  dispatch,
-                  post.posturl,
-                  post.postdata,
-                  (res: any) => {
-                    cdata(res.data.dataList);
-                    let result = res.data.dataList;
-                    setNewState(
-                      dispatch,
-                      'miss/MisquerytaskDetails',
-                      { id: record.id },
-                      (resr: any) => {
-                        ciftype({
-                          ...iftype,
-                          resdata: resr.data.data,
-                          curitem: result.filter((items: any) => {
-                            return items.id == record.id;
-                          })[0],
-                        });
-                      },
-                    );
-                  },
-                );
+                resetdata((res: any) => {
+                  setNewState(
+                    dispatch,
+                    'miss/MisquerytaskDetails',
+                    { id: record.id },
+                    () => {},
+                  );
+                  let result = res.data.page.list;
+                  ciftype({
+                    ...iftype,
+                    curitem: result.filter((items: any) => {
+                      return items.id == record.id;
+                    })[0],
+                  });
+                });
               },
             );
           }}
@@ -538,14 +487,14 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   devStageExpendHours: {
                     value: '', //初始化值
                     type: 'inputnumber',
-                    title: '消耗时长(开发)',
+                    title: '消耗时长',
                     min: 1,
                     name: ['devStageExpendHours'],
                     required: true,
                   },
                   devStageFinishDescription: {
-                    value: '', //初始化值
-                    type: 'textarea',
+                    value: '<p></p>', //初始化值
+                    type: 'editor',
                     title: '开发描述',
                     name: ['devStageFinishDescription'],
                     required: false,
@@ -576,8 +525,9 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
           }}
         >
           <Tooltip title="完成开发">
-            <PowerSettingsNewIcon
+            <CheckCircleIcon
               color={record.status != 4 ? 'action' : 'error'}
+              style={{ fontSize: 23 }}
             />
           </Tooltip>
         </IconButton>
@@ -619,8 +569,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     options: res.data.dataList,
                   },
                   testStageDescription: {
-                    value: '', //初始化值
-                    type: 'textarea',
+                    value: '<p></p>', //初始化值
+                    type: 'editor',
                     title: '测试描述',
                     name: ['testStageDescription'],
                     required: false,
@@ -697,8 +647,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     options: res.data.dataList,
                   },
                   acceptStageDescription: {
-                    value: '', //初始化值
-                    type: 'textarea',
+                    value: '<p></p>', //初始化值
+                    type: 'editor',
                     title: '验收描述',
                     name: ['acceptStageDescription'],
                     required: false,
@@ -746,23 +696,20 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
           onConfirm={() => {
             setNewState(dispatch, 'miss/Misclose', { id: record.id }, () => {
               message.success('关闭任务：' + record.taskName + '成功！');
-              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
-                cdata(res.data.dataList);
-                let result = res.data.dataList;
+              resetdata((res: any) => {
                 setNewState(
                   dispatch,
                   'miss/MisquerytaskDetails',
                   { id: record.id },
-                  (resr: any) => {
-                    ciftype({
-                      ...iftype,
-                      resdata: resr.data.data,
-                      curitem: result.filter((items: any) => {
-                        return items.id == record.id;
-                      })[0],
-                    });
-                  },
+                  () => {},
                 );
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
               });
             });
           }}
@@ -835,10 +782,26 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
   };
 
   useMemo(() => {
-    setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
-      cdata(res.data.dataList);
+    if (!post.postdata.projectId) {
+      return;
+    }
+    setNewState(dispatch, post.posturl, post.postdata, () => {
+      cf(defaultfields);
     });
   }, [post]);
+
+  let pageChange = (page: any, pageSize: any) => {
+    cpost(() => {
+      return {
+        ...post,
+        postdata: {
+          ...post.postdata,
+          pageIndex: page,
+          pageSize,
+        },
+      };
+    });
+  };
 
   function hides(key: any) {
     ciftype(() => {
@@ -848,10 +811,41 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         fullScreen: false,
       };
     });
-    setTimeout(() => {
-      cf(defaultfields);
-    }, 200);
   }
+
+  useImperativeHandle(ref, () => {
+    return {
+      renderAdd() {
+        return (
+          <IconButton
+            style={{ padding: 8, borderRadius: 4 }}
+            onClick={() => {
+              ciftype({
+                ...iftype,
+                fv: true,
+                title: '新增任务',
+              });
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '6px 12px',
+              }}
+            >
+              <AddCircleOutlineIcon style={{ fontSize: 22 }} color="primary" />
+              <span style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}>
+                新增
+              </span>
+            </div>
+          </IconButton>
+        );
+      },
+    };
+  });
+
   return (
     <div>
       <Dia
@@ -870,14 +864,14 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
               setNewState(
                 dispatch,
                 'miss/ProjqueryById',
-                { id: iftype.resdata.info.projectId },
+                { id: miss.MisquerytaskDetails.data.data.info.projectId },
                 (res: any) => {
                   Modal.info({
                     style: { top: 20 },
                     zIndex: 999999,
                     width: 1200,
                     maskClosable: true,
-                    title: iftype.resdata.info.projectName,
+                    title: miss.MisquerytaskDetails.data.data.info.projectName,
                     content: (
                       <Projectdetail
                         showProduct={() => {
@@ -908,8 +902,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 },
               );
             }}
-            maindata={iftype.resdata}
             renderAction={() => renderAction(iftype.curitem)}
+            maindata={miss.MisquerytaskDetails.data.data}
           ></Missiondetail>
         ) : (
           iftype.visible && (
@@ -920,19 +914,13 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 newfields.id = iftype.curitem.id;
                 if (iftype.key == 'changecharge') {
                   setNewState(dispatch, 'miss/Misassign', newfields, () => {
-                    setNewState(
-                      dispatch,
-                      post.posturl,
-                      post.postdata,
-                      (res: any) => {
-                        cdata(res.data.dataList);
-                        message.success('修改成功');
-                        hides(false);
-                      },
-                    );
+                    resetdata(null);
+                    message.success('修改成功');
+                    hides(false);
                   });
                   return;
                 }
+
                 let newlist = newfields.attachmentList.fileList
                   ? newfields.attachmentList.fileList.map(
                       (items: any, i: number) => {
@@ -947,6 +935,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                       },
                     )
                   : [];
+
                 newfields.attachmentList = newlist;
                 if (iftype.key == 'finishdev') {
                   let res = moment(newfields.realFinishTime)
@@ -956,46 +945,25 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     ? res
                     : '';
                   setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
-                    setNewState(
-                      dispatch,
-                      post.posturl,
-                      post.postdata,
-                      (res: any) => {
-                        cdata(res.data.dataList);
-                        message.success('已经完成开发');
-                        hides(false);
-                      },
-                    );
+                    resetdata(null);
+                    message.success('完成开发');
+                    hides(false);
                   });
                   return;
                 }
                 if (iftype.key == 'test') {
                   setNewState(dispatch, 'miss/Mistest', newfields, () => {
-                    setNewState(
-                      dispatch,
-                      post.posturl,
-                      post.postdata,
-                      (res: any) => {
-                        cdata(res.data.dataList);
-                        message.success('操作成功');
-                        hides(false);
-                      },
-                    );
+                    resetdata(null);
+                    message.success('完成开发');
+                    hides(false);
                   });
                   return;
                 }
                 if (iftype.key == 'check') {
                   setNewState(dispatch, 'miss/Mischeck', newfields, () => {
-                    setNewState(
-                      dispatch,
-                      post.posturl,
-                      post.postdata,
-                      (res: any) => {
-                        cdata(res.data.dataList);
-                        message.success('操作成功');
-                        hides(false);
-                      },
-                    );
+                    resetdata(null);
+                    message.success('完成开发');
+                    hides(false);
                   });
                   return;
                 }
@@ -1019,7 +987,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                       },
                     };
                   });
-                } else if (key == 'acceptStageResult') {
+                }
+                if (key == 'acceptStageResult') {
                   cf(() => {
                     fields[key].value = value;
                     return {
@@ -1034,33 +1003,45 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 }
               }}
               submitting={
-                loading.effects['miss/Misactivation'] ||
-                loading.effects['miss/Misassign'] ||
-                loading.effects['miss/MisdevelopEnd'] ||
-                loading.effects['miss/Mistest'] ||
-                loading.effects['miss/Mischeck'] ||
-                loading.effects['miss/Missave']
+                props.loading.effects['model/Mischeck'] || !iftype.visible
               }
             ></InitForm>
           )
         )}
       </Dia>
-
+      <AddMission
+        address="miss/add"
+        iftype={iftype}
+        cancel={(val: any) => {
+          ciftype({
+            ...iftype,
+            fv: false,
+            visible: false,
+          });
+          if (val) {
+            resetdata(null);
+          }
+        }}
+      ></AddMission>
       <AutoTable
-        data={{ list: dataList }}
+        data={miss.querytaskMy}
         columns={columns}
         loading={loading.effects[post.posturl]}
-        pagination={'false'}
+        pageChange={pageChange}
         onChange={handleTableChange}
         scroll={{ y: '65vh' }}
       />
     </div>
   );
-};
+});
 
-export default connect(({ home, miss, model, loading }: any) => ({
-  home,
-  miss,
-  model,
-  loading,
-}))(ThirdChildA);
+export default connect(
+  ({ miss, model, loading }: any) => ({
+    miss,
+    model,
+    loading,
+  }),
+  null,
+  null,
+  { forwardRef: true },
+)(MissionChilds);

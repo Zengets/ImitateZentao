@@ -838,11 +838,8 @@ let Demos = (props: any) => {
         ) : (
           <InitForm
             fields={fields}
-            submitData={() => {
-              let newfields = JSON.parse(JSON.stringify(fields));
-              for (let i in newfields) {
-                newfields[i] = newfields[i].value;
-              }
+            submitData={(values: any) => {
+              let newfields = JSON.parse(JSON.stringify(values));
               //文件处理
               let newlist = newfields.attachmentList.fileList
                 ? newfields.attachmentList.fileList.map(
@@ -965,32 +962,21 @@ let Demos = (props: any) => {
               });
 
               setNewState(dispatch, 'bug/Demosave', newfields, () => {
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: false,
+                  };
+                });
                 setNewState(dispatch, post.posturl, post.postdata, () => {
                   message.success('操作成功');
-                  ciftype(() => {
-                    return {
-                      ...iftype,
-                      visible: false,
-                    };
-                  });
                 });
               });
             }}
-            onChange={(newFields: any) => {
-              if (!newFields) {
-                return;
-              }
-              let name = newFields ? newFields.name : '',
-                value = newFields.value ? newFields.value : '';
-              let key = name ? name[0] : '';
-              cf(() => {
-                fields[key].value = value;
-                return {
-                  ...fields,
-                };
-              });
-            }}
-            submitting={props.loading.effects['bug/Demosave']}
+            onChange={(newFields: any) => {}}
+            submitting={
+              props.loading.effects['bug/Demosave'] || !iftype.visible
+            }
           ></InitForm>
         )}
       </Dia>
@@ -1005,7 +991,7 @@ let Demos = (props: any) => {
                   return {
                     ...iftype,
                     visible: true,
-                    fullScreen: true,
+                    fullScreen: false,
                     title: '新增用例',
                     key: 'add',
                   };

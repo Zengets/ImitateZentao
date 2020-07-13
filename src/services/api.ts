@@ -94,7 +94,7 @@ export async function Depsave(params: any) {
     body: JSON.stringify(params),
   });
 }
-//部门编辑
+//部门删除
 export async function DepdeleteById(params: any) {
   return request(`/zentao/sysDepartment/deleteById`, {
     method: 'POST',
@@ -588,6 +588,23 @@ export async function querySelectListByProjectId(params: any) {
   });
 }
 
+//需求分解任务
+export async function breakDown(params: any) {
+  return request(`/zentao/umTask/breakDown`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//需求分解任务
+export async function add(params: any) {
+  return request(`/zentao/umTask/add`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //任务分配列表页
 export async function MisquerytaskAssign(params: any) {
   return request(`/zentao/umTask/querytaskAssign`, {
@@ -597,8 +614,17 @@ export async function MisquerytaskAssign(params: any) {
   });
 }
 
-//任务分配
+//修改任务负责人
 export async function Misassign(params: any) {
+  return request(`/zentao/umTask/updateCurrentUser`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//任务分配 原
+export async function Misassigns(params: any) {
   return request(`/zentao/umTask/assign`, {
     method: 'POST',
     headers,
@@ -840,6 +866,15 @@ export async function Demotype(params: any) {
 }
 
 //用例类型
+export async function queryByRequireId(params: any) {
+  return request(`/zentao/umTask/queryByRequireId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//用例类型
 export async function Demosave(params: any) {
   return request(`/zentao/umTestCase/save`, {
     method: 'POST',
@@ -966,6 +1001,60 @@ export async function queryMenu(params: any) {
 //项目-项目任务状态统计
 export async function queryProjectTaskStatus(params: any) {
   return request(`/zentao/umProject/queryProjectTaskStatus`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//项目-项目进展表
+export async function queryProjectRate(params: any) {
+  return request(`/zentao/umProject/queryProjectRate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//组织-任务完成汇总表 queryTaskFinish,queryBug
+export async function queryTaskFinish(params: any) {
+  return request(`/zentao/umTask/queryTaskFinish`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//组织-bug统计表
+export async function queryBug(params: any) {
+  return request(`/zentao/umBug/queryBug`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//根据部门查询用户列表
+export async function depuserlist(params: any) {
+  return request(`/zentao/sysUser/query`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//任务重做
+export async function querytaskAll(params: any) {
+  return request(`/zentao/umTask/querytaskAll`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//我的任务重做
+export async function querytaskMy(params: any) {
+  return request(`/zentao/umTask/querytaskMy`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),
