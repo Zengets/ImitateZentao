@@ -48,7 +48,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
       devUserId: undefined, //完成人员id
       acceptStageTimeStart: start, //完成日期起，必填
       acceptStageTimeEnd: end, //完成日期止，必填
-      workdays: workday_count(startday, endday), //工作日天数，必填
+      workdays: parseInt(workday_count(startday, endday)), //工作日天数，必填
     });
 
   let createNewArr = (data: any) => {
@@ -303,7 +303,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
                 ...postdata,
                 acceptStageTimeStart: starts.valueOf(),
                 acceptStageTimeEnd: ends.valueOf(),
-                workdays: workday_count(starts, ends),
+                workdays: parseInt(workday_count(starts, ends)),
               });
             }}
           />
@@ -313,6 +313,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
           <label className={styles.mys}>工作日天数</label>
           <InputNumber
             min={1}
+            step={1}
             placeholder="请选择"
             value={postdata.workdays}
             onChange={(value: any) => {
