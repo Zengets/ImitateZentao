@@ -19,16 +19,14 @@ let Homepage = ({ dispatch, home, model, loading }: any) => {
     cols = { xs: 24, sm: 24, md: 18, lg: 18, xl: 19, xxl: 20 };
 
   useEffect(() => {
-    if (model.postdata.projectId) {
-      setNewState(
-        dispatch,
-        'home/IndexSecond',
-        {
-          id: model.postdata.projectId,
-        },
-        () => {},
-      );
-    }
+    setNewState(
+      dispatch,
+      'home/IndexSecond',
+      {
+        id: model.postdata.projectId,
+      },
+      () => {},
+    );
   }, [model.postdata.projectId]);
 
   return (

@@ -13,7 +13,7 @@ if (allStr) {
   } else if (allStr.indexOf('9003') != -1) {
     IpAndPort = 'http://172.21.3.85:8088/';
   } else {
-    IpAndPort = 'http://172.21.2.164/zentao/';
+    IpAndPort = 'http://172.21.3.4/zentao/';
   }
 }
 
