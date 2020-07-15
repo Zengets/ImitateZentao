@@ -126,6 +126,14 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
       key: 'bugTotal',
       ellipsis: true,
       width: 120,
+      render(text: any, row: any) {
+        return {
+          children: text,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
     },
   ];
 
