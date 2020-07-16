@@ -946,7 +946,7 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
                     : '';
                   setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
                     resetdata(null);
-                    message.success('完成开发');
+                    message.success('操作成功');
                     hides(false);
                   });
                   return;
@@ -954,7 +954,7 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
                 if (iftype.key == 'test') {
                   setNewState(dispatch, 'miss/Mistest', newfields, () => {
                     resetdata(null);
-                    message.success('完成开发');
+                    message.success('操作成功');
                     hides(false);
                   });
                   return;
@@ -962,7 +962,7 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
                 if (iftype.key == 'check') {
                   setNewState(dispatch, 'miss/Mischeck', newfields, () => {
                     resetdata(null);
-                    message.success('完成开发');
+                    message.success('操作成功');
                     hides(false);
                   });
                   return;
@@ -1003,7 +1003,11 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
                 }
               }}
               submitting={
-                props.loading.effects['model/Mischeck'] || !iftype.visible
+                loading.effects['miss/Misassign'] ||
+                loading.effects['miss/MisdevelopEnd'] ||
+                loading.effects['miss/Mistest'] ||
+                loading.effects['miss/Mischeck'] ||
+                !iftype.visible
               }
             ></InitForm>
           )

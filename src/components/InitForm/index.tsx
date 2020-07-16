@@ -27,14 +27,19 @@ let { Option } = Select;
 
 let InitForm = ({ fields, onChange, submitting, submitData, actions }: any) => {
   let [Dom, cDom] = useState([]),
-    [loading, sload] = useState(false);
+    [loading, sload] = useState(false),
+    [rerender, srerender] = useState(true);
   const [form] = Form.useForm();
 
   useEffect(() => {
+    srerender(false);
     let Doms: any = [];
     for (let i in fields) {
       Doms.push(fields[i]);
     }
+    setTimeout(() => {
+      srerender(true);
+    }, 1);
     cDom(Doms);
   }, [fields]);
 
@@ -228,27 +233,29 @@ let InitForm = ({ fields, onChange, submitting, submitData, actions }: any) => {
               </Col>
             ) : null;
           } else if (item.type == 'upload') {
-            const props = {
-              action: '/zentao/common/uploadFile',
-              listType: 'picture',
-              multiple: true,
-              defaultFileList: item.value
-                ? item.value.fileList
-                  ? item.value.fileList
-                  : []
-                : [],
-              onChange(info: any) {
-                let {
-                  file: { name, status, response },
-                  fileList,
-                } = info;
-                if (status == 'done') {
-                } else if (status == 'error') {
-                  message.error(`${info.file.name} 上传失败`);
+            const props = rerender
+              ? {
+                  action: '/zentao/common/uploadFile',
+                  listType: 'picture',
+                  multiple: true,
+                  defaultFileList: item.value
+                    ? item.value.fileList
+                      ? item.value.fileList
+                      : []
+                    : [],
+                  onChange(info: any) {
+                    let {
+                      file: { name, status, response },
+                      fileList,
+                    } = info;
+                    if (status == 'done') {
+                    } else if (status == 'error') {
+                      message.error(`${info.file.name} 上传失败`);
+                    }
+                  },
                 }
-              },
-            };
-            return !item.hides ? (
+              : {};
+            return !item.hides && rerender ? (
               <Col key={i} {...getCol(item.col)}>
                 <Form.Item
                   style={{}}

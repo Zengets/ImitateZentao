@@ -584,7 +584,7 @@ let MissionDevelop = (props: any) => {
               newfields.realFinishTime = newfields.realFinishTime ? res : '';
               setNewState(dispatch, 'miss/MisdevelopEnd', newfields, () => {
                 setNewState(dispatch, post.posturl, post.postdata, () => {
-                  message.success('已经完成开发');
+                  message.success('操作成功');
                   ciftype(() => {
                     return {
                       ...iftype,

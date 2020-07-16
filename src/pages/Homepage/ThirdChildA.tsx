@@ -962,7 +962,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                       post.postdata,
                       (res: any) => {
                         cdata(res.data.dataList);
-                        message.success('已经完成开发');
+                        message.success('操作成功');
                         hides(false);
                       },
                     );
@@ -1034,12 +1034,11 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 }
               }}
               submitting={
-                loading.effects['miss/Misactivation'] ||
                 loading.effects['miss/Misassign'] ||
                 loading.effects['miss/MisdevelopEnd'] ||
                 loading.effects['miss/Mistest'] ||
                 loading.effects['miss/Mischeck'] ||
-                loading.effects['miss/Missave']
+                !iftype.visible
               }
             ></InitForm>
           )
