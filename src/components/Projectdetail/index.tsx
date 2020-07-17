@@ -60,7 +60,7 @@ let Projectdetail = (props: any) => {
       }), //过滤不需要的
       addarr = [
         {
-          title: '产品描述',
+          title: '项目描述',
           dataIndex: 'description',
           key: 'description',
         },
