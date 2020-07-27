@@ -26,7 +26,6 @@ import {
   DemoqueryById,
   DemodeleteById,
 } from '@/services/api.ts';
-
 import { message } from 'antd';
 
 export default {

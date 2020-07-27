@@ -18,6 +18,9 @@ if (allStr) {
 }
 
 export default defineConfig({
+  request: {
+    dataField: '',
+  },
   targets: {
     ie: 11,
   },
