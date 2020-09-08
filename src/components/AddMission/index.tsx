@@ -190,6 +190,7 @@ let AddMission = (props: any) => {
       show={iftype.fv}
       cshow={(key: React.SetStateAction<boolean>) => {
         cancel();
+        cis(false);
       }}
       maxWidth="lg"
       title={iftype.title}

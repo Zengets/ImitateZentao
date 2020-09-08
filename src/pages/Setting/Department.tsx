@@ -114,7 +114,7 @@ let Department = (props: any) => {
                         cancelText: '取消',
                         onOk() {
                           setNewState(dispatch, 'set/Depsave', postdata, () => {
-                            message.success('修改成功');
+                            message.success('操作成功');
                             setNewState(
                               dispatch,
                               'set/DepqueryTreeList',

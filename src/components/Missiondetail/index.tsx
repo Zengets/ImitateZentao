@@ -69,6 +69,11 @@ let Missiondetail = (props: any) => {
       key: 'acceptStageResultName',
     },
     {
+      title: '关闭原因',
+      dataIndex: 'closeDescription',
+      key: 'closeDescription',
+    },
+    {
       title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
@@ -349,6 +354,7 @@ let Missiondetail = (props: any) => {
       'statusName',
       'testStageResultName',
       'acceptStageResultName',
+      'closeDescription',
       'currentUserName',
     ].map((item: any) => {
       return dataSource.filter((it: any) => {

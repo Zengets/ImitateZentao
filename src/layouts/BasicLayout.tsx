@@ -60,7 +60,7 @@ let BasicLayout = (props: any) => {
       },
       () => {
         setNewState(props.dispatch, 'model/Logout', null, () => {
-          message.success('密码修改成功，请重新登录');
+          message.success('密码操作成功，请重新登录');
           history.replace('/');
         });
       },

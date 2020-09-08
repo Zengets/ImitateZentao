@@ -622,7 +622,14 @@ export async function Misassign(params: any) {
     body: JSON.stringify(params),
   });
 }
-
+//任务分配 原
+export async function Misactive(params: any) {
+  return request(`/zentao/umTask/active`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
 //任务分配 原
 export async function Misassigns(params: any) {
   return request(`/zentao/umTask/assign`, {

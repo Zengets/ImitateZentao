@@ -7,18 +7,7 @@ import React, {
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import {
-  Input,
-  message,
-  List,
-  Card,
-  Popconfirm,
-  Divider,
-  Tooltip,
-  Row,
-  Col,
-  Modal,
-} from 'antd';
+import { message, Popconfirm, Divider, Tooltip, Row, Col, Modal } from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
@@ -39,16 +28,16 @@ import rendercolor from '@/utils/rendercor';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Missiondetail from '@/components/Missiondetail';
 import AddMission from '@/components/AddMission';
-import GroupIcon from '@material-ui/icons/Group';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import styles from '../style.less';
+import { UnlockOutlined } from '@ant-design/icons';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import mockfile from '@/utils/mockfile';
 
 let MissionChild = React.forwardRef((props: any, ref: any) => {
   let { miss, dispatch, loading, model } = props,
@@ -388,7 +377,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 220,
+      width: 300,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -405,6 +394,176 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
   function renderAction(record: any) {
     return (
       <div>
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'确认激活:' + record.taskName + '？激活后将无法编辑/删除'}
+          onConfirm={() => {
+            setNewState(dispatch, 'miss/Misactive', { id: record.id }, () => {
+              message.success('激活:' + record.taskName + '成功！');
+              resetdata((res: any) => {
+                setNewState(
+                  dispatch,
+                  'miss/MisquerytaskDetails',
+                  { id: record.id },
+                  () => {},
+                );
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
+              });
+            });
+          }}
+        >
+          <IconButton disabled={record.status != 1}>
+            <Tooltip title="激活">
+              <UnlockOutlined
+                style={{
+                  color: record.status != 1 ? '#999' : '#1183fb',
+                  fontSize: 18,
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+        </Popconfirm>
+        <Divider type="vertical"></Divider>
+
+        <IconButton
+          disabled={record.status != 1}
+          onClick={() => {
+            let defaultfieldes: any = {
+              projectId: {
+                value: model.postdata.projectId, //初始化值
+                type: 'select', //类型
+                title: '所属项目', //placeholder
+                name: ['projectId'], //唯一标识
+                required: true, //必填？
+                disabled: true,
+                options: model.ProjquerySelectList && model.ProjquerySelectList,
+              },
+              taskName: {
+                value: record.taskName, //初始化值
+                type: 'input', //类型
+                title: '任务名称', //placeholder
+                name: ['taskName'], //唯一标识
+                required: true, //必填？
+              },
+              taskDescription: {
+                value: record.taskDescription, //初始化值
+                type: 'editor',
+                title: '任务描述',
+                name: ['taskDescription'],
+                required: false,
+                rows: 6,
+                col: { span: 24 },
+              },
+              priorityType: {
+                value: record.priorityType, //初始化值
+                type: 'select', //类型
+                title: '优先级', //placeholder
+                name: ['priorityType'], //唯一标识
+                required: true, //必填？
+                options: model.Bugpriority && model.Bugpriority, //buglist
+              },
+              currentUserId: {
+                value: record.currentUserId, //初始化值
+                type: 'select', //类型
+                title: '指派给', //placeholder
+                name: ['currentUserId'], //唯一标识
+                required: true, //必填？
+                options:
+                  model.querySelectListByProjectId &&
+                  model.querySelectListByProjectId,
+              },
+              devStageEndDate: {
+                value: moment(parseInt(record.devStageEndDate)), //初始化值
+                type: 'datepicker',
+                title: '截止日期',
+                name: ['devStageEndDate'],
+                required: true,
+                format: 'YYYY-MM-DD',
+                disabledDate: (current: any) => {
+                  return (
+                    current &&
+                    current <
+                      moment()
+                        .add('day', -1)
+                        .endOf('day')
+                  );
+                },
+              },
+              devStagePlanHours: {
+                value: record.devStagePlanHours, //初始化值
+                type: 'inputnumber',
+                title: '预计时长',
+                min: 1,
+                name: ['devStagePlanHours'],
+                required: true,
+              },
+              attachmentList: {
+                value: record.attachmentList
+                  ? mockfile(record.attachmentList)
+                  : [], //初始化值
+                type: 'upload',
+                title: '附件',
+                name: ['attachmentList'],
+                required: false,
+                col: { span: 24 },
+              },
+            };
+            cf(defaultfieldes);
+            ciftype(() => {
+              return {
+                ...iftype,
+                visible: true,
+                title: '修改' + record.taskName,
+                key: 'edit',
+                curitem: record,
+                fullScreen: false,
+              };
+            });
+          }}
+        >
+          <Tooltip title="编辑">
+            <EditIcon color={record.status != 1 ? 'action' : 'primary'} />
+          </Tooltip>
+        </IconButton>
+        <Divider type="vertical"></Divider>
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'确认删除' + record.taskName + '？'}
+          onConfirm={() => {
+            setNewState(
+              dispatch,
+              'miss/MisdeleteById',
+              { id: record.id },
+              () => {
+                message.success('删除' + record.taskName + '成功！');
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
+              },
+            );
+          }}
+        >
+          <Tooltip title="删除">
+            <IconButton disabled={record.status != 1} aria-label="delete">
+              <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
+            </IconButton>
+          </Tooltip>
+        </Popconfirm>
+
+        <Divider type="vertical"></Divider>
+
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -685,46 +844,40 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         </IconButton>
 
         <Divider type="vertical"></Divider>
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认关闭任务：' + record.taskName + '？'}
-          onConfirm={() => {
-            setNewState(dispatch, 'miss/Misclose', { id: record.id }, () => {
-              message.success('关闭任务：' + record.taskName + '成功！');
-              resetdata((res: any) => {
-                setNewState(
-                  dispatch,
-                  'miss/MisquerytaskDetails',
-                  { id: record.id },
-                  () => {},
-                );
-                let result = res.data.page.list;
-                ciftype({
-                  ...iftype,
-                  curitem: result.filter((items: any) => {
-                    return items.id == record.id;
-                  })[0],
-                });
-              });
+        <IconButton
+          disabled={record.status == 7 || record.status == 8}
+          aria-label="delete"
+          onClick={() => {
+            cf({
+              closeDescription: {
+                value: '', //初始化值
+                type: 'textarea',
+                title: '关闭原因',
+                name: ['closeDescription'],
+                required: false,
+                col: { span: 24 },
+              },
+            });
+            ciftype(() => {
+              return {
+                ...iftype,
+                visible: true,
+                title: `确认关闭任务：${record.taskName}？`,
+                curitem: record,
+                key: 'close',
+                fullScreen: false,
+              };
             });
           }}
         >
-          <IconButton
-            disabled={record.status == 7 || record.status == 8}
-            aria-label="delete"
-          >
-            <Tooltip title="关闭">
-              <HighlightOffIcon
-                color={
-                  record.status == 7 || record.status == 8 ? 'action' : 'error'
-                }
-              />
-            </Tooltip>
-          </IconButton>
-        </Popconfirm>
+          <Tooltip title="关闭">
+            <HighlightOffIcon
+              color={
+                record.status == 7 || record.status == 8 ? 'action' : 'error'
+              }
+            />
+          </Tooltip>
+        </IconButton>
       </div>
     );
   }
@@ -913,7 +1066,16 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 if (iftype.key == 'changecharge') {
                   setNewState(dispatch, 'miss/Misassign', newfields, () => {
                     resetdata(null);
-                    message.success('修改成功');
+                    message.success('操作成功');
+                    hides(false);
+                  });
+                  return;
+                }
+
+                if (iftype.key == 'close') {
+                  setNewState(dispatch, 'miss/Misclose', newfields, () => {
+                    resetdata(null);
+                    message.success('操作成功');
                     hides(false);
                   });
                   return;
@@ -959,6 +1121,17 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 }
                 if (iftype.key == 'check') {
                   setNewState(dispatch, 'miss/Mischeck', newfields, () => {
+                    resetdata(null);
+                    message.success('操作成功');
+                    hides(false);
+                  });
+                  return;
+                }
+                if (iftype.key == 'edit') {
+                  newfields.devStageEndDate = moment(
+                    newfields.devStageEndDate,
+                  ).valueOf();
+                  setNewState(dispatch, 'miss/add', newfields, () => {
                     resetdata(null);
                     message.success('操作成功');
                     hides(false);

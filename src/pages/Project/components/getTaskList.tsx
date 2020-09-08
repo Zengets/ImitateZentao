@@ -172,6 +172,18 @@ let GetTaskList = (props: any) => {
     setNewState(dispatch, post.posturl, post.postdata, () => {});
   }, [post.postdata]);
 
+  useMemo(() => {
+    cpost(() => {
+      return {
+        ...post,
+        postdata: {
+          ...post.postdata,
+          requireId,
+        },
+      };
+    });
+  }, [requireId]);
+
   function pageChange(page: any, pageSize: any, postdata: string) {
     cpost(() => {
       return {

@@ -42,7 +42,7 @@ let Fogot = (props: any) => {
       },
       () => {
         history.replace('/');
-        message.success('密码修改成功');
+        message.success('密码操作成功');
       },
     );
   };

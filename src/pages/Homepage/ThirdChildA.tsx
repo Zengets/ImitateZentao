@@ -737,49 +737,40 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         </IconButton>
 
         <Divider type="vertical"></Divider>
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认关闭任务：' + record.taskName + '？'}
-          onConfirm={() => {
-            setNewState(dispatch, 'miss/Misclose', { id: record.id }, () => {
-              message.success('关闭任务：' + record.taskName + '成功！');
-              setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
-                cdata(res.data.dataList);
-                let result = res.data.dataList;
-                setNewState(
-                  dispatch,
-                  'miss/MisquerytaskDetails',
-                  { id: record.id },
-                  (resr: any) => {
-                    ciftype({
-                      ...iftype,
-                      resdata: resr.data.data,
-                      curitem: result.filter((items: any) => {
-                        return items.id == record.id;
-                      })[0],
-                    });
-                  },
-                );
-              });
+        <IconButton
+          disabled={record.status == 7 || record.status == 8}
+          aria-label="delete"
+          onClick={() => {
+            cf({
+              closeDescription: {
+                value: '', //初始化值
+                type: 'textarea',
+                title: '关闭原因',
+                name: ['closeDescription'],
+                required: false,
+                col: { span: 24 },
+              },
+            });
+            ciftype(() => {
+              return {
+                ...iftype,
+                visible: true,
+                title: `确认关闭任务：${record.taskName}？`,
+                curitem: record,
+                key: 'close',
+                fullScreen: false,
+              };
             });
           }}
         >
-          <IconButton
-            disabled={record.status == 7 || record.status == 8}
-            aria-label="delete"
-          >
-            <Tooltip title="关闭">
-              <HighlightOffIcon
-                color={
-                  record.status == 7 || record.status == 8 ? 'action' : 'error'
-                }
-              />
-            </Tooltip>
-          </IconButton>
-        </Popconfirm>
+          <Tooltip title="关闭">
+            <HighlightOffIcon
+              color={
+                record.status == 7 || record.status == 8 ? 'action' : 'error'
+              }
+            />
+          </Tooltip>
+        </IconButton>
       </div>
     );
   }
@@ -926,13 +917,30 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                       post.postdata,
                       (res: any) => {
                         cdata(res.data.dataList);
-                        message.success('修改成功');
+                        message.success('操作成功');
                         hides(false);
                       },
                     );
                   });
                   return;
                 }
+
+                if (iftype.key == 'close') {
+                  setNewState(dispatch, 'miss/Misclose', newfields, () => {
+                    setNewState(
+                      dispatch,
+                      post.posturl,
+                      post.postdata,
+                      (res: any) => {
+                        cdata(res.data.dataList);
+                        message.success('操作成功');
+                        hides(false);
+                      },
+                    );
+                  });
+                  return;
+                }
+
                 let newlist = newfields.attachmentList.fileList
                   ? newfields.attachmentList.fileList.map(
                       (items: any, i: number) => {

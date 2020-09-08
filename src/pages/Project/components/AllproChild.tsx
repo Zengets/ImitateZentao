@@ -671,7 +671,6 @@ let AllproChild = React.forwardRef((props: any, ref: any) => {
                       .startOf('day')
                       .valueOf()
                   : '';
-
                 setNewState(dispatch, 'proj/Projsave', newfields, () => {
                   ciftype(() => {
                     return {

@@ -1,6 +1,7 @@
 import {
   MisquerytaskRelease,
   Missave,
+  Misactive,
   MisdeleteById,
   Misactivation,
   ProjquerySelectList,
@@ -213,6 +214,14 @@ export default {
     },
     *Mistest({ payload }: any, { call, put }: any) {
       const responese = yield call(Mistest, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *Misactive({ payload }: any, { call, put }: any) {
+      const responese = yield call(Misactive, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },
