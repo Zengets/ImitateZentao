@@ -349,7 +349,7 @@ let ToNeeds = (props: any, ref: any) => {
             ...iftype,
             fv: true,
             curitem: record,
-            title: '分配任务',
+            title: '分解任务',
           });
         }}
       >

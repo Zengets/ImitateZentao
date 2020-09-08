@@ -385,7 +385,7 @@ let MissionAssign = (props: any) => {
                   return {
                     ...iftype,
                     visible: true,
-                    title: '分配任务:' + record.taskName,
+                    title: '分解任务:' + record.taskName,
                     key: 'edit',
                     curitem: record,
                     fullScreen: false,
