@@ -700,7 +700,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 (res: any) => {
                   Modal.info({
                     style: { top: 20 },
-                    zIndex: 999999,
+                    zIndex: 66,
                     width: 1200,
                     maskClosable: true,
                     title: iftype.resdata.info.projectName,
@@ -714,7 +714,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                             (result: any) => {
                               Modal.info({
                                 style: { top: 20 },
-                                zIndex: 999999,
+                                zIndex: 66,
                                 width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,

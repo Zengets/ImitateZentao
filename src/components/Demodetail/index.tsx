@@ -215,7 +215,7 @@ let Demodetail = (props: any) => {
                       (rest: any) => {
                         Modal.info({
                           style: { top: 20 },
-                          zIndex: 999999,
+                          zIndex: 66,
                           width: 1200,
                           maskClosable: true,
                           title: item.bugName,
@@ -229,7 +229,7 @@ let Demodetail = (props: any) => {
                                   (res: any) => {
                                     Modal.info({
                                       style: { top: 20 },
-                                      zIndex: 999999,
+                                      zIndex: 66,
                                       width: 1200,
                                       maskClosable: true,
                                       title: rest.data.data.projectName,
@@ -243,7 +243,7 @@ let Demodetail = (props: any) => {
                                               (result: any) => {
                                                 Modal.info({
                                                   style: { top: 20 },
-                                                  zIndex: 999999,
+                                                  zIndex: 66,
                                                   width: 1200,
                                                   maskClosable: true,
                                                   title:

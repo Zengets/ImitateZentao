@@ -7,6 +7,8 @@ import {
   queryBug,
   DepqueryTreeList,
   depuserlist,
+  queryDevList,
+  queryTestList,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -18,6 +20,8 @@ export default {
     queryTaskFinish: [],
     queryBug: [],
     depuserlist: [],
+    queryDevList: [],
+    queryTestList: [],
     umRequiretoproj: [],
     ProdqueryAllSelectAll: [],
     code: {},
@@ -46,6 +50,23 @@ export default {
       yield put({
         type: 'updateState',
         payload: { depuserlist: responese.data && responese.data.data },
+      });
+      return responese;
+    },
+    *queryDevList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryDevList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryDevList: responese.data && responese.data.data },
+      });
+      return responese;
+    },
+
+    *queryTestList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryTestList, payload);
+      yield put({
+        type: 'updateState',
+        payload: { queryTestList: responese.data && responese.data.data },
       });
       return responese;
     },

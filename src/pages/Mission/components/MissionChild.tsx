@@ -7,7 +7,17 @@ import React, {
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
-import { message, Popconfirm, Divider, Tooltip, Row, Col, Modal } from 'antd';
+import {
+  message,
+  Popconfirm,
+  Divider,
+  Tooltip,
+  Row,
+  Col,
+  Modal,
+  Dropdown,
+  Menu,
+} from 'antd';
 import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
@@ -34,7 +44,11 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import styles from '../style.less';
-import { UnlockOutlined } from '@ant-design/icons';
+import {
+  UnlockOutlined,
+  EllipsisOutlined,
+  ExportOutlined,
+} from '@ant-design/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import mockfile from '@/utils/mockfile';
@@ -112,7 +126,11 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       key: '',
     }),
     defaultfields: any = {},
-    [fields, cf] = useState(defaultfields);
+    [fields, cf] = useState(defaultfields),
+    [vs, cvs] = useState({
+      vs: false,
+      id: '',
+    });
 
   useEffect(() => {
     setNewState(dispatch, 'miss/queryTaskStatusSelectList', {}, () => {});
@@ -147,7 +165,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         multiple: 100,
       },
       ellipsis: true,
-      width: 120,
+      width: 100,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
     {
@@ -158,7 +176,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         multiple: 21,
       },
       ellipsis: true,
-      width: 120,
+      width: 90,
       ...getColumnSelectProps(
         'priorityType',
         model.Bugpriority,
@@ -171,7 +189,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       dataIndex: 'taskName',
       key: 'taskName',
       ellipsis: true,
-      width: 200,
+      width: 400,
       sorter: {
         multiple: 99,
       },
@@ -209,7 +227,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       sorter: {
         multiple: 102,
       },
-      width: 120,
+      width: 100,
       ...getColumnSearchProps('beforeUserName', post.postdata, handleSearch),
     },
     {
@@ -219,7 +237,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       sorter: {
         multiple: 102,
       },
-      width: 120,
+      width: 100,
       ...getColumnSearchProps('currentUserName', post.postdata, handleSearch),
       render: (text: any, record: any) =>
         record.status == 7 || record.status == 8 ? (
@@ -286,8 +304,29 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         ),
     },
     {
+      title: '开发人',
+      dataIndex: 'devUserName',
+      key: 'devUserName',
+      sorter: {
+        multiple: 2,
+      },
+      width: 100,
+      ...getColumnSearchProps('devUserName', post.postdata, handleSearch),
+    },
+    {
+      title: '测试人',
+      dataIndex: 'testUserName',
+      key: 'testUserName',
+      sorter: {
+        multiple: 1,
+      },
+      width: 100,
+      ...getColumnSearchProps('testUserName', post.postdata, handleSearch),
+    },
+
+    {
       title: '开始时间',
-      width: 160,
+      width: 120,
       dataIndex: 'devStageRealStartTime',
       key: 'devStageRealStartTime',
       sorter: {
@@ -311,7 +350,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       title: '预计时长',
       dataIndex: 'devStagePlanHours',
       key: 'devStagePlanHours',
-      width: 120,
+      width: 100,
       sorter: {
         multiple: 98,
       },
@@ -320,7 +359,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       title: '消耗时长',
       dataIndex: 'devStageExpendHours',
       key: 'devStageExpendHours',
-      width: 120,
+      width: 100,
       sorter: {
         multiple: 97,
       },
@@ -360,7 +399,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       sorter: {
         multiple: 94,
       },
-      width: 120,
+      width: 80,
       ...getColumnSelectProps(
         'status',
         miss.queryTaskStatusSelectList && miss.queryTaskStatusSelectList,
@@ -377,7 +416,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 300,
+      width: 260,
       render: (text: any, record: any) => renderAction(record),
     },
   ];
@@ -391,50 +430,18 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
     }
   }
 
-  function renderAction(record: any) {
-    return (
-      <div>
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认激活:' + record.taskName + '？激活后将无法编辑/删除'}
-          onConfirm={() => {
-            setNewState(dispatch, 'miss/Misactive', { id: record.id }, () => {
-              message.success('激活:' + record.taskName + '成功！');
-              resetdata((res: any) => {
-                setNewState(
-                  dispatch,
-                  'miss/MisquerytaskDetails',
-                  { id: record.id },
-                  () => {},
-                );
-                let result = res.data.page.list;
-                ciftype({
-                  ...iftype,
-                  curitem: result.filter((items: any) => {
-                    return items.id == record.id;
-                  })[0],
-                });
-              });
-            });
-          }}
-        >
-          <IconButton disabled={record.status != 1}>
-            <Tooltip title="激活">
-              <UnlockOutlined
-                style={{
-                  color: record.status != 1 ? '#999' : '#1183fb',
-                  fontSize: 18,
-                }}
-              />
-            </Tooltip>
-          </IconButton>
-        </Popconfirm>
-        <Divider type="vertical"></Divider>
-
+  const menus = (record: any) => (
+    <Menu
+      onClick={e => {
+        cvs({
+          ...vs,
+          vs: e.key == '2',
+        });
+      }}
+    >
+      <Menu.Item key="1">
         <IconButton
+          style={{ borderRadius: 0 }}
           disabled={record.status != 1}
           onClick={() => {
             let defaultfieldes: any = {
@@ -530,11 +537,21 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             });
           }}
         >
-          <Tooltip title="编辑">
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
             <EditIcon color={record.status != 1 ? 'action' : 'primary'} />
-          </Tooltip>
+            <span style={{ fontSize: 16, paddingLeft: 4, color: '#1183fb' }}>
+              编辑
+            </span>
+          </div>
         </IconButton>
-        <Divider type="vertical"></Divider>
+      </Menu.Item>
+      <Menu.Item key="2">
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -555,15 +572,130 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             );
           }}
         >
-          <Tooltip title="删除">
-            <IconButton disabled={record.status != 1} aria-label="delete">
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
+            <IconButton
+              disabled={record.status != 1}
+              aria-label="delete"
+              style={{ borderRadius: 0 }}
+            >
               <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
+              <span
+                style={{
+                  fontSize: 16,
+                  paddingLeft: 4,
+                  color: record.status != 1 ? '#333' : 'red',
+                  marginTop: 4,
+                }}
+              >
+                删除
+              </span>
             </IconButton>
-          </Tooltip>
+          </div>
         </Popconfirm>
+      </Menu.Item>
+      <Menu.Item key="3">
+        <IconButton
+          disabled={record.status == 7 || record.status == 8}
+          aria-label="delete"
+          style={{ borderRadius: 0 }}
+          onClick={() => {
+            cf({
+              closeDescription: {
+                value: '', //初始化值
+                type: 'textarea',
+                title: '关闭原因',
+                name: ['closeDescription'],
+                required: false,
+                col: { span: 24 },
+              },
+            });
+            ciftype(() => {
+              return {
+                ...iftype,
+                visible: true,
+                title: `确认关闭任务：${record.taskName}？`,
+                curitem: record,
+                key: 'close',
+                fullScreen: false,
+              };
+            });
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
+            <HighlightOffIcon
+              color={
+                record.status == 7 || record.status == 8 ? 'action' : 'error'
+              }
+            />
+            <span style={{ fontSize: 16, paddingLeft: 4, color: 'red' }}>
+              关闭
+            </span>
+          </div>
+        </IconButton>
+      </Menu.Item>
+    </Menu>
+  );
 
+  function renderAction(record: any) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+        }}
+      >
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'确认激活:' + record.taskName + '？激活后将无法编辑/删除'}
+          onConfirm={() => {
+            setNewState(dispatch, 'miss/Misactive', { id: record.id }, () => {
+              message.success('激活:' + record.taskName + '成功！');
+              resetdata((res: any) => {
+                setNewState(
+                  dispatch,
+                  'miss/MisquerytaskDetails',
+                  { id: record.id },
+                  () => {},
+                );
+                let result = res.data.page.list;
+                ciftype({
+                  ...iftype,
+                  curitem: result.filter((items: any) => {
+                    return items.id == record.id;
+                  })[0],
+                });
+              });
+            });
+          }}
+        >
+          <IconButton disabled={record.status != 1}>
+            <Tooltip title="激活">
+              <UnlockOutlined
+                style={{
+                  color: record.status != 1 ? '#999' : '#1183fb',
+                  fontSize: 18,
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+        </Popconfirm>
         <Divider type="vertical"></Divider>
-
         <Popconfirm
           overlayStyle={{ zIndex: 9999999999 }}
           okText="确认"
@@ -764,7 +896,6 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             />
           </Tooltip>
         </IconButton>
-
         <Divider type="vertical"></Divider>
         <IconButton
           disabled={record.status != 6}
@@ -842,42 +973,30 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             />
           </Tooltip>
         </IconButton>
-
         <Divider type="vertical"></Divider>
-        <IconButton
-          disabled={record.status == 7 || record.status == 8}
-          aria-label="delete"
-          onClick={() => {
-            cf({
-              closeDescription: {
-                value: '', //初始化值
-                type: 'textarea',
-                title: '关闭原因',
-                name: ['closeDescription'],
-                required: false,
-                col: { span: 24 },
-              },
-            });
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: `确认关闭任务：${record.taskName}？`,
-                curitem: record,
-                key: 'close',
-                fullScreen: false,
-              };
-            });
-          }}
+        <Dropdown
+          overlay={menus(record)}
+          visible={vs.vs && vs.id == record.id}
+          onVisibleChange={(flag: any) =>
+            cvs({
+              id: record.id,
+              vs: flag,
+            })
+          }
         >
-          <Tooltip title="关闭">
-            <HighlightOffIcon
-              color={
-                record.status == 7 || record.status == 8 ? 'action' : 'error'
-              }
-            />
-          </Tooltip>
-        </IconButton>
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <EllipsisOutlined style={{ fontSize: 24, color: 'red' }} />
+          </div>
+        </Dropdown>
       </div>
     );
   }
@@ -968,30 +1087,76 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
     return {
       renderAdd() {
         return (
-          <IconButton
-            style={{ padding: 8, borderRadius: 4 }}
-            onClick={() => {
-              ciftype({
-                ...iftype,
-                fv: true,
-                title: '新增任务',
-              });
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: '6px 12px',
+          <div>
+            <IconButton
+              style={{ padding: 8, borderRadius: 4 }}
+              onClick={() => {
+                ciftype({
+                  ...iftype,
+                  fv: true,
+                  title: '新增任务',
+                });
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22 }} color="primary" />
-              <span style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}>
-                新增
-              </span>
-            </div>
-          </IconButton>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
+            </IconButton>
+            <Divider type="vertical"></Divider>
+
+            <IconButton
+              style={{ padding: 8, borderRadius: 4 }}
+              onClick={() => {
+                function bodyparse(vals: any) {
+                  delete vals.sortList;
+                  let val = JSON.parse(JSON.stringify(vals));
+                  delete val.pageSize;
+                  delete val.pageIndex;
+                  let res = '';
+                  for (let key in val) {
+                    let value = val[key] ? val[key] : '';
+
+                    res += `&${key}=${value}`;
+                  }
+                  return res.substr(1);
+                }
+                window.open(
+                  `/zentao/umTask/exportFile?${bodyparse(post.postdata)}`,
+                );
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <ExportOutlined style={{ color: '#1183fb', fontSize: 18 }} />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  导出
+                </span>
+              </div>
+            </IconButton>
+          </div>
         );
       },
     };
@@ -1019,7 +1184,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 (res: any) => {
                   Modal.info({
                     style: { top: 20 },
-                    zIndex: 999999,
+                    zIndex: 66,
                     width: 1200,
                     maskClosable: true,
                     title: miss.MisquerytaskDetails.data.data.info.projectName,
@@ -1033,7 +1198,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                             (result: any) => {
                               Modal.info({
                                 style: { top: 20 },
-                                zIndex: 999999,
+                                zIndex: 66,
                                 width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,

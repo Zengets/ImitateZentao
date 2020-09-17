@@ -37,9 +37,9 @@ function workday_count(start: any, end: any) {
 let Bug = ({ dispatch, statics, model, loading }: any) => {
   let [curindex, changecur] = useState(0),
     [postdata, cpost] = useState({
-      productId: '', //产品id
-      projectId: '', // 项目id，根据产品联动
-      solveUserId: '', //人员id，独立下拉框
+      productId: undefined, //产品id
+      projectId: undefined, // 项目id，根据产品联动
+      solveUserId: undefined, //人员id，独立下拉框
     });
 
   let createNewArr = (data: any) => {
@@ -106,22 +106,22 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
       ellipsis: true,
       width: 120,
     },
+    // {
+    //   title: '任务数',
+    //   dataIndex: 'taskCount',
+    //   key: 'taskCount',
+    //   ellipsis: true,
+    //   width: 120,
+    // },
     {
-      title: '任务数',
-      dataIndex: 'taskCount',
-      key: 'taskCount',
-      ellipsis: true,
-      width: 120,
-    },
-    {
-      title: 'bug数',
+      title: '提交bug数',
       dataIndex: 'bugCount',
       key: 'bugCount',
       ellipsis: true,
       width: 120,
     },
     {
-      title: 'bug总计',
+      title: '提交bug总计',
       dataIndex: 'bugTotal',
       key: 'bugTotal',
       ellipsis: true,
@@ -141,6 +141,7 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
     setNewState(dispatch, 'statics/queryBug', postdata, () => {});
     setNewState(dispatch, 'statics/ProdqueryAllSelectAll', {}, () => {});
     setNewState(dispatch, 'statics/umRequiretoproj', {}, () => {});
+    setNewState(dispatch, 'statics/queryTestList', {}, () => {});
   }, []);
 
   return (
@@ -158,10 +159,17 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
                 ...postdata,
                 productId: val,
                 projectId: undefined,
+                solveUserId: undefined,
               });
               setNewState(
                 dispatch,
                 'statics/umRequiretoproj',
+                { productId: val },
+                () => {},
+              );
+              setNewState(
+                dispatch,
+                'statics/queryTestList',
                 { productId: val },
                 () => {},
               );
@@ -188,7 +196,17 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
               cpost({
                 ...postdata,
                 projectId: val,
+                solveUserId: undefined,
               });
+              setNewState(
+                dispatch,
+                'statics/queryTestList',
+                {
+                  productId: postdata.productId,
+                  projectId: val,
+                },
+                () => {},
+              );
             }}
           >
             {statics.umRequiretoproj.map(
@@ -215,11 +233,13 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
               });
             }}
           >
-            {model.UserqueryAll.map(({ dicKey, dicName }: any, i: number) => (
-              <Option key={i} value={dicKey}>
-                {dicName}
-              </Option>
-            ))}
+            {statics.queryTestList.map(
+              ({ dicKey, dicName }: any, i: number) => (
+                <Option key={i} value={dicKey}>
+                  {dicName}
+                </Option>
+              ),
+            )}
           </Select>
         </div>
 

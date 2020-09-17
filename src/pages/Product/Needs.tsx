@@ -205,7 +205,7 @@ let Needs = (props: any) => {
       sorter: {
         multiple: 97,
       },
-      width: 120,
+      width: 100,
       dataIndex: 'createUserName',
       key: 'createUserName',
       ...getColumnSelectProps(
@@ -223,7 +223,7 @@ let Needs = (props: any) => {
         multiple: 100,
       },
       ellipsis: true,
-      width: 120,
+      width: 110,
       ...getColumnSelectProps(
         'projectId',
         prod.umRequiretoproj,
@@ -238,7 +238,7 @@ let Needs = (props: any) => {
       },
       dataIndex: 'statusName',
       key: 'statusName',
-      width: 120,
+      width: 90,
       ...getColumnSelectProps(
         'status',
         prod.queryRequireStatusSelectList,
@@ -258,7 +258,7 @@ let Needs = (props: any) => {
       },
       dataIndex: 'stageName',
       key: 'stageName',
-      width: 120,
+      width: 90,
       ...getColumnSelectProps(
         'stage',
         prod.queryRequireStageSelectList,
@@ -278,7 +278,7 @@ let Needs = (props: any) => {
       },
       dataIndex: 'taskNum',
       key: 'taskNum',
-      width: 120,
+      width: 90,
     },
     {
       title: '操作',

@@ -22,7 +22,6 @@ export default [
         name: '产品',
         path: '/index/product',
         routes: [
-          { path: '/index/product', redirect: '/index/product/all' },
           {
             name: '所有产品',
             path: '/index/product/all',
@@ -39,7 +38,6 @@ export default [
         name: '项目',
         path: '/index/project',
         routes: [
-          { path: '/index/project', redirect: '/index/project/allpro' },
           {
             name: '所有项目',
             path: '/index/project/allpro',
@@ -99,7 +97,6 @@ export default [
         name: '测试',
         path: '/index/test',
         routes: [
-          { path: '/index/test', redirect: '/index/test/bugs' },
           {
             name: '所有BUG',
             path: '/index/test/bugs',
@@ -117,7 +114,6 @@ export default [
         name: '统计',
         path: '/index/statistics',
         routes: [
-          { path: '/index/statistics', redirect: '/index/statistics/project' },
           {
             name: '项目',
             path: '/index/statistics/project',
@@ -135,7 +131,6 @@ export default [
         name: '设置',
         path: '/index/setting',
         routes: [
-          { path: '/index/setting', redirect: '/index/setting/department' },
           {
             name: '部门管理',
             path: '/index/setting/department',

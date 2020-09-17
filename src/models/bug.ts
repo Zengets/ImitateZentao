@@ -1,6 +1,7 @@
 import {
   querySelectListByProjectId,
   BugqueryList,
+  umTaskList,
   Bugsave,
   Demosave,
   BugqueryById,
@@ -25,6 +26,7 @@ import {
   Demoexecute,
   DemoqueryById,
   DemodeleteById,
+  MisquerytaskDetails,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -70,10 +72,15 @@ export default {
         dataList: [],
       },
     },
+    MisquerytaskDetails: {
+      data: {
+        data: {},
+      },
+    },
     BugqueryById: {},
     querySelectListByProjectId: [],
-    done: true,
     Bugstatus: [],
+    umTaskList: [],
     Bugtype: [],
     Demotype: [],
     Bugstage: [],
@@ -123,6 +130,14 @@ export default {
       yield put({
         type: 'updateState',
         payload: { ProdqueryInfo: responese },
+      });
+      return responese;
+    },
+    *MisquerytaskDetails({ payload }: any, { call, put }: any) {
+      const responese = yield call(MisquerytaskDetails, payload);
+      yield put({
+        type: 'updateState',
+        payload: { MisquerytaskDetails: responese },
       });
       return responese;
     },
@@ -248,9 +263,13 @@ export default {
         type: 'updateState',
         payload: { Bugstatus: responese.data && responese.data.dataList },
       });
+      return responese;
+    },
+    *umTaskList({ payload }: any, { call, put }: any) {
+      const responese = yield call(umTaskList, payload);
       yield put({
         type: 'updateState',
-        payload: { done: false },
+        payload: { umTaskList: responese.data && responese.data.dataList },
       });
       return responese;
     },

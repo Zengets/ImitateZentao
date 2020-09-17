@@ -544,8 +544,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     required: true,
                   },
                   devStageFinishDescription: {
-                    value: '', //初始化值
-                    type: 'textarea',
+                    value: '<p></p>', //初始化值
+                    type: 'editor',
                     title: '开发描述',
                     name: ['devStageFinishDescription'],
                     required: false,
@@ -865,7 +865,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                 (res: any) => {
                   Modal.info({
                     style: { top: 20 },
-                    zIndex: 999999,
+                    zIndex: 66,
                     width: 1200,
                     maskClosable: true,
                     title: iftype.resdata.info.projectName,
@@ -879,7 +879,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                             (result: any) => {
                               Modal.info({
                                 style: { top: 20 },
-                                zIndex: 999999,
+                                zIndex: 66,
                                 width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,

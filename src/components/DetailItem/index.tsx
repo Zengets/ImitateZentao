@@ -30,8 +30,12 @@ let DetailItem = (props: any) => {
       </div>
       {item && item.tooltip ? (
         <Dropdown
+          arrow={true}
+          overlayStyle={{ position: 'absolute', zIndex: 122 }}
           overlay={
-            <div style={{ maxWidth: 616 }}>{item.tooltip && item.tooltip}</div>
+            <div style={{ maxWidth: 616, whiteSpace: 'pre-wrap' }}>
+              {item.tooltip && item.tooltip}
+            </div>
           }
         >
           <a>{value}</a>

@@ -4,7 +4,6 @@ import React, {
   useMemo,
   useImperativeHandle,
 } from 'react';
-import styles from './index.less';
 import { connect, history } from 'umi';
 import InitForm from '@/components/InitForm';
 import moment from 'moment';
@@ -20,7 +19,6 @@ import {
   Col,
   Modal,
 } from 'antd';
-import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -43,6 +41,7 @@ import rendercolor from '@/utils/rendercor';
 import Productdetail from '@/components/Productdetail';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Missiondetail from '@/components/Missiondetail';
 
 let Bugs = React.forwardRef((props: any, ref: any) => {
   let { bug, dispatch, loading, model, addpostdata } = props,
@@ -99,6 +98,10 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
             sort: '',
           },
           {
+            fieldName: 'totalExpendHours', //消耗时长
+            sort: '',
+          },
+          {
             fieldName: 'currentUserName', //当前负责人名
             sort: '',
           },
@@ -110,7 +113,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       },
     }),
     [iftype, ciftype] = useState({
-      curitem: {},
+      curitem: { taskId: '' },
       fullScreen: false,
       visible: false,
       title: '',
@@ -166,6 +169,14 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
         required: false, //必填？
         options: model.Bugpriority && model.Bugpriority,
       },
+      taskId: {
+        value: '', //初始化值
+        type: 'select', //类型
+        title: '相关任务', //placeholder
+        name: ['taskId'], //唯一标识
+        required: false, //必填？
+        options: bug.umTaskList && bug.umTaskList,
+      },
       steps: {
         value: '', //初始化值
         type: 'editor',
@@ -201,20 +212,27 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
     },
     [fields, cf] = useState(defaultfields);
 
-  useEffect(() => {
-    if (bug.done) {
-      let arr = [
-        'Bugstatus',
-        'Bugtype',
-        'Bugstage',
-        'Bugseverity',
-        'Bugsolution',
-      ]; //下拉框汇总
-      arr.map((item: any) => {
-        setNewState(dispatch, `bug/${item}`, {}, () => {});
-      });
-    }
+  //获取下拉框数据
+  function dropDownInit() {
+    let arr = [
+      'Bugstatus',
+      'Bugtype',
+      'Bugstage',
+      'Bugseverity',
+      'Bugsolution',
+      'umTaskList',
+    ]; //下拉框汇总
+    arr.map((item: any) => {
+      let data = {};
+      if (item == 'umTaskList') {
+        data = { projectId: projectId };
+      }
+      setNewState(dispatch, `bug/${item}`, data, () => {});
+    });
+  }
 
+  //用例转bug 设置默认值
+  function setBugDetail() {
     let query = history.location.query.data;
     query = query ? JSON.parse(query) : null;
 
@@ -245,6 +263,11 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
         };
       });
     }
+  }
+
+  useEffect(() => {
+    dropDownInit();
+    setBugDetail();
   }, []);
 
   //父级组件项目变化调用
@@ -327,6 +350,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       sorter: {
         multiple: 99,
       },
+      width: 300,
       ...getColumnSearchProps('bugName', post.postdata, handleSearch),
       render(text: React.ReactNode, record: any) {
         return (
@@ -427,6 +451,15 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
           </span>
         );
       },
+    },
+    {
+      title: '消耗时长（h）',
+      dataIndex: 'totalExpendHours',
+      key: 'totalExpendHours',
+      sorter: {
+        multiple: 6,
+      },
+      width: 120,
     },
     {
       title: '当前负责人',
@@ -541,6 +574,15 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 options:
                   model.querySelectListByProjectId &&
                   model.querySelectListByProjectId,
+                col: { span: 8 },
+              },
+              expendHours: {
+                value: null, //初始化值
+                type: 'inputnumber', //类型
+                title: '消耗时长（h）', //placeholder
+                name: ['expendHours'], //唯一标识
+                required: true, //必填？
+                col: { span: 8 },
               },
               solution: {
                 value: null, //初始化值
@@ -549,6 +591,7 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
                 name: ['solution'], //唯一标识
                 required: true, //必填？
                 options: bug.Bugsolution && bug.Bugsolution,
+                col: { span: 8 },
               },
               solveDescription: {
                 value: '<p></p>', //初始化值
@@ -881,6 +924,30 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
     };
   });
 
+  let childRender = (res: any) => (
+    <Projectdetail
+      showProduct={() => {
+        setNewState(
+          dispatch,
+          'bug/ProdqueryInfo',
+          { id: res.data.data.productId },
+          (result: any) => {
+            Modal.info({
+              style: { top: 20 },
+              zIndex: 66,
+              width: 1200,
+              maskClosable: true,
+              title: res.data.data.productName,
+              content: <Productdetail maindata={result.data.data} />,
+              okText: '晓得了',
+            });
+          },
+        );
+      }}
+      maindata={res.data.data}
+    />
+  );
+
   return (
     <div>
       <Dia
@@ -895,47 +962,64 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
       >
         {iftype.key == 'detail' ? (
           <Bugdetail
-            showOther={() => {
-              setNewState(
-                dispatch,
-                'bug/ProjqueryById',
-                { id: bug.BugqueryById.data.data.projectId },
-                (res: any) => {
-                  Modal.info({
-                    style: { top: 20 },
-                    zIndex: 999999,
-                    width: 1200,
-                    maskClosable: true,
-                    title: bug.BugqueryById.data.data.projectName,
-                    content: (
-                      <Projectdetail
-                        showProduct={() => {
-                          setNewState(
-                            dispatch,
-                            'bug/ProdqueryInfo',
-                            { id: res.data.data.productId },
-                            (result: any) => {
-                              Modal.info({
-                                style: { top: 20 },
-                                zIndex: 999999,
-                                width: 1200,
-                                maskClosable: true,
-                                title: res.data.data.productName,
-                                content: (
-                                  <Productdetail maindata={result.data.data} />
-                                ),
-                                okText: '晓得了',
-                              });
-                            },
-                          );
-                        }}
-                        maindata={res.data.data}
-                      />
-                    ),
-                    okText: '晓得了',
-                  });
-                },
-              );
+            showOther={(key: any) => {
+              if (key == 'projectName') {
+                setNewState(
+                  dispatch,
+                  'bug/ProjqueryById',
+                  { id: bug.BugqueryById.data.data.projectId },
+                  (res: any) => {
+                    Modal.info({
+                      style: { top: 20 },
+                      zIndex: 66,
+                      width: 1200,
+                      maskClosable: true,
+                      title: bug.BugqueryById.data.data.projectName,
+                      content: childRender(res),
+                      okText: '晓得了',
+                    });
+                  },
+                );
+              } else {
+                setNewState(
+                  dispatch,
+                  'bug/MisquerytaskDetails',
+                  { id: iftype.curitem.taskId },
+                  (response: any) => {
+                    Modal.info({
+                      style: { top: 20 },
+                      zIndex: 66,
+                      width: 1200,
+                      maskClosable: true,
+                      title: iftype.curitem.taskName,
+                      content: (
+                        <Missiondetail
+                          showOther={() => {
+                            setNewState(
+                              dispatch,
+                              'bug/ProjqueryById',
+                              { id: iftype.curitem.projectId },
+                              (res: any) => {
+                                Modal.info({
+                                  style: { top: 20 },
+                                  zIndex: 66,
+                                  width: 1200,
+                                  maskClosable: true,
+                                  title: iftype.curitem.projectName,
+                                  content: childRender(res),
+                                  okText: '晓得了',
+                                });
+                              },
+                            );
+                          }}
+                          maindata={response.data.data}
+                        ></Missiondetail>
+                      ),
+                      okText: '晓得了',
+                    });
+                  },
+                );
+              }
             }}
             renderAction={() => renderAction(iftype.curitem, true)}
             maindata={bug.BugqueryById.data.data}

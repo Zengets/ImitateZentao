@@ -235,7 +235,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
   useEffect(() => {
     setNewState(dispatch, 'statics/queryTaskFinish', postdata, () => {});
     setNewState(dispatch, 'statics/DepqueryTreeList', {}, () => {});
-    setNewState(dispatch, 'statics/depuserlist', {}, () => {});
+    setNewState(dispatch, 'statics/queryDevList', {}, () => {});
   }, []);
 
   return (
@@ -254,7 +254,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
             onChange={(value: any) => {
               setNewState(
                 dispatch,
-                'statics/depuserlist',
+                'statics/queryDevList',
                 { departmentId: value },
                 () => {
                   cpost({
@@ -281,7 +281,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
               });
             }}
           >
-            {statics.depuserlist.map(({ dicKey, dicName }: any, i: number) => (
+            {statics.queryDevList.map(({ dicKey, dicName }: any, i: number) => (
               <Option key={i} value={dicKey}>
                 {dicName}
               </Option>
@@ -290,7 +290,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
         </div>
 
         <div className={styles.items}>
-          <label className={styles.mys}>项目起止时间</label>
+          <label className={styles.mys}>起止时间</label>
           <RangePicker
             value={[
               moment(postdata.acceptStageTimeStart),

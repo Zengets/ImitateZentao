@@ -9,7 +9,7 @@ if (allStr) {
   if (allStr.indexOf('9000') != -1) {
     IpAndPort = 'http://172.21.3.155:8081/';
   } else if (allStr.indexOf('9001') != -1) {
-    IpAndPort = 'http://172.21.3.20:8081/';
+    IpAndPort = 'http://172.21.3.35:8081/';
   } else if (allStr.indexOf('9003') != -1) {
     IpAndPort = 'http://172.21.3.85:8088/';
   } else {
@@ -46,6 +46,7 @@ export default defineConfig({
     'font-size-base': '12px',
   },
   routes: initialRouter,
+  //favicon: '/assets/favicon.ico',
   proxy: {
     '/zentao/': {
       target: IpAndPort,

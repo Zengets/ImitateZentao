@@ -38,6 +38,7 @@ import rendercolor from '@/utils/rendercor';
 import Productdetail from '@/components/Productdetail';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Missiondetail from '@/components/Missiondetail';
 
 let ThirdChildB = (props: any) => {
   let { bug, dispatch, loading, model, home } = props,
@@ -78,6 +79,10 @@ let ThirdChildB = (props: any) => {
           },
           {
             fieldName: 'solveUserName', //处理人名
+            sort: '',
+          },
+          {
+            fieldName: 'totalExpendHours', //消耗时长
             sort: '',
           },
           {
@@ -125,8 +130,7 @@ let ThirdChildB = (props: any) => {
         title: '指派给', //placeholder
         name: ['solveUserId'], //唯一标识
         required: true, //必填？
-        options:
-          bug.querySelectListByProjectId && bug.querySelectListByProjectId,
+        options: [],
       },
       bugType: {
         value: '', //初始化值
@@ -181,7 +185,7 @@ let ThirdChildB = (props: any) => {
         type: 'upload',
         title: '附件',
         name: ['attachmentList'],
-        required: true,
+        required: false,
         col: { span: 24 },
       },
     },
@@ -328,6 +332,15 @@ let ThirdChildB = (props: any) => {
       ),
     },
     {
+      title: '消耗时长（h）',
+      dataIndex: 'totalExpendHours',
+      key: 'totalExpendHours',
+      sorter: {
+        multiple: 6,
+      },
+      width: 120,
+    },
+    {
       title: '当前负责人',
       dataIndex: 'currentUserName',
       key: 'currentUserName',
@@ -368,44 +381,49 @@ let ThirdChildB = (props: any) => {
         <IconButton
           disabled={record.status != 3}
           onClick={() => {
-            cf({
-              solveUserId: {
-                value: null, //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['solveUserId'], //唯一标识
-                required: true, //必填？
-                options:
-                  bug.querySelectListByProjectId &&
-                  bug.querySelectListByProjectId,
+            setNewState(
+              dispatch,
+              'bug/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  solveUserId: {
+                    value: null, //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['solveUserId'], //唯一标识
+                    required: true, //必填？
+                    options: res.data.dataList,
+                  },
+                  activateDescription: {
+                    value: '<p></p>', //初始化值
+                    type: 'editor', //类型
+                    title: '激活描述', //placeholder
+                    name: ['activateDescription'], //唯一标识
+                    required: true, //必填？
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '激活Bug:' + record.bugName,
+                    key: 'active',
+                    curitem: record,
+                    fullScreen: false,
+                  };
+                });
               },
-              activateDescription: {
-                value: '<p></p>', //初始化值
-                type: 'editor', //类型
-                title: '激活描述', //placeholder
-                name: ['activateDescription'], //唯一标识
-                required: true, //必填？
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: true,
-                col: { span: 24 },
-              },
-            });
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '激活Bug:' + record.bugName,
-                key: 'active',
-                curitem: record,
-                fullScreen: false,
-              };
-            });
+            );
           }}
         >
           <PlayCircleOutlineIcon
@@ -417,52 +435,57 @@ let ThirdChildB = (props: any) => {
         <IconButton
           disabled={record.status != 1}
           onClick={() => {
-            cf({
-              acceptUserId: {
-                value: null, //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['acceptUserId'], //唯一标识
-                required: true, //必填？
-                options:
-                  bug.querySelectListByProjectId &&
-                  bug.querySelectListByProjectId,
+            setNewState(
+              dispatch,
+              'bug/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  acceptUserId: {
+                    value: null, //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['acceptUserId'], //唯一标识
+                    required: true, //必填？
+                    options: res.data.dataList,
+                  },
+                  solution: {
+                    value: null, //初始化值
+                    type: 'select', //类型
+                    title: '解决方案', //placeholder
+                    name: ['solution'], //唯一标识
+                    required: true, //必填？
+                    options: bug.Bugsolution && bug.Bugsolution,
+                  },
+                  solveDescription: {
+                    value: '<p></p>', //初始化值
+                    type: 'editor', //类型
+                    title: '处理描述', //placeholder
+                    name: ['solveDescription'], //唯一标识
+                    required: true, //必填？
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '处理Bug:' + record.bugName,
+                    key: 'deal',
+                    curitem: record,
+                    fullScreen: false,
+                  };
+                });
               },
-              solution: {
-                value: null, //初始化值
-                type: 'select', //类型
-                title: '解决方案', //placeholder
-                name: ['solution'], //唯一标识
-                required: true, //必填？
-                options: bug.Bugsolution && bug.Bugsolution,
-              },
-              solveDescription: {
-                value: '<p></p>', //初始化值
-                type: 'editor', //类型
-                title: '处理描述', //placeholder
-                name: ['solveDescription'], //唯一标识
-                required: true, //必填？
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: true,
-                col: { span: 24 },
-              },
-            });
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '处理Bug:' + record.bugName,
-                key: 'deal',
-                curitem: record,
-                fullScreen: false,
-              };
-            });
+            );
           }}
         >
           <BuildIcon
@@ -475,62 +498,67 @@ let ThirdChildB = (props: any) => {
         <IconButton
           disabled={record.status != 2}
           onClick={() => {
-            cf({
-              acceptResult: {
-                value: null, //初始化值
-                type: 'radio', //类型
-                title: '验收结果', //placeholder
-                name: ['acceptResult'], //唯一标识
-                required: true, //必填？
-                options: [
-                  {
-                    dicName: '不通过',
-                    dicKey: 0,
+            setNewState(
+              dispatch,
+              'bug/querySelectListByProjectId',
+              { projectId: record.projectId },
+              (res: any) => {
+                cf({
+                  acceptResult: {
+                    value: null, //初始化值
+                    type: 'radio', //类型
+                    title: '验收结果', //placeholder
+                    name: ['acceptResult'], //唯一标识
+                    required: true, //必填？
+                    options: [
+                      {
+                        dicName: '不通过',
+                        dicKey: 0,
+                      },
+                      {
+                        dicName: '通过',
+                        dicKey: 1,
+                      },
+                    ],
                   },
-                  {
-                    dicName: '通过',
-                    dicKey: 1,
+                  solveUserId: {
+                    value: null, //初始化值
+                    type: 'select', //类型
+                    title: '指派给', //placeholder
+                    name: ['solveUserId'], //唯一标识
+                    required: true, //必填？
+                    hides: true,
+                    options: res.data.dataList,
                   },
-                ],
+                  acceptDescription: {
+                    value: '<p></p>', //初始化值
+                    type: 'editor', //类型
+                    title: '处理描述', //placeholder
+                    name: ['acceptDescription'], //唯一标识
+                    required: true, //必填？
+                    col: { span: 24 },
+                  },
+                  attachmentList: {
+                    value: [], //初始化值
+                    type: 'upload',
+                    title: '附件',
+                    name: ['attachmentList'],
+                    required: false,
+                    col: { span: 24 },
+                  },
+                });
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '验证Bug:' + record.bugName,
+                    key: 'checks',
+                    curitem: record,
+                    fullScreen: false,
+                  };
+                });
               },
-              solveUserId: {
-                value: null, //初始化值
-                type: 'select', //类型
-                title: '指派给', //placeholder
-                name: ['solveUserId'], //唯一标识
-                required: true, //必填？
-                hides: true,
-                options:
-                  bug.querySelectListByProjectId &&
-                  bug.querySelectListByProjectId,
-              },
-              acceptDescription: {
-                value: '<p></p>', //初始化值
-                type: 'editor', //类型
-                title: '处理描述', //placeholder
-                name: ['acceptDescription'], //唯一标识
-                required: true, //必填？
-                col: { span: 24 },
-              },
-              attachmentList: {
-                value: [], //初始化值
-                type: 'upload',
-                title: '附件',
-                name: ['attachmentList'],
-                required: true,
-                col: { span: 24 },
-              },
-            });
-            ciftype(() => {
-              return {
-                ...iftype,
-                visible: true,
-                title: '验证Bug:' + record.bugName,
-                key: 'checks',
-                curitem: record,
-                fullScreen: false,
-              };
-            });
+            );
           }}
         >
           <PlaylistAddCheckIcon
@@ -717,6 +745,30 @@ let ThirdChildB = (props: any) => {
     }, 200);
   }
 
+  let childRender = (res: any) => (
+    <Projectdetail
+      showProduct={() => {
+        setNewState(
+          dispatch,
+          'bug/ProdqueryInfo',
+          { id: res.data.data.productId },
+          (result: any) => {
+            Modal.info({
+              style: { top: 20 },
+              zIndex: 66,
+              width: 1200,
+              maskClosable: true,
+              title: res.data.data.productName,
+              content: <Productdetail maindata={result.data.data} />,
+              okText: '晓得了',
+            });
+          },
+        );
+      }}
+      maindata={res.data.data}
+    />
+  );
+
   return (
     <div>
       <Dia
@@ -731,47 +783,64 @@ let ThirdChildB = (props: any) => {
       >
         {iftype.key == 'detail' ? (
           <Bugdetail
-            showOther={() => {
-              setNewState(
-                dispatch,
-                'bug/ProjqueryById',
-                { id: bug.BugqueryById.data.data.projectId },
-                (res: any) => {
-                  Modal.info({
-                    style: { top: 20 },
-                    zIndex: 999999,
-                    width: 1200,
-                    maskClosable: true,
-                    title: bug.BugqueryById.data.data.projectName,
-                    content: (
-                      <Projectdetail
-                        showProduct={() => {
-                          setNewState(
-                            dispatch,
-                            'bug/ProdqueryInfo',
-                            { id: res.data.data.productId },
-                            (result: any) => {
-                              Modal.info({
-                                style: { top: 20 },
-                                zIndex: 999999,
-                                width: 1200,
-                                maskClosable: true,
-                                title: res.data.data.productName,
-                                content: (
-                                  <Productdetail maindata={result.data.data} />
-                                ),
-                                okText: '晓得了',
-                              });
-                            },
-                          );
-                        }}
-                        maindata={res.data.data}
-                      />
-                    ),
-                    okText: '晓得了',
-                  });
-                },
-              );
+            showOther={(key: any) => {
+              if (key == 'projectName') {
+                setNewState(
+                  dispatch,
+                  'bug/ProjqueryById',
+                  { id: bug.BugqueryById.data.data.projectId },
+                  (res: any) => {
+                    Modal.info({
+                      style: { top: 20 },
+                      zIndex: 66,
+                      width: 1200,
+                      maskClosable: true,
+                      title: bug.BugqueryById.data.data.projectName,
+                      content: childRender(res),
+                      okText: '晓得了',
+                    });
+                  },
+                );
+              } else {
+                setNewState(
+                  dispatch,
+                  'bug/MisquerytaskDetails',
+                  { id: iftype.curitem.taskId },
+                  (response: any) => {
+                    Modal.info({
+                      style: { top: 20 },
+                      zIndex: 66,
+                      width: 1200,
+                      maskClosable: true,
+                      title: iftype.curitem.taskName,
+                      content: (
+                        <Missiondetail
+                          showOther={() => {
+                            setNewState(
+                              dispatch,
+                              'bug/ProjqueryById',
+                              { id: iftype.curitem.projectId },
+                              (res: any) => {
+                                Modal.info({
+                                  style: { top: 20 },
+                                  zIndex: 66,
+                                  width: 1200,
+                                  maskClosable: true,
+                                  title: iftype.curitem.projectName,
+                                  content: childRender(res),
+                                  okText: '晓得了',
+                                });
+                              },
+                            );
+                          }}
+                          maindata={response.data.data}
+                        ></Missiondetail>
+                      ),
+                      okText: '晓得了',
+                    });
+                  },
+                );
+              }
             }}
             renderAction={() => renderAction(iftype.curitem, true)}
             maindata={bug.BugqueryById.data.data}

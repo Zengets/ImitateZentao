@@ -139,6 +139,11 @@ let Bugdetail = (props: any) => {
       key: 'projectName',
     },
     {
+      title: '相关任务',
+      dataIndex: 'taskName',
+      key: 'taskName',
+    },
+    {
       title: '附件',
       dataIndex: 'attachmentList',
       key: 'attachmentList',
@@ -157,6 +162,11 @@ let Bugdetail = (props: any) => {
       title: '确认附件',
       dataIndex: 'confirmAttachmentList',
       key: 'confirmAttachmentList',
+    },
+    {
+      title: '消耗时长',
+      dataIndex: 'totalExpendHours',
+      key: 'totalExpendHours',
     },
   ];
 
@@ -217,6 +227,7 @@ let Bugdetail = (props: any) => {
     });
     let info2 = [
       'projectName',
+      'taskName',
       'bugTypeName',
       'severity',
       'priority',
@@ -235,6 +246,7 @@ let Bugdetail = (props: any) => {
       'solveTime',
       'acceptTime',
       'endDate',
+      'totalExpendHours',
     ].map((item: any) => {
       return dataSource.filter((it: any) => {
         return it.dataIndex == item;
@@ -300,21 +312,6 @@ let Bugdetail = (props: any) => {
                             : item.value
                         }
                         item={item}
-                        hdClick={() => {
-                          if (item.dataIndex == 'projectName') {
-                            showOther();
-                          }
-                        }}
-                        contentstyle={{
-                          color:
-                            item.dataIndex == 'projectName'
-                              ? '#1183fb'
-                              : rendercolor('Buglevel', item.value),
-                          cursor:
-                            item.dataIndex == 'projectName'
-                              ? 'pointer'
-                              : 'default',
-                        }}
                       />
                     </List.Item>
                   )
@@ -338,8 +335,11 @@ let Bugdetail = (props: any) => {
                         width={86}
                         key={item.dataIndex}
                         hdClick={() => {
-                          if (item.dataIndex == 'projectName') {
-                            showOther();
+                          if (
+                            item.dataIndex == 'projectName' ||
+                            item.dataIndex == 'taskName'
+                          ) {
+                            showOther(item.dataIndex);
                           }
                         }}
                         title={item.title}
@@ -350,13 +350,15 @@ let Bugdetail = (props: any) => {
                         }
                         contentstyle={{
                           color:
-                            item.dataIndex == 'projectName'
+                            item.dataIndex == 'projectName' ||
+                            item.dataIndex == 'taskName'
                               ? '#1183fb'
                               : item.dataIndex == 'statusName'
                               ? rendercolor('Bugstatus', item.value)
                               : rendercolor('Buglevel', item.value),
                           cursor:
-                            item.dataIndex == 'projectName'
+                            item.dataIndex == 'projectName' ||
+                            item.dataIndex == 'taskName'
                               ? 'pointer'
                               : 'default',
                         }}

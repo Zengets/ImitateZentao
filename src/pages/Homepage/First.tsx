@@ -147,7 +147,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
               (res: any) => {
                 Modal.info({
                   style: { top: 20 },
-                  zIndex: 999999,
+                  zIndex: 66,
                   width: 1200,
                   maskClosable: true,
                   title: proj.ProjqueryById.data.data.productName,

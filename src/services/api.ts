@@ -746,6 +746,14 @@ export async function BugqueryList(params: any) {
     body: JSON.stringify(params),
   });
 }
+//任务下拉框
+export async function umTaskList(params: any) {
+  return request(`/zentao/umTask/querySelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
 
 //bug新增  BugqueryList,Bugsave
 export async function Bugsave(params: any) {
@@ -1044,6 +1052,24 @@ export async function queryBug(params: any) {
 //根据部门查询用户列表
 export async function depuserlist(params: any) {
   return request(`/zentao/sysUser/query`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//根据搜索条件查询研发人员下拉框
+export async function queryDevList(params: any) {
+  return request(`/zentao/sysUser/queryDevList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//根据搜索条件查询研发人员下拉框
+export async function queryTestList(params: any) {
+  return request(`/zentao/sysUser/queryTestList`, {
     method: 'POST',
     headers,
     body: JSON.stringify(params),

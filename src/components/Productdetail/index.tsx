@@ -61,6 +61,7 @@ let Productdetail = (props: any) => {
           title: '产品描述',
           dataIndex: 'description',
           key: 'description',
+          type: 'innerhtml',
         },
         {
           title: '附件',
@@ -80,6 +81,7 @@ let Productdetail = (props: any) => {
           ? moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD')
           : '-';
         return {
+          ...item,
           title: item.title,
           dataIndex: item.dataIndex,
           value:
@@ -161,6 +163,7 @@ let Productdetail = (props: any) => {
                 item.value && (
                   <List.Item>
                     <DetailItem
+                      item={item}
                       key={item.dataIndex}
                       title={item.title}
                       value={

@@ -417,7 +417,7 @@ let MissionCheck = (props: any) => {
                 (res: any) => {
                   Modal.info({
                     style: { top: 20 },
-                    zIndex: 999999,
+                    zIndex: 66,
                     width: 1200,
                     maskClosable: true,
                     title: miss.MisquerytaskDetails.data.data.info.projectName,
@@ -431,7 +431,7 @@ let MissionCheck = (props: any) => {
                             (result: any) => {
                               Modal.info({
                                 style: { top: 20 },
-                                zIndex: 999999,
+                                zIndex: 66,
                                 width: 1200,
                                 maskClosable: true,
                                 title: res.data.data.productName,

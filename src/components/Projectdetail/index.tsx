@@ -4,6 +4,7 @@ import { List, Card, Row, Col, Divider } from 'antd';
 import rendercolor from '@/utils/rendercor';
 import DetailItem from '@/components/DetailItem';
 import Button from '@material-ui/core/Button';
+import { type } from './../../.umi/plugin-model/Provider';
 
 let Projectdetail = (props: any) => {
   let { renderAction, maindata, showProduct } = props;
@@ -63,6 +64,7 @@ let Projectdetail = (props: any) => {
           title: '项目描述',
           dataIndex: 'description',
           key: 'description',
+          type: 'innerhtml',
         },
         {
           title: '附件',
@@ -108,6 +110,7 @@ let Projectdetail = (props: any) => {
           ? moment(parseInt(listdata[item.dataIndex])).format('YYYY-MM-DD')
           : '-';
         return {
+          ...item,
           title: item.title,
           dataIndex: item.dataIndex,
           value:
@@ -208,6 +211,7 @@ let Projectdetail = (props: any) => {
                   <List.Item>
                     <DetailItem
                       key={item.dataIndex}
+                      item={item}
                       hdClick={() => {
                         if (item.dataIndex == 'productName') {
                           showProduct();
@@ -241,6 +245,7 @@ let Projectdetail = (props: any) => {
                 item.value && (
                   <List.Item>
                     <DetailItem
+                      item={item}
                       key={item.dataIndex}
                       title={item.title}
                       value={item.value}

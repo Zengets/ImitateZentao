@@ -17,9 +17,9 @@ import { useEffect } from 'react';
 import setNewState from '@/utils/setNewState';
 import { useState } from 'react';
 
-function a11yProps(index: any) {
+function a11yProps(index: any, style: object) {
   return {
-    style: { height: 60, minWidth: 80 },
+    style: { ...style, height: 60, minWidth: 80 },
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
@@ -61,6 +61,7 @@ function Header(props: any) {
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
   };
+
   childroute &&
     childroute.map((item: any, i: any) => {
       if (history.location.pathname == item.path) {
@@ -151,7 +152,7 @@ function Header(props: any) {
                 .toLowerCase()
                 .indexOf(input.toLowerCase()) >= 0
             }
-            style={{ width: 155, color: '#1183fb' }}
+            style={{ width: 266, color: '#1183fb' }}
             value={
               name == '产品' ? props.model.prod : props.model.postdata.projectId
             }
@@ -210,10 +211,15 @@ function Header(props: any) {
                     <Tab
                       key={i}
                       label={item.name}
-                      style={{ borderLeft: '#fff solid 1px' }}
-                      {...a11yProps(i)}
+                      {...a11yProps(i, {
+                        borderLeft: 'rgba(255,255,255,0.4) solid 1px',
+                      })}
                       onClick={() => {
-                        history.push(item.path);
+                        if (item.routes && item.routes.length > 0) {
+                          history.push(item.routes[0].path);
+                        } else {
+                          history.push(item.path);
+                        }
                       }}
                     />
                   );
@@ -221,9 +227,13 @@ function Header(props: any) {
                   return (
                     <Tab
                       label={item.name}
-                      {...a11yProps(i)}
+                      {...a11yProps(i, {})}
                       onClick={() => {
-                        history.push(item.path);
+                        if (item.routes && item.routes.length > 0) {
+                          history.push(item.routes[0].path);
+                        } else {
+                          history.push(item.path);
+                        }
                       }}
                     />
                   );
@@ -275,8 +285,8 @@ function Header(props: any) {
         >
           <div
             style={{
-              width: 350,
-              minWidth: 350,
+              width: 600,
+              minWidth: 600,
               display: 'flex',
               alignItems: 'center',
             }}
@@ -317,13 +327,13 @@ function Header(props: any) {
             ) : null}
           </div>
 
-          <div style={{ width: 350, minWidth: 350 }}>
-            {!childroute && (
+          <div style={{ width: 600, minWidth: 600 }}>
+            {/* {!childroute && (
               <Input.Search
-                style={{ borderRadius: 4, maxWidth: 350 }}
+                style={{ borderRadius: 4, maxWidth: 600 }}
                 placeholder={`搜索${mainroutes[value].name}`}
               />
-            )}
+            )} */}
           </div>
         </Container>
       </div>
