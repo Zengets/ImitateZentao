@@ -130,8 +130,8 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
     },
     {
       title: '实际工时/任务数',
-      dataIndex: 'finishPlanHours',
-      key: 'finishPlanHours',
+      dataIndex: 'actualExpendHours',
+      key: 'actualExpendHours',
       ellipsis: true,
       width: 120,
       render: (text: any, record: any) => (
