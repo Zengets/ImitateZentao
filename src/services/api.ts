@@ -1093,3 +1093,12 @@ export async function querytaskMy(params: any) {
     body: JSON.stringify(params),
   });
 }
+
+//新增、修改任务增加相关需求
+export async function querySelectByProjectId(params: any) {
+  return request(`/zentao/umRequire/querySelectByProjectId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
