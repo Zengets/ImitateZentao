@@ -36,10 +36,14 @@ function workday_count(start: any, end: any) {
 
 let Bug = ({ dispatch, statics, model, loading }: any) => {
   let [curindex, changecur] = useState(0),
+    startday = moment().startOf('month'),
+    endday = moment(),
     [postdata, cpost] = useState({
       productId: undefined, //产品id
       projectId: undefined, // 项目id，根据产品联动
       solveUserId: undefined, //人员id，独立下拉框
+      openMinTime: startday.valueOf(),
+      openMaxTime: endday.valueOf(),
     });
 
   let createNewArr = (data: any) => {
@@ -65,8 +69,6 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
         return result;
       }, []);
   };
-
-  console.log(createNewArr(statics.queryBug));
 
   let columns = [
     {
@@ -106,13 +108,35 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
       ellipsis: true,
       width: 120,
     },
-    // {
-    //   title: '任务数',
-    //   dataIndex: 'taskCount',
-    //   key: 'taskCount',
-    //   ellipsis: true,
-    //   width: 120,
-    // },
+    {
+      title: '项目起止日期',
+      dataIndex: 'projectDate',
+      key: 'projectDate',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '总任务数',
+      dataIndex: 'testCount',
+      key: 'testCount',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '已测试任务数',
+      dataIndex: 'finishTestCount',
+      key: 'finishTestCount',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      title: '完成进度',
+      dataIndex: 'completionEfficiency',
+      key: 'completionEfficiency',
+      ellipsis: true,
+      width: 120,
+      render: (text: any) => <span>{text ? text + '%' : ''}</span>,
+    },
     {
       title: '提交bug数',
       dataIndex: 'bugCount',
@@ -241,6 +265,21 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
               ),
             )}
           </Select>
+        </div>
+        <div className={styles.items}>
+          <label className={styles.mys}>任务截止日期</label>
+          <RangePicker
+            value={[moment(postdata.openMinTime), moment(postdata.openMaxTime)]}
+            onChange={(val: any) => {
+              let starts = val ? moment(val[0]) : startday,
+                ends = val ? moment(val[1]) : endday;
+              cpost({
+                ...postdata,
+                openMinTime: starts.valueOf(),
+                openMaxTime: ends.valueOf(),
+              });
+            }}
+          />
         </div>
 
         <div className={styles.items}>

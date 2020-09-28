@@ -13,7 +13,7 @@ let Organize = (props: any) => {
 
   let col = { xs: 24, sm: 24, md: 6, lg: 5, xl: 4, xxl: 4 },
     cols = { xs: 24, sm: 24, md: 18, lg: 19, xl: 20, xxl: 20 },
-    menu = ['任务完成汇总表', 'Bug统计表'];
+    menu = ['开发统计表', '测试统计表'];
 
   return (
     <Container maxWidth="xl">

@@ -323,6 +323,16 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       width: 100,
       ...getColumnSearchProps('testUserName', post.postdata, handleSearch),
     },
+    {
+      title: ' 验收人',
+      dataIndex: 'acceptUserName',
+      key: 'acceptUserName',
+      sorter: {
+        multiple: 37,
+      },
+      width: 100,
+      ...getColumnSearchProps('acceptUserName', post.postdata, handleSearch),
+    },
 
     {
       title: '开始时间',
@@ -479,7 +489,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 options: model.Bugpriority && model.Bugpriority, //buglist
               },
               currentUserId: {
-                value: record.currentUserId, //初始化值
+                value: record.devUserId, //初始化值
                 type: 'select', //类型
                 title: '指派给', //placeholder
                 name: ['currentUserId'], //唯一标识

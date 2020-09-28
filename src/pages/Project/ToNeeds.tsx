@@ -145,7 +145,6 @@ let ToNeeds = (props: any, ref: any) => {
         multiple: 99,
       },
       ellipsis: true,
-      width: 120,
       dataIndex: 'requireName',
       key: 'requireName',
       ...getColumnSearchProps(

@@ -31,6 +31,13 @@ let ProjectTaskStatus = ({ dispatch, statics, loading }: any) => {
       ellipsis: true,
     },
     {
+      title: '待激活',
+      dataIndex: 'beActivation',
+      key: 'beActivation',
+      ellipsis: true,
+      width: 120,
+    },
+    {
       title: '待开发',
       dataIndex: 'beDevelop',
       key: 'beDevelop',

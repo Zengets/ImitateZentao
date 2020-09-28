@@ -109,21 +109,39 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
       width: 120,
     },
     {
-      title: '预计消耗',
+      title: '项目起止日期',
+      dataIndex: 'projectDate',
+      key: 'projectDate',
+      ellipsis: true,
+      width: 120,
+    },
+
+    {
+      title: '预计工时/任务数',
       dataIndex: 'planExpendHours',
       key: 'planExpendHours',
       ellipsis: true,
       width: 120,
+      render: (text: any, record: any) => (
+        <span>
+          {text} / {record.taskCount}
+        </span>
+      ),
     },
     {
-      title: '实际消耗',
+      title: '实际工时/任务数',
       dataIndex: 'actualExpendHours',
       key: 'actualExpendHours',
       ellipsis: true,
       width: 120,
+      render: (text: any, record: any) => (
+        <span>
+          {text} / {record.finishCount}
+        </span>
+      ),
     },
     {
-      title: '完成效率',
+      title: '完成进度',
       dataIndex: 'completionEfficiency',
       key: 'completionEfficiency',
       ellipsis: true,
@@ -290,7 +308,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
         </div>
 
         <div className={styles.items}>
-          <label className={styles.mys}>起止时间</label>
+          <label className={styles.mys}>任务截止日期</label>
           <RangePicker
             value={[
               moment(postdata.acceptStageTimeStart),

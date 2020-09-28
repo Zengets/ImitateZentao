@@ -192,12 +192,10 @@ let ThirdChildB = (props: any) => {
     [fields, cf] = useState(defaultfields);
 
   useEffect(() => {
-    if (bug.done) {
-      let arr = ['Bugtype', 'Bugstage', 'Bugseverity', 'Bugsolution']; //下拉框汇总
-      arr.map((item: any) => {
-        setNewState(dispatch, `bug/${item}`, {}, () => {});
-      });
-    }
+    let arr = ['Bugtype', 'Bugstage', 'Bugseverity', 'Bugsolution']; //下拉框汇总
+    arr.map((item: any) => {
+      setNewState(dispatch, `bug/${item}`, {}, () => {});
+    });
     setNewState(dispatch, post.posturl, post.postdata, (res: any) => {
       cdata(res.data.dataList);
     });
@@ -448,6 +446,15 @@ let ThirdChildB = (props: any) => {
                     name: ['acceptUserId'], //唯一标识
                     required: true, //必填？
                     options: res.data.dataList,
+                    col: { span: 8 },
+                  },
+                  expendHours: {
+                    value: null, //初始化值
+                    type: 'inputnumber', //类型
+                    title: '消耗时长（h）', //placeholder
+                    name: ['expendHours'], //唯一标识
+                    required: true, //必填？
+                    col: { span: 8 },
                   },
                   solution: {
                     value: null, //初始化值
@@ -456,6 +463,7 @@ let ThirdChildB = (props: any) => {
                     name: ['solution'], //唯一标识
                     required: true, //必填？
                     options: bug.Bugsolution && bug.Bugsolution,
+                    col: { span: 8 },
                   },
                   solveDescription: {
                     value: '<p></p>', //初始化值

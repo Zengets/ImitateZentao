@@ -129,12 +129,13 @@ let SetUser = (props: any) => {
         required: true,
         options: set.UserqueryWechatList && set.UserqueryWechatList,
       },
-      roleId: {
-        value: '', //初始化值
+      roleIdList: {
+        value: [], //初始化值
         type: 'select',
         title: '角色',
-        name: ['roleId'],
+        name: ['roleIdList'],
         required: true,
+        multiple: true,
         options: set.UserqueryAllSelect && set.UserqueryAllSelect,
       },
       jobTitle: {
@@ -216,6 +217,7 @@ let SetUser = (props: any) => {
       title: '角色',
       dataIndex: 'roleName',
       key: 'roleName',
+      ellipsis: true,
     },
     {
       title: '部门',
@@ -339,9 +341,9 @@ let SetUser = (props: any) => {
                 value: record.workwechatId, //初始化值
                 options: set.UserqueryWechatList && set.UserqueryWechatList,
               },
-              roleId: {
-                ...fields.roleId,
-                value: record.roleId, //初始化值
+              roleIdList: {
+                ...fields.roleIdList,
+                value: record.roleIdList, //初始化值
                 options: set.UserqueryAllSelect && set.UserqueryAllSelect,
               },
               jobTitle: {
@@ -514,35 +516,39 @@ let SetUser = (props: any) => {
         title={iftype.title}
         footer={<div style={{ height: 24 }}></div>}
       >
-        <InitForm
-          fields={fields}
-          submitData={(values: any) => {
-            let newfields = JSON.parse(JSON.stringify(values));
-            newfields.entryDate = newfields.entryDate
-              ? moment(newfields.entryDate)
-                  .startOf('day')
-                  .valueOf()
-              : '';
-            if (iftype.key == 'edit') {
-              newfields.id = iftype.curitem.id;
+        {iftype.visible && (
+          <InitForm
+            fields={fields}
+            submitData={(values: any) => {
+              let newfields = JSON.parse(JSON.stringify(values));
+              newfields.entryDate = newfields.entryDate
+                ? moment(newfields.entryDate)
+                    .startOf('day')
+                    .valueOf()
+                : '';
+              if (iftype.key == 'edit') {
+                newfields.id = iftype.curitem.id;
+              }
+              console.log(newfields);
+              delete newfields.password;
+              setNewState(dispatch, 'set/Usersave', newfields, () => {
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: false,
+                  };
+                });
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  message.success('操作成功');
+                });
+              });
+            }}
+            onChange={(newFields: any) => {}}
+            submitting={
+              props.loading.effects['set/Usersave'] || !iftype.visible
             }
-            console.log(newfields);
-            delete newfields.password;
-            setNewState(dispatch, 'set/Usersave', newfields, () => {
-              ciftype(() => {
-                return {
-                  ...iftype,
-                  visible: false,
-                };
-              });
-              setNewState(dispatch, post.posturl, post.postdata, () => {
-                message.success('操作成功');
-              });
-            });
-          }}
-          onChange={(newFields: any) => {}}
-          submitting={props.loading.effects['set/Usersave'] || !iftype.visible}
-        ></InitForm>
+          ></InitForm>
+        )}
       </Dia>
       <Card
         title={props.route.name}
