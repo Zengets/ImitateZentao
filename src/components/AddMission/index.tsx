@@ -56,7 +56,7 @@ let AddMission = (props: any) => {
         value: '', //初始化值
         type: 'select', //类型
         title: '是否测试', //placeholder
-        name: ['requireId'], //唯一标识
+        name: ['needTest'], //唯一标识
         required: true, //必填？
         options: [
           {
@@ -138,7 +138,7 @@ let AddMission = (props: any) => {
         dispatch,
         'model/querySelectListByProjectId',
         { projectId: projectId },
-        (res: any) => {},
+        () => {},
       );
       setNewState(
         dispatch,
@@ -257,12 +257,14 @@ let AddMission = (props: any) => {
             setNewState(dispatch, address, newfields, () => {
               message.success('操作成功');
               cis(true);
-              cancel(true);
+              if (!dicKey) {
+                cancel(true);
+              }
             });
           }}
           onChange={(newFields: any) => {}}
           submitting={loading.effects[address] || !iftype.fv}
-          actions={actions}
+          actions={isover && dicKey ? actions : null}
         ></InitForm>
       )}
     </Dia>
