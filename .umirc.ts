@@ -28,6 +28,7 @@ export default defineConfig({
   manifest: {
     basePath: './',
   },
+  hash: true,
   history: { type: 'hash' },
   nodeModulesTransform: {
     type: 'none',
