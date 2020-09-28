@@ -3,7 +3,6 @@ import styles from './index.less';
 import { connect, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import InitForm from '@/components/InitForm';
-import moment from 'moment';
 import { message, Modal, Card, Row, Col, List, Divider, Empty } from 'antd';
 import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
