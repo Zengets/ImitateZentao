@@ -29,6 +29,7 @@ export default defineConfig({
     basePath: './',
   },
   hash: true,
+
   history: { type: 'hash' },
   nodeModulesTransform: {
     type: 'none',
