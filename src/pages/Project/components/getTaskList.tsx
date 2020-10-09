@@ -34,6 +34,7 @@ import Missiondetail from '@/components/Missiondetail';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import InitForm from '@/components/InitForm';
 
 const { TabPane } = Tabs;
 
@@ -48,6 +49,8 @@ let GetTaskList = (props: any) => {
       title: '',
       key: '',
     }),
+    defaultfields: any = {},
+    [fields, cf] = useState(defaultfields),
     [post, cpost] = useState({
       posturl: 'proj/queryByRequireId',
       postdata: {
@@ -389,54 +392,96 @@ let GetTaskList = (props: any) => {
         title={iftype.title}
         footer={<div style={{ height: 24 }}></div>}
       >
-        {iftype.visible && (
-          <Missiondetail
-            showOther={() => {
-              setNewState(
-                dispatch,
-                'miss/ProjqueryById',
-                { id: miss.MisquerytaskDetails.data.data.info.projectId },
-                (res: any) => {
-                  Modal.info({
-                    style: { top: 20 },
-                    zIndex: 66,
-                    width: 1200,
-                    maskClosable: true,
-                    title: miss.MisquerytaskDetails.data.data.info.projectName,
-                    content: (
-                      <Projectdetail
-                        showProduct={() => {
-                          setNewState(
-                            dispatch,
-                            'miss/ProdqueryInfo',
-                            { id: res.data.data.productId },
-                            (result: any) => {
-                              Modal.info({
-                                style: { top: 20 },
-                                zIndex: 66,
-                                width: 1200,
-                                maskClosable: true,
-                                title: res.data.data.productName,
-                                content: (
-                                  <Productdetail maindata={result.data.data} />
-                                ),
-                                okText: '晓得了',
-                              });
-                            },
-                          );
-                        }}
-                        maindata={res.data.data}
-                      />
-                    ),
-                    okText: '晓得了',
+        {iftype.visible ? (
+          iftype.key == 'detail' ? (
+            <Missiondetail
+              showOther={() => {
+                setNewState(
+                  dispatch,
+                  'miss/ProjqueryById',
+                  { id: miss.MisquerytaskDetails.data.data.info.projectId },
+                  (res: any) => {
+                    Modal.info({
+                      style: { top: 20 },
+                      zIndex: 66,
+                      width: 1200,
+                      maskClosable: true,
+                      title:
+                        miss.MisquerytaskDetails.data.data.info.projectName,
+                      content: (
+                        <Projectdetail
+                          showProduct={() => {
+                            setNewState(
+                              dispatch,
+                              'miss/ProdqueryInfo',
+                              { id: res.data.data.productId },
+                              (result: any) => {
+                                Modal.info({
+                                  style: { top: 20 },
+                                  zIndex: 66,
+                                  width: 1200,
+                                  maskClosable: true,
+                                  title: res.data.data.productName,
+                                  content: (
+                                    <Productdetail
+                                      maindata={result.data.data}
+                                    />
+                                  ),
+                                  okText: '晓得了',
+                                });
+                              },
+                            );
+                          }}
+                          maindata={res.data.data}
+                        />
+                      ),
+                      okText: '晓得了',
+                    });
+                  },
+                );
+              }}
+              maindata={miss.MisquerytaskDetails.data.data}
+            ></Missiondetail>
+          ) : (
+            <InitForm
+              fields={fields}
+              submitData={(values: any) => {
+                let newfields = JSON.parse(JSON.stringify(values));
+                newfields.id = iftype.curitem.id;
+
+                let newlist = newfields.attachmentList.fileList
+                  ? newfields.attachmentList.fileList.map(
+                      (items: any, i: number) => {
+                        return {
+                          attachmentName: items.response
+                            ? items.response.data.dataList[0].name
+                            : items.name,
+                          attachUrl: items.response
+                            ? items.response.data.dataList[0].url
+                            : items.url,
+                        };
+                      },
+                    )
+                  : [];
+                newfields.attachmentList = newlist;
+                if (iftype.key == 'edit') {
+                  newfields.devStageEndDate = moment(
+                    newfields.devStageEndDate,
+                  ).valueOf();
+                  setNewState(dispatch, 'miss/add', newfields, () => {
+                    message.success('操作成功');
+                    hides(false);
                   });
-                },
-              );
-            }}
-            maindata={miss.MisquerytaskDetails.data.data}
-          ></Missiondetail>
-        )}
+                  return;
+                }
+              }}
+              onChange={() => {}}
+              submitting={loading.effects['miss/add'] || !iftype.visible}
+            ></InitForm>
+          )
+        ) : null}
       </Dia>
+
       <p
         style={{
           padding: 8,
