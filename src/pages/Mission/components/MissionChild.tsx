@@ -168,6 +168,18 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       width: 100,
       ...getColumnSearchProps('taskNo', post.postdata, handleSearch),
     },
+    //2020.09.29
+    {
+      title: '需求编号',
+      dataIndex: 'requireNo',
+      key: 'requireNo',
+      sorter: {
+        multiple: 100,
+      },
+      ellipsis: true,
+      width: 120,
+      ...getColumnSearchProps('requireNo', post.postdata, handleSearch),
+    },
     {
       title: '优先级',
       dataIndex: 'priorityName',
