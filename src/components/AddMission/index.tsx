@@ -11,6 +11,8 @@ import Button from '@material-ui/core/Button';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 let AddMission = (props: any) => {
+  console.log('props', props);
+
   let {
       miss,
       dispatch,
@@ -39,9 +41,9 @@ let AddMission = (props: any) => {
         title: '相关需求', //placeholder
         name: ['requireId'], //唯一标识
         required: true, //必填？
-        disabled: true,
-        hides: !dicKey,
-        options: [{ dicKey, dicName }],
+        // disabled: true,
+        // hides: !dicKey,
+        options: miss.querySelectByProjectId && miss.querySelectByProjectId,
       },
       taskName: {
         value: '', //初始化值
@@ -49,6 +51,23 @@ let AddMission = (props: any) => {
         title: '任务名称', //placeholder
         name: ['taskName'], //唯一标识
         required: true, //必填？
+      },
+      needTest: {
+        value: '', //初始化值
+        type: 'select', //类型
+        title: '是否测试', //placeholder
+        name: ['needTest'], //唯一标识
+        required: true, //必填？
+        options: [
+          {
+            dicKey: 0,
+            dicName: '不需要',
+          },
+          {
+            dicKey: 1,
+            dicName: '需要',
+          },
+        ],
       },
       taskDescription: {
         value: '<p></p>', //初始化值
@@ -120,6 +139,12 @@ let AddMission = (props: any) => {
         'model/querySelectListByProjectId',
         { projectId: projectId },
         () => {},
+      );
+      setNewState(
+        dispatch,
+        'miss/querySelectByProjectId',
+        { projectId: projectId },
+        (res: any) => {},
       );
     }
   }, [model.postdata.projectId]);

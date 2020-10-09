@@ -42,6 +42,7 @@ import Productdetail from '@/components/Productdetail';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Missiondetail from '@/components/Missiondetail';
+import { ExportOutlined } from '@ant-design/icons';
 
 let Bugs = React.forwardRef((props: any, ref: any) => {
   let { bug, dispatch, loading, model, addpostdata } = props,
@@ -891,34 +892,80 @@ let Bugs = React.forwardRef((props: any, ref: any) => {
     return {
       renderAdd() {
         return (
-          <IconButton
-            style={{ padding: 8, borderRadius: 4 }}
-            onClick={() => {
-              ciftype(() => {
-                return {
-                  ...iftype,
-                  visible: true,
-                  title: '新建Bug',
-                  key: 'add',
-                };
-              });
-              cf(defaultfields);
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: '6px 12px',
+          <div>
+            <IconButton
+              style={{ padding: 8, borderRadius: 4 }}
+              onClick={() => {
+                ciftype(() => {
+                  return {
+                    ...iftype,
+                    visible: true,
+                    title: '新建Bug',
+                    key: 'add',
+                  };
+                });
+                cf(defaultfields);
               }}
             >
-              <AddCircleOutlineIcon style={{ fontSize: 22 }} color="primary" />
-              <span style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}>
-                新增
-              </span>
-            </div>
-          </IconButton>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <AddCircleOutlineIcon
+                  style={{ fontSize: 22 }}
+                  color="primary"
+                />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  新增
+                </span>
+              </div>
+            </IconButton>
+
+            <IconButton
+              style={{ padding: 8, borderRadius: 4 }}
+              onClick={() => {
+                function bodyparse(vals: any) {
+                  delete vals.sortList;
+                  let val = JSON.parse(JSON.stringify(vals));
+                  delete val.pageSize;
+                  delete val.pageIndex;
+                  let res = '';
+                  for (let key in val) {
+                    let value = val[key] ? val[key] : '';
+
+                    res += `&${key}=${value}`;
+                  }
+                  return res.substr(1);
+                }
+                //2020.9.29
+                window.open(
+                  `/zentao/umBug/exportFile?${bodyparse(post.postdata)}`,
+                );
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <ExportOutlined style={{ color: '#1183fb', fontSize: 18 }} />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  导出
+                </span>
+              </div>
+            </IconButton>
+          </div>
         );
       },
     };

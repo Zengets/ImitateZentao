@@ -25,6 +25,7 @@ import {
   breakDown,
   add,
   querytaskMy,
+  querySelectByProjectId,
 } from '@/services/api.ts';
 
 import { message } from 'antd';
@@ -86,6 +87,7 @@ export default {
         page: {},
       },
     },
+    querySelectByProjectId: [],
     ProjquerySelectList: [],
     queryTaskStatusSelectList: [],
     querySelectListByProjectId: [],
@@ -283,6 +285,16 @@ export default {
         type: 'updateState',
         payload: {
           ProjquerySelectList: responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *querySelectByProjectId({ payload }: any, { call, put }: any) {
+      const responese = yield call(querySelectByProjectId, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          querySelectByProjectId: responese.data && responese.data.dataList,
         },
       });
       return responese;

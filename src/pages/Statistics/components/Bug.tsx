@@ -19,6 +19,12 @@ import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
+import {
+  UnlockOutlined,
+  EllipsisOutlined,
+  ExportOutlined,
+} from '@ant-design/icons';
+
 let { Option } = Select,
   { RangePicker } = DatePicker,
   { TreeNode } = TreeSelect;
@@ -153,6 +159,64 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
       render(text: any, row: any) {
         return {
           children: text,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+    //2020.9.29 导出路径接口
+    {
+      title: '导出',
+      dataIndex: 'daochu',
+      key: 'daochu',
+      ellipsis: true,
+      width: 120,
+      render(text: any, row: any) {
+        return {
+          children: (
+            <IconButton
+              style={{ padding: 8, borderRadius: 4 }}
+              onClick={() => {
+                function bodyparse(vals: any) {
+                  delete vals.sortList;
+                  let val = JSON.parse(JSON.stringify(vals));
+                  delete val.pageSize;
+                  delete val.pageIndex;
+                  let res = '';
+                  for (let key in val) {
+                    let value = val[key] ? val[key] : '';
+
+                    res += `&${key}=${value}`;
+                  }
+                  return res.substr(1);
+                }
+                window.open(
+                  `/zentao/umTask/exportTaskReport?${bodyparse({
+                    currentUserId: row.userId,
+                    devStageEndDateStart: postdata.openMinTime,
+                    devStageEndDateEnd: postdata.openMaxTime,
+                  })}`,
+                );
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '6px 12px',
+                }}
+              >
+                <ExportOutlined style={{ color: '#1183fb', fontSize: 18 }} />
+                <span
+                  style={{ fontSize: 14, color: '#1183fb', paddingLeft: 6 }}
+                >
+                  导出
+                </span>
+              </div>
+            </IconButton>
+          ),
           props: {
             rowSpan: row.rowSpan,
           },

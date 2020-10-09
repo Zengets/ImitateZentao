@@ -64,6 +64,7 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
         beforeUserName: '', //---------------分配人名称
         projectId: '', //---------------项目id *
         status: '',
+        requireNo: '', //需求编号
         ifJump: ifJump, //----------------------------状态        下拉框(所有)
         devStageRealStartTimeStart: '', //-----------------开始时间搜索  (到分钟)
         devStageRealStartTimeEnd: '', //-----------------开始时间搜索  (到分钟)
