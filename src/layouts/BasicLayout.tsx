@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './index.less';
+import styles from './layout.less';
 import { connect, Link, history } from 'umi';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';

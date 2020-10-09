@@ -555,38 +555,44 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             }}
           >
             <EditIcon color={record.status != 1 ? 'action' : 'primary'} />
-            <span style={{ fontSize: 16, paddingLeft: 4, color: '#1183fb' }}>
+            <span
+              style={{
+                fontSize: 16,
+                paddingLeft: 4,
+                color: record.status != 1 ? '#333' : '#1183fb',
+              }}
+            >
               编辑
             </span>
           </div>
         </IconButton>
       </Menu.Item>
       <Menu.Item key="2">
-        <Popconfirm
-          overlayStyle={{ zIndex: 9999999999 }}
-          okText="确认"
-          cancelText="取消"
-          placement="bottom"
-          title={'确认删除' + record.taskName + '？'}
-          onConfirm={() => {
-            setNewState(
-              dispatch,
-              'miss/MisdeleteById',
-              { id: record.id },
-              () => {
-                message.success('删除' + record.taskName + '成功！');
-                setNewState(dispatch, post.posturl, post.postdata, () => {
-                  hides(false);
-                });
-              },
-            );
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
+          <Popconfirm
+            overlayStyle={{ zIndex: 9999999999 }}
+            okText="确认"
+            cancelText="取消"
+            placement="bottom"
+            title={'确认删除' + record.taskName + '？'}
+            onConfirm={() => {
+              setNewState(
+                dispatch,
+                'miss/MisdeleteById',
+                { id: record.id },
+                () => {
+                  message.success('删除' + record.taskName + '成功！');
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    hides(false);
+                  });
+                },
+              );
             }}
           >
             <IconButton
@@ -606,8 +612,8 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 删除
               </span>
             </IconButton>
-          </div>
-        </Popconfirm>
+          </Popconfirm>
+        </div>
       </Menu.Item>
       <Menu.Item key="3">
         <IconButton

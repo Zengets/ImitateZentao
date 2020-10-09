@@ -24,23 +24,16 @@ import Container from '@material-ui/core/Container';
 import setNewState from '@/utils/setNewState';
 import IconButton from '@material-ui/core/IconButton';
 import AutoTable from '@/components/AutoTable';
-import {
-  getColumnSearchProps,
-  getColumnSelectProps,
-  getColumnTreeSelectProps,
-  getColumnRangeProps,
-} from '@/components/TbSearch';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+
 import rendercolor from '@/utils/rendercor';
-import LinkIcon from '@material-ui/icons/Link';
-import Button from '@material-ui/core/Button';
+
 import Dia from '@/components/Dia';
-import AddMission from '@/components/AddMission';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Productdetail from '@/components/Productdetail';
 import Projectdetail from '@/components/Projectdetail';
 import Missiondetail from '@/components/Missiondetail';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const { TabPane } = Tabs;
 
@@ -165,7 +158,171 @@ let GetTaskList = (props: any) => {
         </span>
       ),
     },
+    {
+      title: '操作',
+      dataIndex: 'action',
+      key: 'action',
+      width: 120,
+      render: (text: any, record: any) => renderAction(record),
+    },
   ];
+
+  function renderAction(record: any) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+        }}
+      >
+        <IconButton
+          style={{ borderRadius: 0 }}
+          disabled={record.status != 1}
+          onClick={() => {
+            let defaultfieldes: any = {
+              projectId: {
+                value: model.postdata.projectId, //初始化值
+                type: 'select', //类型
+                title: '所属项目', //placeholder
+                name: ['projectId'], //唯一标识
+                required: true, //必填？
+                disabled: true,
+                options: model.ProjquerySelectList && model.ProjquerySelectList,
+              },
+              taskName: {
+                value: record.taskName, //初始化值
+                type: 'input', //类型
+                title: '任务名称', //placeholder
+                name: ['taskName'], //唯一标识
+                required: true, //必填？
+              },
+              taskDescription: {
+                value: record.taskDescription, //初始化值
+                type: 'editor',
+                title: '任务描述',
+                name: ['taskDescription'],
+                required: false,
+                rows: 6,
+                col: { span: 24 },
+              },
+              priorityType: {
+                value: record.priorityType, //初始化值
+                type: 'select', //类型
+                title: '优先级', //placeholder
+                name: ['priorityType'], //唯一标识
+                required: true, //必填？
+                options: model.Bugpriority && model.Bugpriority, //buglist
+              },
+              currentUserId: {
+                value: record.devUserId, //初始化值
+                type: 'select', //类型
+                title: '指派给', //placeholder
+                name: ['currentUserId'], //唯一标识
+                required: true, //必填？
+                options:
+                  model.querySelectListByProjectId &&
+                  model.querySelectListByProjectId,
+              },
+              devStageEndDate: {
+                value: moment(parseInt(record.devStageEndDate)), //初始化值
+                type: 'datepicker',
+                title: '截止日期',
+                name: ['devStageEndDate'],
+                required: true,
+                format: 'YYYY-MM-DD',
+                disabledDate: (current: any) => {
+                  return (
+                    current &&
+                    current <
+                      moment()
+                        .add('day', -1)
+                        .endOf('day')
+                  );
+                },
+              },
+              devStagePlanHours: {
+                value: record.devStagePlanHours, //初始化值
+                type: 'inputnumber',
+                title: '预计时长',
+                min: 1,
+                name: ['devStagePlanHours'],
+                required: true,
+              },
+              attachmentList: {
+                value: record.attachmentList
+                  ? mockfile(record.attachmentList)
+                  : [], //初始化值
+                type: 'upload',
+                title: '附件',
+                name: ['attachmentList'],
+                required: false,
+                col: { span: 24 },
+              },
+            };
+            cf(defaultfieldes);
+            ciftype(() => {
+              return {
+                ...iftype,
+                visible: true,
+                title: '修改' + record.taskName,
+                key: 'edit',
+                curitem: record,
+                fullScreen: false,
+              };
+            });
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}
+          >
+            <EditIcon color={record.status != 1 ? 'action' : 'primary'} />
+          </div>
+        </IconButton>
+        <Divider type="vertical"></Divider>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <Popconfirm
+            overlayStyle={{ zIndex: 9999999999 }}
+            okText="确认"
+            cancelText="取消"
+            placement="bottom"
+            title={'确认删除' + record.taskName + '？'}
+            onConfirm={() => {
+              setNewState(
+                dispatch,
+                'miss/MisdeleteById',
+                { id: record.id },
+                () => {
+                  message.success('删除' + record.taskName + '成功！');
+                  setNewState(dispatch, post.posturl, post.postdata, () => {
+                    hides(false);
+                  });
+                },
+              );
+            }}
+          >
+            <IconButton
+              disabled={record.status != 1}
+              aria-label="delete"
+              style={{ borderRadius: 0 }}
+            >
+              <DeleteIcon color={record.status != 1 ? 'action' : 'error'} />
+            </IconButton>
+          </Popconfirm>
+        </div>
+      </div>
+    );
+  }
 
   //postdata changes callback
   useMemo(() => {
@@ -221,7 +378,7 @@ let GetTaskList = (props: any) => {
   } = proj.queryByRequireId?.data?.data;
 
   return (
-    <div>
+    <div style={{ backgroundColor: '#fff' }}>
       <Dia
         fullScreen={iftype.fullScreen}
         show={iftype.visible}
@@ -280,7 +437,14 @@ let GetTaskList = (props: any) => {
           ></Missiondetail>
         )}
       </Dia>
-      <p style={{ padding: 8, backgroundColor: '#f0f0f0', marginBottom: 8 }}>
+      <p
+        style={{
+          padding: 8,
+          backgroundColor: '#1183fb',
+          marginBottom: 8,
+          color: '#fff',
+        }}
+      >
         共 {count} 个任务,待开发 {beDevelop} 个，开发中 {developing} 个，待测试{' '}
         {beTest} 个，已完成 {completed} 个，待验收 {beCheck} 个，已关闭 {closed}{' '}
         个,总预计 {estimate} 小时，已消耗 {consume} 小时，剩余 {surplus} 小时。

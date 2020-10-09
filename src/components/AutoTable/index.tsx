@@ -10,9 +10,9 @@ let AutoTable = ({
   pageChange,
   onChange,
   scroll,
-  expandedRowRender,
   pagination,
   rowSelection,
+  expandable,
 }: any) => {
   let dataSource = pageChange
     ? data.data
@@ -47,7 +47,7 @@ let AutoTable = ({
       }
       rowKey={rowKey ? rowKey : 'id'}
       onChange={onChange}
-      expandedRowRender={expandedRowRender}
+      expandable={expandable ? expandable : {}}
       rowSelection={rowSelection}
       size="small"
     ></Table>
