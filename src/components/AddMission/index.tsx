@@ -11,8 +11,6 @@ import Button from '@material-ui/core/Button';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 let AddMission = (props: any) => {
-  console.log('props', props);
-
   let {
       miss,
       dispatch,

@@ -31,10 +31,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import mockfile from '@/utils/mockfile';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import rendercolor from '@/utils/rendercor';
-import DetailItem from '@/components/DetailItem';
-import Button from '@material-ui/core/Button';
+import GetTaskList from './components/getTaskList';
 import Needsdetail from '@/components/Needsdetail';
-import { models } from './../../.umi/plugin-model/Provider';
 
 let Needs = (props: any) => {
   let { prod, model, dispatch, loading } = props,
@@ -279,6 +277,24 @@ let Needs = (props: any) => {
       dataIndex: 'taskNum',
       key: 'taskNum',
       width: 90,
+      render: (text: any, record: any) => {
+        return (
+          <a
+            onClick={() => {
+              ciftype({
+                ...iftype,
+                curitem: record,
+                fullScreen: false,
+                visible: true,
+                title: `分解的任务列表`,
+                key: 'missionlist',
+              });
+            }}
+          >
+            {text}
+          </a>
+        );
+      },
     },
     {
       title: '操作',
@@ -553,6 +569,14 @@ let Needs = (props: any) => {
             renderAction={() => renderAction(iftype.curitem)}
             maindata={prod.queryDetailInfo.data.data}
           ></Needsdetail>
+        ) : iftype.key == 'missionlist' ? (
+          <GetTaskList
+            requireId={iftype.curitem.id}
+            resetData={() => {
+              setNewState(dispatch, post.posturl, post.postdata, () => {});
+            }}
+            noaction={true}
+          ></GetTaskList>
         ) : (
           iftype.visible && (
             <InitForm

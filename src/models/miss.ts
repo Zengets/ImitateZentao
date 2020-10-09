@@ -15,6 +15,7 @@ import {
   Mistest,
   MisquerytaskCheck,
   Mischeck,
+  taskToRequire,
   MisquerytaskOverview,
   querytaskAll,
   Misclose,
@@ -200,6 +201,14 @@ export default {
     },
     *Mischeck({ payload }: any, { call, put }: any) {
       const responese = yield call(Mischeck, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *taskToRequire({ payload }: any, { call, put }: any) {
+      const responese = yield call(taskToRequire, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },

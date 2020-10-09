@@ -621,7 +621,17 @@ let ToNeeds = (props: any, ref: any) => {
                 expandRowByClick: true,
                 rowExpandable: () => true,
                 expandedRowRender: (record: any) => (
-                  <GetTaskList requireId={record.id}></GetTaskList>
+                  <GetTaskList
+                    requireId={iftype.curitem.id}
+                    resetData={() => {
+                      setNewState(
+                        dispatch,
+                        post.posturl,
+                        post.postdata,
+                        () => {},
+                      );
+                    }}
+                  ></GetTaskList>
                 ),
               }}
             />

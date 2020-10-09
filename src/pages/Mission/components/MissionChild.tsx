@@ -48,6 +48,7 @@ import {
   UnlockOutlined,
   EllipsisOutlined,
   ExportOutlined,
+  RetweetOutlined,
 } from '@ant-design/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -421,7 +422,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       sorter: {
         multiple: 94,
       },
-      width: 80,
+      width: 90,
       ...getColumnSelectProps(
         'status',
         miss.queryTaskStatusSelectList && miss.queryTaskStatusSelectList,
@@ -457,7 +458,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       onClick={e => {
         cvs({
           ...vs,
-          vs: e.key == '2',
+          vs: e.key == '2' || e.key == '4',
         });
       }}
     >
@@ -476,12 +477,40 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 disabled: true,
                 options: model.ProjquerySelectList && model.ProjquerySelectList,
               },
+              requireId: {
+                value: record.requireId, //初始化值
+                type: 'select', //类型
+                title: '相关需求', //placeholder
+                name: ['requireId'], //唯一标识
+                required: true, //必填？
+                // disabled: true,
+                // hides: !dicKey,
+                options:
+                  miss.querySelectByProjectId && miss.querySelectByProjectId,
+              },
               taskName: {
                 value: record.taskName, //初始化值
                 type: 'input', //类型
                 title: '任务名称', //placeholder
                 name: ['taskName'], //唯一标识
                 required: true, //必填？
+              },
+              needTest: {
+                value: record.needTest, //初始化值
+                type: 'select', //类型
+                title: '是否测试', //placeholder
+                name: ['needTest'], //唯一标识
+                required: true, //必填？
+                options: [
+                  {
+                    dicKey: '0',
+                    dicName: '不需要',
+                  },
+                  {
+                    dicKey: '1',
+                    dicName: '需要',
+                  },
+                ],
               },
               taskDescription: {
                 value: record.taskDescription, //初始化值
@@ -672,6 +701,47 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
             </span>
           </div>
         </IconButton>
+      </Menu.Item>
+      <Menu.Item key="4">
+        <Popconfirm
+          overlayStyle={{ zIndex: 9999999999 }}
+          okText="确认"
+          cancelText="取消"
+          placement="bottom"
+          title={'未验收的任务转为需求？'}
+          onConfirm={() => {
+            setNewState(
+              dispatch,
+              'miss/taskToRequire',
+              { id: record.id },
+              () => {
+                message.success('任务转为需求成功！');
+                setNewState(dispatch, post.posturl, post.postdata, () => {
+                  hides(false);
+                });
+              },
+            );
+          }}
+        >
+          <IconButton
+            disabled={record.status > 7 || record.status == 7}
+            aria-label="delete"
+            style={{ borderRadius: 0 }}
+          >
+            <RetweetOutlined
+              style={{ color: record.status < 7 ? '#1183fb' : '#333' }}
+            />
+            <span
+              style={{
+                fontSize: 16,
+                paddingLeft: 4,
+                color: record.status < 7 ? '#1183fb' : '#333',
+              }}
+            >
+              转移
+            </span>
+          </IconButton>
+        </Popconfirm>
       </Menu.Item>
     </Menu>
   );
@@ -1004,6 +1074,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         <Divider type="vertical"></Divider>
         <Dropdown
           overlay={menus(record)}
+          trigger={['click']}
           visible={vs.vs && vs.id == record.id}
           onVisibleChange={(flag: any) =>
             cvs({

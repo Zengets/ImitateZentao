@@ -104,7 +104,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
           },
           detail: {
             formatter: '{value}%',
-            fontSize: 18,
+            fontSize: 12,
             borderRadius: 3,
             width: 100,
             marginTop: 10,
@@ -229,162 +229,264 @@ let First = ({ dispatch, home, model, proj }: any) => {
           </div>
         </Col>
         {dataList && dataList.length > 0 ? (
-          <Col {...cols} style={{ display: 'flex' }}>
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <p
-                style={{
-                  alignSelf: 'flex-start',
-                  paddingLeft: 20,
-                  fontSize: 14,
-                  color: '#000',
-                }}
-              >
-                项目完成率
-              </p>
-              <ReactEcharts
-                style={{
-                  width: '100%',
-                  height: 200,
-                  marginTop: 12,
-                  marginBottom: 24,
-                }}
-                option={getOption('项目完成率', home.IndexFirst.data.data.rate)}
-              ></ReactEcharts>
-              <Row style={{ width: '100%' }}>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>预计</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.planHours}小时
+          <Col {...cols}>
+            <Row>
+              <Col span={12}>
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <p
+                    style={{
+                      alignSelf: 'flex-start',
+                      paddingLeft: 20,
+                      fontSize: 14,
+                      color: '#1183fb',
+                    }}
+                  >
+                    项目进度
                   </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>消耗</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.expendHours}小时
+                  <div
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <ReactEcharts
+                      style={{
+                        width: 160,
+                        height: 128,
+                      }}
+                      option={getOption(
+                        '项目完成率',
+                        home.IndexFirst.data.data.rate,
+                      )}
+                    ></ReactEcharts>
+
+                    <Row style={{ flex: 1 }}>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>预计:</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.planHours}小时
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>消耗:</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.expendHours}小时
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#f50' }}>剩余:</p>
+                        <p style={{ color: 'orange' }}>
+                          {home.IndexFirst.data.data.leftHours}小时
+                        </p>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </Col>
+
+              <Col span={12}>
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderLeft: '#f0f0f0 solid 1px',
+                  }}
+                >
+                  <p
+                    style={{
+                      alignSelf: 'flex-start',
+                      paddingLeft: 20,
+                      fontSize: 14,
+                      color: '#1183fb',
+                    }}
+                  >
+                    开发进度
                   </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#f50' }}>剩余</p>
-                  <p style={{ color: 'orange' }}>
-                    {home.IndexFirst.data.data.leftHours}小时
+                  <div
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <ReactEcharts
+                      style={{
+                        width: 160,
+                        height: 128,
+                      }}
+                      option={getOption(
+                        '任务完成率',
+                        home.IndexFirst.data.data.taskRate,
+                      )}
+                    ></ReactEcharts>
+
+                    <Row style={{ flex: 1 }}>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>所有任务:</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.totalTaskNum}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>未完成:</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.notFinishTask}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: 'green' }}>昨天完成:</p>
+                        <p style={{ color: '#4caf50' }}>
+                          {home.IndexFirst.data.data.lastDayTask}个
+                        </p>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </Col>
+
+              <Col span={12}>
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <p
+                    style={{
+                      alignSelf: 'flex-start',
+                      paddingLeft: 20,
+                      fontSize: 14,
+                      color: '#1183fb',
+                    }}
+                  >
+                    测试进度
                   </p>
-                </Col>
-              </Row>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderLeft: '#f0f0f0 solid 1px',
-                borderRight: '#f0f0f0 solid 1px',
-              }}
-            >
-              <p
-                style={{
-                  alignSelf: 'flex-start',
-                  paddingLeft: 20,
-                  fontSize: 14,
-                  color: '#000',
-                }}
-              >
-                任务完成率
-              </p>
-              <ReactEcharts
-                style={{
-                  width: '100%',
-                  height: 200,
-                  marginTop: 12,
-                  marginBottom: 24,
-                }}
-                option={getOption(
-                  '任务完成率',
-                  home.IndexFirst.data.data.taskRate,
-                )}
-              ></ReactEcharts>
-              <Row style={{ width: '100%' }}>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>所有任务</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.totalTaskNum}个
+                  <div
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <ReactEcharts
+                      style={{
+                        width: 160,
+                        height: 128,
+                      }}
+                      option={getOption(
+                        'Bug修复率',
+                        home.IndexFirst.data.data.testTaskRate,
+                      )}
+                    ></ReactEcharts>
+                    <Row style={{ flex: 1 }}>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>所有任务：</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.totalTestTaskNum}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>未完成：</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.notFinishTestTask}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#dc004e' }}>昨天完成：</p>
+                        <p style={{ color: 'red' }}>
+                          {home.IndexFirst.data.data.lastDayTestTask}个
+                        </p>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </Col>
+
+              <Col span={12}>
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderLeft: '#f0f0f0 solid 1px',
+                  }}
+                >
+                  <p
+                    style={{
+                      alignSelf: 'flex-start',
+                      paddingLeft: 20,
+                      fontSize: 14,
+                      color: '#1183fb',
+                    }}
+                  >
+                    Bug进度
                   </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>未完成任务</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.notFinishTask}个
-                  </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: 'green' }}>昨天完成任务</p>
-                  <p style={{ color: '#4caf50' }}>
-                    {home.IndexFirst.data.data.lastDayTask}个
-                  </p>
-                </Col>
-              </Row>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <p
-                style={{
-                  alignSelf: 'flex-start',
-                  paddingLeft: 20,
-                  fontSize: 14,
-                  color: '#000',
-                }}
-              >
-                Bug修复率
-              </p>
-              <ReactEcharts
-                style={{
-                  width: '100%',
-                  height: 200,
-                  marginTop: 12,
-                  marginBottom: 24,
-                }}
-                option={getOption(
-                  'Bug修复率',
-                  home.IndexFirst.data.data.bugRate,
-                )}
-              ></ReactEcharts>
-              <Row style={{ width: '100%' }}>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>所有Bug</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.totalBugNum}个
-                  </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#999' }}>未解决Bug</p>
-                  <p style={{ color: '#000' }}>
-                    {home.IndexFirst.data.data.notSolvedBug}个
-                  </p>
-                </Col>
-                <Col span={8} className={styles.center}>
-                  <p style={{ color: '#dc004e' }}>昨天解决Bug数</p>
-                  <p style={{ color: 'red' }}>
-                    {home.IndexFirst.data.data.lastDayBug}个
-                  </p>
-                </Col>
-              </Row>
-            </div>
+                  <div
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <ReactEcharts
+                      style={{
+                        width: 160,
+                        height: 128,
+                      }}
+                      option={getOption(
+                        'Bug修复率',
+                        home.IndexFirst.data.data.bugRate,
+                      )}
+                    ></ReactEcharts>
+                    <Row style={{ flex: 1 }}>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>所有Bug：</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.totalBugNum}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#999' }}>未解决：</p>
+                        <p style={{ color: '#000' }}>
+                          {home.IndexFirst.data.data.notSolvedBug}个
+                        </p>
+                      </Col>
+                      <Col span={8} className={styles.center}>
+                        <p style={{ color: '#dc004e' }}>昨天解决：</p>
+                        <p style={{ color: 'red' }}>
+                          {home.IndexFirst.data.data.lastDayBug}个
+                        </p>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </Col>
+            </Row>
           </Col>
         ) : (
           <Empty

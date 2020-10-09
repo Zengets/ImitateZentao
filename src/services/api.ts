@@ -701,7 +701,14 @@ export async function Mischeck(params: any) {
     body: JSON.stringify(params),
   });
 }
-
+//任务测试验证  MisquerytaskCheck,Mischeck
+export async function taskToRequire(params: any) {
+  return request(`/zentao/umTask/taskToRequire`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
 //任务总览  MisquerytaskOverview
 export async function MisquerytaskOverview(params: any) {
   return request(`/zentao/umTask/querytaskOverview`, {
