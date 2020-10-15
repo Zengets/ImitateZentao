@@ -109,6 +109,7 @@ let BasicLayout = (props: any) => {
     setNewState(dispatch, 'model/ProjquerySelectList', {}, () => {}); //项目
     setNewState(dispatch, 'model/queryMenu', {}, () => {}); //菜单
     setNewState(dispatch, 'model/Bugpriority', {}, () => {}); //优先级
+    setNewState(dispatch, 'model/queryTaskTypeSelectList', {}, () => {}); //任务类型
   }, []);
 
   return (

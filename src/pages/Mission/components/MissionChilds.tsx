@@ -215,6 +215,21 @@ let MissionChilds = React.forwardRef((props: any, ref: any) => {
       },
     },
     {
+      title: '任务类型',
+      dataIndex: 'taskTypeName',
+      key: 'taskTypeName',
+      sorter: {
+        multiple: 132,
+      },
+      width: 110,
+      ...getColumnSelectProps(
+        'taskType',
+        model.queryTaskTypeSelectList,
+        post.postdata,
+        handleSearch,
+      ),
+    },
+    {
       title: '分配人',
       dataIndex: 'beforeUserName',
       key: 'beforeUserName',

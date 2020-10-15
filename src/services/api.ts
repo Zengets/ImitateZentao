@@ -59,6 +59,24 @@ export async function queryBackgroungImg(params: any) {
   });
 }
 
+//看板数据
+export async function blackboard(params: any) {
+  return request(`/zentao/umTask/queryRequirTaskByProjectId`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
+//看板数据
+export async function blackport(params: any) {
+  return request(`/zentao/umTask/queryChartData`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //修改密码
 export async function changePassword(params: any) {
   return request(`/zentao/sysAccount/changePassword`, {
@@ -587,7 +605,14 @@ export async function querySelectListByProjectId(params: any) {
     body: JSON.stringify(params),
   });
 }
-
+//项目下的人员下拉框分配任务用
+export async function queryTaskTypeSelectList(params: any) {
+  return request(`/zentao/sysDic/queryTaskTypeSelectList`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
 //需求分解任务
 export async function breakDown(params: any) {
   return request(`/zentao/umTask/breakDown`, {

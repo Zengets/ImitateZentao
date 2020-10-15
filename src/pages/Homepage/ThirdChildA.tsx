@@ -50,8 +50,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
         taskNo: '', //任务编号
         taskName: '', //任务名
         currentUserId: '', //当前负责人id
-        deadDateStart: '', //截止起日期
-        deadDateEnd: '', //截止止日期
+        devStageEndDateStart: '', //截止起日期
+        devStageEndDateEnd: '', //截止止日期
         projectId: '', //所属项目id
         status: '', //状态
         sortList: [
@@ -265,6 +265,21 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       },
     },
     {
+      title: '任务类型',
+      dataIndex: 'taskTypeName',
+      key: 'taskTypeName',
+      sorter: {
+        multiple: 132,
+      },
+      width: 110,
+      ...getColumnSelectProps(
+        'taskType',
+        model.queryTaskTypeSelectList,
+        post.postdata,
+        handleSearch,
+      ),
+    },
+    {
       title: '所属项目',
       dataIndex: 'projectName',
       key: 'projectName',
@@ -373,15 +388,15 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
     },
     {
       title: '截止日期',
-      dataIndex: 'deadDate',
-      key: 'deadDate',
+      dataIndex: 'devStageEndDate',
+      key: 'devStageEndDate',
       sorter: {
         multiple: 95,
       },
       width: 120,
       ...getColumnRangeProps(
-        'deadDateStart',
-        'deadDateEnd',
+        'devStageEndDateStart',
+        'devStageEndDateEnd',
         post.postdata,
         handleSearch,
       ),
@@ -435,7 +450,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
       width: 120,
       ...getColumnSelectProps(
         'status',
-        home.IndexThird.data.statusList && home.IndexThird.data.statusList,
+        home.IndexThird?.data?.statusList && home.IndexThird.data.statusList,
         post.postdata,
         handleSearch,
       ),
@@ -448,6 +463,9 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
   ];
 
   function renderAction(record: any) {
+    let statusarr = [5, 6, 7];
+    let rao1 = statusarr.indexOf(record.taskType) != -1, //不需要测试 验收
+      rao2 = '';
     return (
       <div>
         <Popconfirm
@@ -512,9 +530,11 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(验收)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   realFinishTime: {
@@ -616,6 +636,7 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     title: '指派给', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   testStageDescription: {
@@ -690,7 +711,8 @@ let ThirdChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(开发)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
                     hides: true,

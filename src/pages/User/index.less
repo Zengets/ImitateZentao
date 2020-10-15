@@ -1,9 +1,11 @@
 input {
   background-color: rgba(255, 255, 255, 0) !important;
 }
+
 :global .ant-tree .ant-tree-treenode {
   padding-bottom: 10px !important;
 }
+
 input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -38,4 +40,112 @@ input:-webkit-autofill:focus {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.datePicker {
+  min-width: 94px;
+}
+
+.mblim {
+  > div {
+    width: 49% !important;
+  }
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  li {
+    flex: 1;
+    text-align: center;
+    color: #fff;
+    background-color: #666;
+    padding: 3px 0;
+    border-left: #fff solid 1px;
+  }
+}
+
+.maintab {
+  :global .ant-tabs-ink-bar {
+    background: #fff !important;
+  }
+
+  .ant-row {
+    :global .ant-tabs-ink-bar {
+      background: #1183fb !important;
+    }
+  }
+
+  :global .ant-tabs-nav {
+    margin-bottom: 0px !important;
+  }
+
+  :global .ant-switch-checked {
+    background-color: #000 !important;
+  }
+}
+
+.todetail {
+  color: #f50;
+  cursor: pointer;
+  padding-left: 10px;
+  word-break: keep-all;
+}
+
+.row {
+  overflow: hidden;
+  width: 100%;
+}
+
+.lineCol {
+  border: 1px solid #dcdcdc;
+  padding: 10px 0;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.lineCol + .lineCol {
+  border: 1px solid #dcdcdc;
+  padding: 10px 0;
+  overflow: hidden;
+  margin-left: -1px;
+}
+
+.rowspace {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.oneline {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.span {
+  overflow: hidden;
+  padding: 6px;
+  background-color: #fff;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  border-left: #f9f9f9 solid 2px;
+  box-sizing: border-box;
+  display: block;
+
+  &:hover {
+    background-color: #ffffff;
+    transition: all 0.2s;
+    border-left: #1183fb solid 2px;
+  }
 }

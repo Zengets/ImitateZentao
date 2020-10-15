@@ -363,7 +363,7 @@ let ThirdChildB = (props: any) => {
       width: 120,
       ...getColumnSelectProps(
         'status',
-        home.IndexFourth.data.statusList && home.IndexFourth.data.statusList,
+        home.IndexFourth?.data?.statusList && home.IndexFourth.data.statusList,
         post.postdata,
         handleSearch,
       ),

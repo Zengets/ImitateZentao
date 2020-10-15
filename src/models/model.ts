@@ -8,6 +8,7 @@ import {
   queryMenu,
   ProdqueryAllSelectAll,
   querySelectListByProjectId,
+  queryTaskTypeSelectList,
   breakDown,
 } from '@/services/api.ts';
 import { message } from 'antd';
@@ -26,6 +27,7 @@ export default {
       },
     },
     UserqueryAll: [],
+    queryTaskTypeSelectList: [],
     postdata: {
       projectId: undefined, //项目id，必填
       realName: '', //用户名称，筛选条件
@@ -87,6 +89,16 @@ export default {
       yield put({
         type: 'updateState',
         payload: { UserqueryAll: responese.data && responese.data.parentList },
+      });
+      return responese;
+    },
+    *queryTaskTypeSelectList({ payload }: any, { call, put }: any) {
+      const responese = yield call(queryTaskTypeSelectList, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          queryTaskTypeSelectList: responese.data && responese.data.dataList,
+        },
       });
       return responese;
     },

@@ -189,7 +189,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
         multiple: 21,
       },
       ellipsis: true,
-      width: 90,
+      width: 98,
       ...getColumnSelectProps(
         'priorityType',
         model.Bugpriority,
@@ -232,6 +232,21 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
           </a>
         );
       },
+    },
+    {
+      title: '任务类型',
+      dataIndex: 'taskTypeName',
+      key: 'taskTypeName',
+      sorter: {
+        multiple: 132,
+      },
+      width: 110,
+      ...getColumnSelectProps(
+        'taskType',
+        model.queryTaskTypeSelectList,
+        post.postdata,
+        handleSearch,
+      ),
     },
     {
       title: '分配人',
@@ -419,6 +434,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       title: '状态',
       dataIndex: 'statusName',
       key: 'statusName',
+      fixed: 'right',
       sorter: {
         multiple: 94,
       },
@@ -438,6 +454,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
     {
       title: '操作',
       dataIndex: 'action',
+      fixed: 'right',
       key: 'action',
       width: 260,
       render: (text: any, record: any) => renderAction(record),
@@ -495,22 +512,15 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 name: ['taskName'], //唯一标识
                 required: true, //必填？
               },
-              needTest: {
-                value: record.needTest, //初始化值
+              taskType: {
+                value: record.taskType, //初始化值
                 type: 'select', //类型
-                title: '是否测试', //placeholder
-                name: ['needTest'], //唯一标识
+                title: '任务类型', //placeholder
+                name: ['taskType'], //唯一标识
                 required: true, //必填？
-                options: [
-                  {
-                    dicKey: '0',
-                    dicName: '不需要',
-                  },
-                  {
-                    dicKey: '1',
-                    dicName: '需要',
-                  },
-                ],
+                options:
+                  model.queryTaskTypeSelectList &&
+                  model.queryTaskTypeSelectList,
               },
               taskDescription: {
                 value: record.taskDescription, //初始化值
@@ -747,6 +757,9 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
   );
 
   function renderAction(record: any) {
+    let statusarr = [5, 6, 7];
+    let rao1 = statusarr.indexOf(record.taskType) != -1, //不需要测试 验收
+      rao2 = '';
     return (
       <div
         style={{
@@ -848,9 +861,11 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(验收)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   realFinishTime: {
@@ -953,6 +968,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                     title: '指派给', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   testStageDescription: {
@@ -1026,7 +1042,8 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(开发)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
                     hides: true,
@@ -1184,7 +1201,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
 
   useImperativeHandle(ref, () => {
     return {
-      renderAdd() {
+      renderAdd(fn) {
         return (
           <div>
             <IconButton
@@ -1217,7 +1234,6 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
               </div>
             </IconButton>
             <Divider type="vertical"></Divider>
-
             <IconButton
               style={{ padding: 8, borderRadius: 4 }}
               onClick={() => {
@@ -1255,6 +1271,8 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
                 </span>
               </div>
             </IconButton>
+            {fn && <Divider type="vertical"></Divider>}
+            {fn ? fn() : null}
           </div>
         );
       },

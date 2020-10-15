@@ -10,6 +10,7 @@ import {
   TreeSelect,
   InputNumber,
   Tooltip,
+  Modal,
 } from 'antd';
 import styles from '../style.less';
 import Button from '@material-ui/core/Button';
@@ -19,6 +20,8 @@ import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
+import ReactEcharts from 'echarts-for-react';
+
 import {
   UnlockOutlined,
   EllipsisOutlined,
@@ -85,7 +88,204 @@ let Bug = ({ dispatch, statics, model, loading }: any) => {
       width: 120,
       render(text: any, row: any) {
         return {
-          children: row.userName,
+          children: (
+            <a
+              onClick={() => {
+                setNewState(
+                  dispatch,
+                  'statics/blackport',
+                  {
+                    currentUserId: row.userId,
+                    devStageEndDateStart: postdata.openMinTime, //任务截止日期起
+                    devStageEndDateEnd: postdata.openMaxTime, //任务截止日期止
+                  },
+                  (res: any) => {
+                    let getOption = (data: any) => {
+                      return {
+                        tooltip: {
+                          trigger: 'item',
+                          triggerOn: 'mousemove',
+                        },
+                        toolbox: {
+                          show: true,
+                          x: '96.6%',
+                          y: '6%',
+                          feature: {
+                            saveAsImage: {
+                              show: true,
+                              excludeComponents: ['toolbox'],
+                              pixelRatio: 2,
+                              name: data.name + data.date + '工作报表',
+                            },
+                          },
+                        },
+                        series: [
+                          {
+                            type: 'tree',
+                            id: 0,
+                            name: 'tree1',
+                            data: [data],
+                            top: '10%',
+                            left: '8%',
+                            bottom: '22%',
+                            right: '20%',
+                            symbolSize: 5,
+                            edgeForkPosition: '5%',
+                            roam: true,
+
+                            initialTreeDepth: 3,
+                            lineStyle: {
+                              width: 1,
+                            },
+                            label: {
+                              distance: 10,
+                              position: 'left',
+                              verticalAlign: 'middle',
+                              align: 'right',
+                              formatter: (params: any) => {
+                                console.log(params);
+                                if (params.data.date) {
+                                  return (
+                                    '{a|' +
+                                    params.name +
+                                    ' 工作报表\n' +
+                                    params.data.date +
+                                    '}'
+                                  );
+                                }
+
+                                if (params.data.endDate) {
+                                  let lasttimer =
+                                    params.data.status == 3
+                                      ? '{a|' +
+                                        params.name +
+                                        '\n ' +
+                                        params.data.endDate +
+                                        ' [任务数:' +
+                                        params.data.children.length +
+                                        '] ' +
+                                        '}{abs|}'
+                                      : '{a|' +
+                                        params.name +
+                                        '\n ' +
+                                        params.data.endDate +
+                                        ' [任务数:' +
+                                        params.data.children.length +
+                                        '] ' +
+                                        '}{abg|}';
+
+                                  return lasttimer;
+                                }
+
+                                if (params.data.statusName) {
+                                  let lasttimer =
+                                    params.data.ifDelay == '2'
+                                      ? '{a|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}{ab|}'
+                                      : params.data.status == 3
+                                      ? '{a|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}'
+                                      : params.data.status == 7
+                                      ? '{c|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}'
+                                      : '{b|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}';
+
+                                  return lasttimer;
+                                }
+                              },
+                              rich: {
+                                txt: {
+                                  color: '#999',
+                                  align: 'left',
+                                },
+                                a: {
+                                  color: '#000',
+                                  lineHeight: 22,
+                                  align: 'center',
+                                },
+                                b: {
+                                  color: '#1183fb',
+                                  align: 'left',
+                                },
+                                c: {
+                                  color: '#00b600',
+                                  align: 'left',
+                                },
+
+                                abg: {
+                                  backgroundColor: '#f0f0f0',
+                                  color: '#fff',
+                                  width: '100%',
+                                  align: 'right',
+                                  height: 22,
+                                  borderRadius: [0, 0, 4, 4],
+                                },
+                                abs: {
+                                  backgroundColor: '#ffa2be',
+                                  color: '#fff',
+                                  width: '100%',
+                                  align: 'right',
+                                  height: 22,
+                                  borderRadius: [0, 0, 4, 4],
+                                },
+                                ab: {
+                                  backgroundColor: '#ffa2be',
+                                  width: '100%',
+                                  align: 'right',
+                                  padding: 6,
+                                },
+                              },
+                            },
+                            leaves: {
+                              label: {
+                                position: 'right',
+                                verticalAlign: 'middle',
+                                align: 'left',
+                              },
+                            },
+
+                            expandAndCollapse: true,
+                            animationDuration: 550,
+                            animationDurationUpdate: 750,
+                          },
+                        ],
+                      };
+                    };
+                    Modal.info({
+                      title: `${row.userName}${row.projectDate}任务看板`,
+                      width: '96%',
+                      style: { top: 12 },
+                      maskClosable: true,
+                      content: (
+                        <ReactEcharts
+                          style={{
+                            width: '100%',
+                            height: '80vh',
+                          }}
+                          option={getOption(res.data.dataList)}
+                        ></ReactEcharts>
+                      ),
+                    });
+                  },
+                );
+              }}
+            >
+              {row.userName}
+            </a>
+          ),
           props: {
             rowSpan: row.rowSpan,
           },

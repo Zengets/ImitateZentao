@@ -30,7 +30,6 @@ let Login = ({ user, loadings, dispatch }: any) => {
     showPasswords: false,
   });
   const onSubmit = (data: any) => {
-    console.log(data);
     setNewState(
       dispatch,
       'user/Login',
@@ -40,11 +39,14 @@ let Login = ({ user, loadings, dispatch }: any) => {
       },
       (result: any) => {
         localStorage.setItem('userInfo', JSON.stringify(result.data.user));
-
-        setNewState(dispatch, 'model/queryMenu', {}, (res: any) => {
-          history.replace('/index');
-          localStorage.setItem('Menu', JSON.stringify(res.data.dataList));
-        });
+        if (document.body.clientWidth > 800) {
+          setNewState(dispatch, 'model/queryMenu', {}, (res: any) => {
+            history.replace('/index');
+            localStorage.setItem('Menu', JSON.stringify(res.data.dataList));
+          });
+        } else {
+          history.replace('/blackboard');
+        }
       },
     );
   };
@@ -185,7 +187,6 @@ let Login = ({ user, loadings, dispatch }: any) => {
                   )}
                 </span>
               </FormControl>
-
               <Button
                 fullWidth
                 type="submit"

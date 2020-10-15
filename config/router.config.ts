@@ -9,6 +9,10 @@ export default [
     component: '@/pages/User/Fogot',
   },
   {
+    path: '/blackboard',
+    component: '@/pages/User/BlackMain',
+  },
+  {
     path: '/index',
     component: '@/layouts/BasicLayout',
     routes: [

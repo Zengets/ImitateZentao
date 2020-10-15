@@ -144,6 +144,21 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       },
     },
     {
+      title: '任务类型',
+      dataIndex: 'taskTypeName',
+      key: 'taskTypeName',
+      sorter: {
+        multiple: 132,
+      },
+      width: 110,
+      ...getColumnSelectProps(
+        'taskType',
+        model.queryTaskTypeSelectList,
+        post.postdata,
+        handleSearch,
+      ),
+    },
+    {
       title: '所属项目',
       dataIndex: 'projectName',
       key: 'projectName',
@@ -270,7 +285,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
       width: 120,
       ...getColumnSelectProps(
         'status',
-        home.IndexThird.data.statusList && home.IndexThird.data.statusList,
+        home.IndexThird?.data?.statusList && home.IndexThird.data.statusList,
         post.postdata,
         handleSearch,
       ),
@@ -283,6 +298,9 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
   ];
 
   function renderAction(record: any) {
+    let statusarr = [5, 6, 7];
+    let rao1 = statusarr.indexOf(record.taskType) != -1, //不需要测试 验收
+      rao2 = '';
     return (
       <div>
         <Popconfirm
@@ -347,9 +365,11 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(验收)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   realFinishTime: {
@@ -379,8 +399,8 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     required: true,
                   },
                   devStageFinishDescription: {
-                    value: '', //初始化值
-                    type: 'textarea',
+                    value: '<p></p>', //初始化值
+                    type: 'editor',
                     title: '开发描述',
                     name: ['devStageFinishDescription'],
                     required: false,
@@ -451,6 +471,7 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                     title: '指派给', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
+                    hides: rao1,
                     options: res.data.dataList,
                   },
                   testStageDescription: {
@@ -525,7 +546,8 @@ let FourthChildA = ({ dispatch, home, model, loading, miss }: any) => {
                   currentUserId: {
                     value: '', //初始化值
                     type: 'select', //类型
-                    title: '指派给', //placeholder
+                    title:
+                      record.taskType == 2 ? '指派给(测试)' : '指派给(开发)', //placeholder
                     name: ['currentUserId'], //唯一标识
                     required: true, //必填？
                     hides: true,

@@ -9,11 +9,11 @@ if (allStr) {
   if (allStr.indexOf('9000') != -1) {
     IpAndPort = 'http://172.21.3.155:8081/';
   } else if (allStr.indexOf('9001') != -1) {
-    IpAndPort = 'http://172.21.3.44:8501/';
+    IpAndPort = 'http://172.21.3.239:8501/';
   } else if (allStr.indexOf('9003') != -1) {
     IpAndPort = 'http://172.21.3.85:8088/';
   } else {
-    IpAndPort = 'http://172.21.3.44:8501/'; //http://172.21.3.5/zentao/
+    IpAndPort = 'http://172.21.3.8/zentao/'; //http://172.21.3.5/zentao/
   }
 }
 
@@ -24,6 +24,7 @@ export default defineConfig({
   targets: {
     ie: 11,
   },
+  hash: true,
   publicPath: './',
   manifest: {
     basePath: './',

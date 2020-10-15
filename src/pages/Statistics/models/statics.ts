@@ -9,6 +9,7 @@ import {
   depuserlist,
   queryDevList,
   queryTestList,
+  blackport,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -23,10 +24,19 @@ export default {
     queryDevList: [],
     queryTestList: [],
     umRequiretoproj: [],
+    blackport: {},
     ProdqueryAllSelectAll: [],
     code: {},
   },
   effects: {
+    *blackport({ payload }: any, { call, put }: any) {
+      const responese = yield call(blackport, payload);
+      yield put({
+        type: 'updateState',
+        payload: { blackport: responese.data && responese.data.dataList },
+      });
+      return responese;
+    },
     *umRequiretoproj({ payload }: any, { call, put }: any) {
       const responese = yield call(umRequiretoproj, payload);
       yield put({

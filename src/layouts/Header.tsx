@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,14 +8,11 @@ import styles from './layout.less';
 import Container from '@material-ui/core/Container';
 import { Breadcrumb, Menu, Dropdown, Divider, Input, Select } from 'antd';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { IconButton, Paper } from '@material-ui/core';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import { connect, history } from 'umi';
 import Link from '@material-ui/core/Link';
-import { useEffect } from 'react';
 import setNewState from '@/utils/setNewState';
-import { useState } from 'react';
+import PersonCenter from '@/components/PersonCenter';
 
 function a11yProps(index: any, style: object) {
   return {
@@ -240,31 +237,11 @@ function Header(props: any) {
                 }
               })}
           </Tabs>
-          <Dropdown overlay={props.menu} trigger="click">
-            <div className={styles.userbox}>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                color="inherit"
-                style={{ borderRadius: 8 }}
-              >
-                <div
-                  style={{
-                    margin: '4px 6px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <AccountCircle style={{ fontSize: 36 }} />
-                  <span style={{ fontSize: 16, paddingLeft: 6 }}>
-                    {userInfo.realName}
-                  </span>
-                </div>
-              </IconButton>
-            </div>
-          </Dropdown>
+
+          <PersonCenter
+            realName={userInfo.realName}
+            menu={props.menu}
+          ></PersonCenter>
         </Container>
       </AppBar>
       <div

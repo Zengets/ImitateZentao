@@ -4,6 +4,8 @@ import {
   reparePassword,
   uploadBackgroungImg,
   queryBackgroungImg,
+  blackboard,
+  blackport,
 } from '@/services/api.ts';
 import { message } from 'antd';
 
@@ -11,8 +13,30 @@ export default {
   state: {
     res: {},
     queryBackgroungImg: '',
+    blackboard: [],
+    blackport: {},
   },
   effects: {
+    *blackboard({ payload }: any, { call, put }: any) {
+      const responese = yield call(blackboard, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          blackboard: responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
+    *blackport({ payload }: any, { call, put }: any) {
+      const responese = yield call(blackport, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          blackport: responese.data && responese.data.dataList,
+        },
+      });
+      return responese;
+    },
     *queryBackgroungImg({ payload }: any, { call, put }: any) {
       const responese = yield call(queryBackgroungImg, payload);
       yield put({

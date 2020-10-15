@@ -5,6 +5,7 @@ import {
   Card,
   Row,
   Col,
+  Modal,
   Select,
   DatePicker,
   TreeSelect,
@@ -24,25 +25,55 @@ import {
   EllipsisOutlined,
   ExportOutlined,
 } from '@ant-design/icons';
+import {
+  getNextMonthDays,
+  getNextWeekDays,
+  getCurrMonthDays,
+  getCurrWeekDays,
+  getLastMonthDays,
+  getLastWeekDays,
+} from '@/utils/mwdtimepicker';
+import ReactEcharts from 'echarts-for-react';
 
 let { Option } = Select,
   { RangePicker } = DatePicker,
   { TreeNode } = TreeSelect;
-//工作日计算
-function workday_count(start: any, end: any) {
-  let first = start.clone().endOf('week'); // 第一周最后一天
-  let last = end.clone().startOf('week'); // 最后一周第一天
-  let days = (last.diff(first, 'days') * 5) / 7;
-  let wfirst = first.day() - start.day();
-  if (start.day() == 0) --wfirst;
-  let wlast = end.day() - last.day();
-  if (end.day() == 6) --wlast;
-  return wfirst + days + wlast;
-}
+
+const selectarr = [
+  {
+    label: '当日',
+    value: 'a',
+  },
+  {
+    label: '上周',
+    value: 'b',
+  },
+  {
+    label: '上月',
+    value: 'c',
+  },
+  {
+    label: '本周',
+    value: 'd',
+  },
+  {
+    label: '本月',
+    value: 'e',
+  },
+  {
+    label: '下周',
+    value: 'f',
+  },
+  {
+    label: '下月',
+    value: 'g',
+  },
+];
 
 let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
   let [curindex, changecur] = useState(0),
     [fastest, cfastest] = useState(0),
+    [active, cact] = useState(0),
     startday = moment().startOf('month'),
     endday = moment(),
     start = moment()
@@ -54,7 +85,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
       devUserId: undefined, //完成人员id
       acceptStageTimeStart: start, //完成日期起，必填
       acceptStageTimeEnd: end, //完成日期止，必填
-      workdays: parseInt(workday_count(startday, endday)), //工作日天数，必填
+      workdays: undefined,
     });
 
   let createNewArr = (data: any) => {
@@ -101,7 +132,204 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
       width: 120,
       render(text: any, row: any) {
         return {
-          children: row.userName,
+          children: (
+            <a
+              onClick={() => {
+                setNewState(
+                  dispatch,
+                  'statics/blackport',
+                  {
+                    currentUserId: row.userId,
+                    devStageEndDateStart: postdata.acceptStageTimeStart, //任务截止日期起
+                    devStageEndDateEnd: postdata.acceptStageTimeEnd, //任务截止日期止
+                  },
+                  (res: any) => {
+                    let getOption = (data: any) => {
+                      return {
+                        tooltip: {
+                          trigger: 'item',
+                          triggerOn: 'mousemove',
+                        },
+                        toolbox: {
+                          show: true,
+                          x: '96.6%',
+                          y: '6%',
+                          feature: {
+                            saveAsImage: {
+                              show: true,
+                              excludeComponents: ['toolbox'],
+                              pixelRatio: 2,
+                              name: data.name + data.date + '工作报表',
+                            },
+                          },
+                        },
+                        series: [
+                          {
+                            type: 'tree',
+                            id: 0,
+                            name: 'tree1',
+                            data: [data],
+                            top: '10%',
+                            left: '8%',
+                            bottom: '22%',
+                            right: '20%',
+                            symbolSize: 5,
+                            edgeForkPosition: '5%',
+                            roam: true,
+
+                            initialTreeDepth: 3,
+                            lineStyle: {
+                              width: 1,
+                            },
+                            label: {
+                              distance: 10,
+                              position: 'left',
+                              verticalAlign: 'middle',
+                              align: 'right',
+                              formatter: (params: any) => {
+                                console.log(params);
+                                if (params.data.date) {
+                                  return (
+                                    '{a|' +
+                                    params.name +
+                                    ' 工作报表\n' +
+                                    params.data.date +
+                                    '}'
+                                  );
+                                }
+
+                                if (params.data.endDate) {
+                                  let lasttimer =
+                                    params.data.status == 3
+                                      ? '{a|' +
+                                        params.name +
+                                        '\n ' +
+                                        params.data.endDate +
+                                        ' [任务数:' +
+                                        params.data.children.length +
+                                        '] ' +
+                                        '}{abs|}'
+                                      : '{a|' +
+                                        params.name +
+                                        '\n ' +
+                                        params.data.endDate +
+                                        ' [任务数:' +
+                                        params.data.children.length +
+                                        '] ' +
+                                        '}{abg|}';
+
+                                  return lasttimer;
+                                }
+
+                                if (params.data.statusName) {
+                                  let lasttimer =
+                                    params.data.ifDelay == '2'
+                                      ? '{a|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}{ab|}'
+                                      : params.data.status == 3
+                                      ? '{a|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}'
+                                      : params.data.status == 7
+                                      ? '{c|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}'
+                                      : '{b|' +
+                                        params.data.statusName +
+                                        '} {txt|' +
+                                        params.name +
+                                        '}';
+
+                                  return lasttimer;
+                                }
+                              },
+                              rich: {
+                                txt: {
+                                  color: '#999',
+                                  align: 'left',
+                                },
+                                a: {
+                                  color: '#000',
+                                  lineHeight: 22,
+                                  align: 'center',
+                                },
+                                b: {
+                                  color: '#1183fb',
+                                  align: 'left',
+                                },
+                                c: {
+                                  color: '#00b600',
+                                  align: 'left',
+                                },
+
+                                abg: {
+                                  backgroundColor: '#f0f0f0',
+                                  color: '#fff',
+                                  width: '100%',
+                                  align: 'right',
+                                  height: 22,
+                                  borderRadius: [0, 0, 4, 4],
+                                },
+                                abs: {
+                                  backgroundColor: '#ffa2be',
+                                  color: '#fff',
+                                  width: '100%',
+                                  align: 'right',
+                                  height: 22,
+                                  borderRadius: [0, 0, 4, 4],
+                                },
+                                ab: {
+                                  backgroundColor: '#ffa2be',
+                                  width: '100%',
+                                  align: 'right',
+                                  padding: 6,
+                                },
+                              },
+                            },
+                            leaves: {
+                              label: {
+                                position: 'right',
+                                verticalAlign: 'middle',
+                                align: 'left',
+                              },
+                            },
+
+                            expandAndCollapse: true,
+                            animationDuration: 550,
+                            animationDurationUpdate: 750,
+                          },
+                        ],
+                      };
+                    };
+                    Modal.info({
+                      title: `${row.userName}${row.projectDate}任务看板`,
+                      width: '96%',
+                      style: { top: 12 },
+                      maskClosable: true,
+                      content: (
+                        <ReactEcharts
+                          style={{
+                            width: '100%',
+                            height: '80vh',
+                          }}
+                          option={getOption(res.data.dataList)}
+                        ></ReactEcharts>
+                      ),
+                    });
+                  },
+                );
+              }}
+            >
+              {row.userName}
+            </a>
+          ),
           props: {
             rowSpan: row.rowSpan,
           },
@@ -124,31 +352,23 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
     },
 
     {
-      title: '预计工时/任务数',
+      title: '预计工时',
       dataIndex: 'planExpendHours',
       key: 'planExpendHours',
       ellipsis: true,
       width: 120,
-      render: (text: any, record: any) => (
-        <span>
-          {text} / {record.taskCount}
-        </span>
-      ),
+      render: (text: any, record: any) => <span>{text}</span>,
     },
     {
-      title: '实际工时/任务数',
+      title: '实际工时',
       dataIndex: 'actualExpendHours',
       key: 'actualExpendHours',
       ellipsis: true,
       width: 120,
-      render: (text: any, record: any) => (
-        <span>
-          {text} / {record.finishCount}
-        </span>
-      ),
+      render: (text: any, record: any) => <span>{text}</span>,
     },
     {
-      title: '完成进度',
+      title: '工作效率',
       dataIndex: 'completionEfficiency',
       key: 'completionEfficiency',
       ellipsis: true,
@@ -238,7 +458,7 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
       },
     },
     {
-      title: '工作效率',
+      title: '工作饱和度',
       dataIndex: 'workEfficiency',
       key: 'workEfficiency',
       ellipsis: true,
@@ -316,10 +536,41 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
   ];
 
   useEffect(() => {
-    setNewState(dispatch, 'statics/queryTaskFinish', postdata, () => {});
+    setNewState(dispatch, 'statics/queryTaskFinish', postdata, (res: any) => {
+      cpost({
+        ...postdata,
+        workdays: parseInt(res.data.workdays),
+      });
+    });
     setNewState(dispatch, 'statics/DepqueryTreeList', {}, () => {});
     setNewState(dispatch, 'statics/queryDevList', {}, () => {});
   }, []);
+
+  useMemo(() => {
+    cpost({
+      ...postdata,
+      workdays: undefined,
+    });
+    setNewState(
+      dispatch,
+      'statics/queryTaskFinish',
+      {
+        ...postdata,
+        workdays: undefined,
+      },
+      (res: any) => {
+        cpost({
+          ...postdata,
+          workdays: parseInt(res.data.workdays),
+        });
+      },
+    );
+  }, [
+    postdata.departmentId,
+    postdata.devUserId,
+    postdata.acceptStageTimeStart,
+    postdata.acceptStageTimeEnd,
+  ]);
 
   return (
     <div>
@@ -371,9 +622,10 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
             ))}
           </Select>
         </div>
-
+      </div>
+      <div style={{ marginBottom: 12, display: 'flex', flexWrap: 'wrap' }}>
         <div className={styles.items}>
-          <label className={styles.mys}>任务截止日期</label>
+          <label className={styles.mys}>任务期间</label>
           <RangePicker
             value={[
               moment(postdata.acceptStageTimeStart),
@@ -386,12 +638,10 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
                 ...postdata,
                 acceptStageTimeStart: starts.valueOf(),
                 acceptStageTimeEnd: ends.valueOf(),
-                workdays: parseInt(workday_count(starts, ends)),
               });
             }}
           />
         </div>
-
         <div className={styles.items}>
           <label className={styles.mys}>工作日天数</label>
           <InputNumber
@@ -404,29 +654,68 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
                 ...postdata,
                 workdays: value,
               });
-            }}
-          />
-        </div>
-
-        <div className={styles.items}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disableElevation
-            style={{ height: 32, borderRadius: 0 }}
-            onClick={() => {
               setNewState(
                 dispatch,
                 'statics/queryTaskFinish',
-                postdata,
-                () => {},
+                {
+                  ...postdata,
+                  workdays: value,
+                },
+                (res: any) => {},
+              );
+            }}
+          />
+        </div>
+        {selectarr.map((item: any, i: number) => (
+          <Button
+            key={i}
+            type="submit"
+            variant="contained"
+            color={active == item.value ? 'primary' : 'action'}
+            disableElevation
+            style={{ height: 32, borderRadius: 0, margin: '0 2px' }}
+            onClick={() => {
+              function getVal(val: string) {
+                if (val == 'a') {
+                  return [moment().startOf('day'), moment().endOf('day')];
+                } else if (val == 'b') {
+                  return getLastWeekDays();
+                } else if (val == 'c') {
+                  return getLastMonthDays();
+                } else if (val == 'd') {
+                  return getCurrWeekDays();
+                } else if (val == 'e') {
+                  return getCurrMonthDays();
+                } else if (val == 'f') {
+                  return getNextWeekDays();
+                } else if (val == 'g') {
+                  return getNextMonthDays();
+                }
+              }
+              cact(item.value);
+              let starts = getVal(item.value)[0],
+                ends = getVal(item.value)[1],
+                newpostdata = {
+                  ...postdata,
+                  acceptStageTimeStart: starts.valueOf(),
+                  acceptStageTimeEnd: ends.valueOf(),
+                  workdays: undefined,
+                };
+              cpost(newpostdata);
+              setNewState(
+                dispatch,
+                'statics/queryTaskFinish',
+                newpostdata,
+                (res: any) => {
+                  newpostdata.workdays = parseInt(res.data.workdays);
+                  cpost(newpostdata);
+                },
               );
             }}
           >
-            <span style={{ marginTop: 2 }}>查询</span>
+            <span style={{ marginTop: 2 }}>{item.label}</span>
           </Button>
-        </div>
+        ))}
       </div>
 
       <AutoTable
