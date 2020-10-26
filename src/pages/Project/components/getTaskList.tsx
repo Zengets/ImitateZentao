@@ -226,22 +226,15 @@ let GetTaskList = (props: any) => {
                 name: ['taskName'], //唯一标识
                 required: true, //必填？
               },
-              needTest: {
-                value: record.needTest, //初始化值
+              taskType: {
+                value: record.taskType, //初始化值
                 type: 'select', //类型
-                title: '是否测试', //placeholder
-                name: ['needTest'], //唯一标识
+                title: '任务类型', //placeholder
+                name: ['taskType'], //唯一标识
                 required: true, //必填？
-                options: [
-                  {
-                    dicKey: '0',
-                    dicName: '不需要',
-                  },
-                  {
-                    dicKey: '1',
-                    dicName: '需要',
-                  },
-                ],
+                options:
+                  model.queryTaskTypeSelectList &&
+                  model.queryTaskTypeSelectList,
               },
               taskDescription: {
                 value: record.taskDescription, //初始化值
