@@ -8,6 +8,8 @@ import {
   querySelectListByProjectId,
   MisquerytaskAssign,
   Misassign,
+  MisupdateEndDate,
+  Misunpack,
   MisquerytaskDevelop,
   MisdevelopStart,
   MisdevelopEnd,
@@ -249,6 +251,22 @@ export default {
     },
     *Misassign({ payload }: any, { call, put }: any) {
       const responese = yield call(Misassign, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *MisupdateEndDate({ payload }: any, { call, put }: any) {
+      const responese = yield call(MisupdateEndDate, payload);
+      yield put({
+        type: 'updateState',
+        payload: { res: responese },
+      });
+      return responese;
+    },
+    *Misunpack({ payload }: any, { call, put }: any) {
+      const responese = yield call(Misunpack, payload);
       yield put({
         type: 'updateState',
         payload: { res: responese },

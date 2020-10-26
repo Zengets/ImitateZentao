@@ -215,9 +215,6 @@ let AddMission = (props: any) => {
           fields={fields}
           submitData={(values: any) => {
             let newfields = JSON.parse(JSON.stringify(values));
-            if (iftype.key == 'edit') {
-              newfields.id = iftype.curitem.id;
-            }
             let newlist = newfields.attachmentList.fileList
               ? newfields.attachmentList.fileList.map(
                   (items: any, i: number) => {

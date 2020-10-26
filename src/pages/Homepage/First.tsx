@@ -395,7 +395,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
                         height: 128,
                       }}
                       option={getOption(
-                        'Bug修复率',
+                        '测试进度',
                         home.IndexFirst.data.data.testTaskRate,
                       )}
                     ></ReactEcharts>
@@ -459,7 +459,7 @@ let First = ({ dispatch, home, model, proj }: any) => {
                         height: 128,
                       }}
                       option={getOption(
-                        'Bug修复率',
+                        'Bug进度',
                         home.IndexFirst.data.data.bugRate,
                       )}
                     ></ReactEcharts>

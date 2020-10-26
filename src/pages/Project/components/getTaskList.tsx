@@ -540,9 +540,29 @@ let GetTaskList = (props: any) => {
           color: '#fff',
         }}
       >
-        共 {count} 个任务,待开发 {beDevelop} 个，开发中 {developing} 个，待测试{' '}
-        {beTest} 个，已完成 {completed} 个，待验收 {beCheck} 个，已关闭 {closed}{' '}
-        个,总预计 {estimate} 小时，已消耗 {consume} 小时，剩余 {surplus} 小时。
+        <span>
+          共 {count} 个任务,待开发 {beDevelop} 个，开发中 {developing}{' '}
+          个，待测试 {beTest} 个，已完成 {completed} 个，待验收 {beCheck}{' '}
+          个，已关闭 {closed} 个,总预计 {estimate} 小时，已消耗 {consume}{' '}
+          小时，剩余 {surplus} 小时。
+        </span>
+        <a
+          style={{
+            float: 'right',
+            marginRight: 12,
+            color: '#fff',
+            border: '#fff solid 1px',
+            padding: '4px 6px',
+            marginTop: -5,
+          }}
+          onClick={() => {
+            setNewState(dispatch, 'miss/Misunpack', { id: requireId }, () => {
+              resetData();
+            });
+          }}
+        >
+          拆包
+        </a>
       </p>
       <AutoTable
         data={proj.queryByRequireId}

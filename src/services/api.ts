@@ -647,6 +647,23 @@ export async function Misassign(params: any) {
     body: JSON.stringify(params),
   });
 }
+//修改截止日期
+export async function MisupdateEndDate(params: any) {
+  return request(`/zentao/umTask/updateEndDate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+//需求拆包
+export async function Misunpack(params: any) {
+  return request(`/zentao/umRequire/unpack`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+}
+
 //任务分配 原
 export async function Misactive(params: any) {
   return request(`/zentao/umTask/active`, {

@@ -418,15 +418,45 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
       ),
       render(text: any, record: any) {
         return (
-          <span
+          <a
+            className={styles.did}
             style={{
-              color: record.ifDelay == 1 ? '#666' : '#fff',
+              color: record.ifDelay == 1 ? '#1183fb' : '#fff',
               backgroundColor: record.ifDelay == 1 ? 'transparent' : '#e84e0f',
               padding: '0 8px',
             }}
+            onClick={() => {
+              cf({
+                devStageEndDate: {
+                  value: '', //初始化值
+                  type: 'datepicker',
+                  title: '截止日期',
+                  name: ['devStageEndDate'],
+                  required: true,
+                  rows: 6,
+                  col: { span: 24 },
+                },
+              });
+              ciftype(() => {
+                return {
+                  ...iftype,
+                  visible: true,
+                  title: `[${record.taskNo}]${record.taskName} 截止日期修改`,
+                  curitem: record,
+                  fullScreen: false,
+                  key: 'changedeadline',
+                };
+              });
+            }}
           >
             {text && moment(parseInt(text)).format('YYYY-MM-DD')}
-          </span>
+            <div className="hides">
+              <TouchAppIcon
+                color={record.ifDelay == 1 ? '#e84e0f' : '#999'}
+                style={{ fontSize: 20 }}
+              ></TouchAppIcon>
+            </div>
+          </a>
         );
       },
     },
@@ -757,7 +787,7 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
   );
 
   function renderAction(record: any) {
-    let statusarr = [5, 6, 7];
+    let statusarr = [3, 4, 5, 6, 7];
     let rao1 = statusarr.indexOf(record.taskType) != -1, //不需要测试 验收
       rao2 = '';
     return (
@@ -1345,6 +1375,32 @@ let MissionChild = React.forwardRef((props: any, ref: any) => {
               submitData={(values: any) => {
                 let newfields = JSON.parse(JSON.stringify(values));
                 newfields.id = iftype.curitem.id;
+                if (iftype.key == 'changecharge') {
+                  setNewState(dispatch, 'miss/Misassign', newfields, () => {
+                    resetdata(null);
+                    message.success('操作成功');
+                    hides(false);
+                  });
+                  return;
+                }
+
+                if (iftype.key == 'changedeadline') {
+                  newfields.devStageEndDate = moment(
+                    newfields.devStageEndDate,
+                  ).valueOf();
+                  setNewState(
+                    dispatch,
+                    'miss/MisupdateEndDate',
+                    newfields,
+                    () => {
+                      resetdata(null);
+                      message.success('操作成功');
+                      hides(false);
+                    },
+                  );
+                  return;
+                }
+
                 if (iftype.key == 'changecharge') {
                   setNewState(dispatch, 'miss/Misassign', newfields, () => {
                     resetdata(null);
