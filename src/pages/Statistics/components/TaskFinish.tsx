@@ -41,6 +41,10 @@ let { Option } = Select,
 
 const selectarr = [
   {
+    label: '昨日',
+    value: 'o',
+  },
+  {
     label: '当日',
     value: 'a',
   },
@@ -690,6 +694,13 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
                   return getNextWeekDays();
                 } else if (val == 'g') {
                   return getNextMonthDays();
+                } else {
+                  return [
+                    moment()
+                      .add('day', -1)
+                      .startOf('day'),
+                    moment().endOf('day'),
+                  ];
                 }
               }
               cact(item.value);
