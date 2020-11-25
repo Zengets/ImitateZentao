@@ -699,7 +699,9 @@ let TaskFinish = ({ dispatch, statics, model, loading }: any) => {
                     moment()
                       .add('day', -1)
                       .startOf('day'),
-                    moment().endOf('day'),
+                    moment()
+                      .add('day', -1)
+                      .endOf('day'),
                   ];
                 }
               }
